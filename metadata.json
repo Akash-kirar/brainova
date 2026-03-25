@@ -1,0 +1,5 @@
+{
+  "name": "Brainova",
+  "description": "System architecture, database design, and playable prototype for the Brainova brain training app.",
+  "requestFramePermissions": []
+}
