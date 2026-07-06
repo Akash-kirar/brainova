@@ -1,9 +1,9 @@
-export const translations = {
+export const translations: Record<Language, any> = {
   "en": {
     "home": "Home",
     "games": "Games",
     "coach": "Coach",
-    "stats": "Stats",
+    "stats": "Progress",
     "profile": "Profile",
     "welcomeBack": "Welcome Back",
     "createAccount": "Create Account",
@@ -21,11 +21,16 @@ export const translations = {
     "searchGames": "Search games...",
     "todaysAnalysis": "Today's Analysis",
     "whatToImprove": "What do you want to improve?",
+    "giveInformation": "Give your information",
+    "provideDetails": "Provide your details for a better personalized plan tailored to your cognitive goals.",
+    "completeProfile": "Complete Profile",
     "personalizedPlan": "Personalized Plan",
     "recommendedTraining": "Recommended Training",
     "activity": "Activity",
     "lastActivity": "Last Activity",
-    "highScores": "High Scores",
+    "memoryGames": "Memory Games",
+    "focusGames": "Focus Games",
+    "highScores": "Your Scores",
     "supportInformation": "Support Information",
     "aiCoach": "AI Coach",
     "coachDesc": "Your personal AI trainer that adapts to your performance and creates custom workout plans.",
@@ -168,7 +173,7 @@ export const translations = {
     "onboardingDesc2": "Our advanced AI adapts to your unique cognitive profile, creating a custom training program that evolves with you.",
     "onboardingTitle3": "Track Daily Progress",
     "onboardingDesc3": "Build a habit of mental fitness. Just 10 minutes a day leads to measurable improvements in your cognitive scores.",
-    "selectGame": "Select a game to train your brain.",
+    "selectGame": "Keep your brain intelligent",
     "systemStatus": "System Status",
     "server": "Server",
     "activeUsers": "Active Users",
@@ -283,6 +288,9 @@ export const translations = {
     "searchGames": "गेम्स खोजें...",
     "todaysAnalysis": "आज का विश्लेषण",
     "whatToImprove": "आप क्या सुधारना चाहते हैं?",
+    "giveInformation": "अपनी जानकारी दें",
+    "provideDetails": "अपने संज्ञानात्मक लक्ष्यों के अनुरूप बेहतर व्यक्तिगत योजना के लिए अपना विवरण प्रदान करें।",
+    "completeProfile": "प्रोफ़ाइल पूरी करें",
     "personalizedPlan": "व्यक्तिगत योजना",
     "recommendedTraining": "अनुशंसित प्रशिक्षण",
     "activity": "गतिविधि",
@@ -540,6 +548,9 @@ export const translations = {
     "searchGames": "গেম খুঁজুন...",
     "todaysAnalysis": "আজকের বিশ্লেষণ",
     "whatToImprove": "আপনি কি উন্নতি করতে চান?",
+    "giveInformation": "আপনার তথ্য দিন",
+    "provideDetails": "আপনার জ্ঞানীয় লক্ষ্যগুলির জন্য তৈরি একটি আরও ভাল ব্যক্তিগতকৃত পরিকল্পনার জন্য আপনার বিবরণ প্রদান করুন।",
+    "completeProfile": "প্রোফাইল সম্পূর্ণ করুন",
     "personalizedPlan": "ব্যক্তিগতকৃত পরিকল্পনা",
     "recommendedTraining": "প্রস্তাবিত প্রশিক্ষণ",
     "activity": "কার্যকলাপ",
@@ -797,6 +808,9 @@ export const translations = {
     "searchGames": "गेम शोधा...",
     "todaysAnalysis": "आजचे विश्लेषण",
     "whatToImprove": "तुम्हाला काय सुधारायचे आहे?",
+    "giveInformation": "तुमची माहिती द्या",
+    "provideDetails": "तुमच्या संज्ञानात्मक उद्दिष्टांनुसार तयार केलेल्या अधिक चांगल्या वैयक्तिकृत योजनेसाठी तुमचे तपशील द्या.",
+    "completeProfile": "प्रोफाइल पूर्ण करा",
     "personalizedPlan": "वैयक्तिकृत योजना",
     "recommendedTraining": "शिफारस केलेले प्रशिक्षण",
     "activity": "क्रियाकलाप",
@@ -1054,6 +1068,9 @@ export const translations = {
     "searchGames": "గేమ్‌లను వెతకండి...",
     "todaysAnalysis": "నేటి విశ్లేషణ",
     "whatToImprove": "మీరు ఏమి మెరుగుపరచాలనుకుంటున్నారు?",
+    "giveInformation": "మీ సమాచారాన్ని ఇవ్వండి",
+    "provideDetails": "మీ అభిజ్ఞా లక్ష్యాలకు అనుగుణంగా మెరుగైన వ్యక్తిగతీకరించిన ప్రణాళిక కోసం మీ వివరాలను అందించండి.",
+    "completeProfile": "ప్రొఫైల్ పూర్తి చేయండి",
     "personalizedPlan": "వ్యక్తిగతీకరించిన ప్రణాళిక",
     "recommendedTraining": "సిఫార్సు చేయబడిన శిక్షణ",
     "activity": "కార్యాచరణ",
@@ -1311,6 +1328,9 @@ export const translations = {
     "searchGames": "கேம்களைத் தேடு...",
     "todaysAnalysis": "இன்றைய அலசல்",
     "whatToImprove": "நீங்கள் எதை மேம்படுத்த விரும்புகிறீர்கள்?",
+    "giveInformation": "உங்கள் தகவலை கொடுங்கள்",
+    "provideDetails": "உங்கள் அறிவாற்றல் இலக்குகளுக்கு ஏற்ப சிறந்த தனிப்பயனாக்கப்பட்ட திட்டத்திற்கு உங்கள் விவரங்களை வழங்கவும்.",
+    "completeProfile": "சுயவிவரத்தை முடிக்கவும்",
     "personalizedPlan": "தனிப்பயனாக்கப்பட்ட திட்டம்",
     "recommendedTraining": "பரிந்துரைக்கப்பட்ட பயிற்சி",
     "activity": "செயல்பாடு",
@@ -1547,6 +1567,8 @@ export const translations = {
     "cognitiveTraining": "அறிவாற்றல் பயிற்சி"
   }
 };
+
+
 
 export type Language = 'en' | 'hi' | 'bn' | 'mr' | 'te' | 'ta';
 

@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { ArrowLeft, Play, RotateCcw, Trophy, Calculator } from 'lucide-react';
+import GameMenu from './GameMenu';
 
 type GameState = 'menu' | 'playing' | 'gameover';
 
@@ -9,11 +10,14 @@ interface MathSprintGameProps {
   title: string;
   description: string;
   onBack: () => void;
+  trainingMode?: boolean;
+  onTrainingComplete?: (score: number) => void;
   onGameComplete?: (score: number, maxLevel: number) => void;
 }
 
-export default function MathSprintGame({ operation, title, description, onBack, onGameComplete }: MathSprintGameProps) {
-  const [gameState, setGameState] = useState<GameState>('menu');
+export default function MathSprintGame({ operation, title, description, onBack, trainingMode, onTrainingComplete, onGameComplete }: MathSprintGameProps) {
+  const [gameState, setGameState] = useState<GameState>(trainingMode ? 'playing' : 'menu');
+
   const [score, setScore] = useState(0);
   const [level, setLevel] = useState(1);
   const [timeLeft, setTimeLeft] = useState(60);
@@ -87,9 +91,10 @@ export default function MathSprintGame({ operation, title, description, onBack, 
       return () => clearInterval(timer);
     } else if (gameState === 'playing' && timeLeft <= 0) {
       setGameState('gameover');
+      if (trainingMode && onTrainingComplete) onTrainingComplete(score);
       if (onGameComplete) onGameComplete(score, level);
     }
-  }, [gameState, timeLeft, score, level, onGameComplete]);
+  }, [gameState, timeLeft, score, level, trainingMode, onTrainingComplete, onGameComplete]);
 
   const handleOptionClick = (opt: number) => {
     if (gameState !== 'playing' || !equation) return;
@@ -119,16 +124,16 @@ export default function MathSprintGame({ operation, title, description, onBack, 
       <div className="flex-1 flex flex-col items-center justify-center p-6">
         <AnimatePresence mode="wait">
           {gameState === 'menu' && (
-            <motion.div key="menu" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="text-center max-w-sm w-full">
-              <div className="w-24 h-24 rounded-3xl bg-blue-500/20 flex items-center justify-center mx-auto mb-8">
-                <Calculator className="w-12 h-12 text-blue-400" />
-              </div>
-              <h2 className="text-3xl font-bold mb-4">{title}</h2>
-              <p className="text-white/60 mb-12">{description}</p>
-              <button onClick={startGame} className="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-4 rounded-2xl transition-colors flex items-center justify-center gap-2">
-                <Play className="w-5 h-5" /> Start Game
-              </button>
-            </motion.div>
+            <GameMenu
+              title={title}
+              description={description}
+              icon={<Calculator className="w-14 h-14 text-blue-400" />}
+              iconBgColor="bg-[#1a1a2e]"
+              iconColor="text-blue-400"
+              onStart={startGame}
+              onBack={onBack}
+              showDifficulty={false}
+            />
           )}
 
           {gameState === 'playing' && equation && (

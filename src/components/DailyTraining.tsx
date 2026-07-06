@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Brain, Sparkles, CheckCircle, ArrowRight, Activity, Zap, Target, ArrowLeft, Trophy } from 'lucide-react';
+import { ArrowLeft, Trophy, CheckCircle, Lock, Brain } from 'lucide-react';
 import MemoryGridGame from './MemoryGridGame';
 import ReactionSpeedGame from './ReactionSpeedGame';
+import MathSprintGame from './MathSprintGame';
+import PatternLogicGame from './PatternLogicGame';
 
 type TrainingStep = 'analyzing' | 'plan' | 'playing' | 'summary';
 
@@ -14,20 +16,22 @@ interface DailyTrainingProps {
 interface WorkoutGame {
   id: string;
   name: string;
-  type: 'memory' | 'speed';
+  category: string;
+  type: string;
   difficulty: 'easy' | 'medium' | 'hard';
-  icon: React.ReactNode;
-  color: string;
+  icon: string | React.ReactNode;
+  iconBg: string;
+  locked?: boolean;
 }
 
 const WORKOUT_PLAN: WorkoutGame[] = [
-  { id: 'g1', name: 'Memory Matrix', type: 'memory', difficulty: 'medium', icon: <Brain className="w-6 h-6" />, color: 'text-indigo-400' },
-  { id: 'g2', name: 'Reaction Speed', type: 'speed', difficulty: 'hard', icon: <Zap className="w-6 h-6" />, color: 'text-rose-400' },
-  { id: 'g3', name: 'Memory Matrix', type: 'memory', difficulty: 'hard', icon: <Brain className="w-6 h-6" />, color: 'text-indigo-400' },
+  { id: 'g1', name: 'Halve Your Cake', category: 'MATH', type: 'math', difficulty: 'medium', icon: '🍰', iconBg: 'bg-[#ff914d]', locked: false },
+  { id: 'g2', name: 'Organic Order', category: 'PROBLEM SOLVING', type: 'logic', difficulty: 'medium', icon: '🌱', iconBg: 'bg-[#2edd70]', locked: false },
+  { id: 'g3', name: 'Raindrops', category: 'MATH', type: 'memory', difficulty: 'medium', icon: '💧', iconBg: 'bg-[#3b82f6]', locked: true },
 ];
 
 export default function DailyTraining({ onBack, onWorkoutComplete }: DailyTrainingProps) {
-  const [step, setStep] = useState<TrainingStep>('analyzing');
+  const [step, setStep] = useState<TrainingStep>('plan');
   const [currentGameIndex, setCurrentGameIndex] = useState(0);
   const [scores, setScores] = useState<number[]>([]);
 
@@ -54,13 +58,13 @@ export default function DailyTraining({ onBack, onWorkoutComplete }: DailyTraini
   const totalScore = scores.reduce((a, b) => a + b, 0);
 
   return (
-    <div className="flex flex-col h-full bg-[#0a0a0c] text-white">
+    <div className="flex flex-col h-full bg-[#1b232c] text-white">
       {/* Header */}
-      <div className="flex items-center justify-between px-6 py-6 border-b border-white/5">
-        <button onClick={onBack} className="p-2 -ml-2 rounded-full hover:bg-white/10 transition-colors">
+      <div className="flex items-center justify-between px-6 py-6" style={{ display: step === 'plan' ? 'none' : 'flex' }}>
+        <button onClick={onBack} className="p-2 -ml-2 rounded-full hover:bg-white/10 transition-colors bg-black/20">
           <ArrowLeft className="w-6 h-6" />
         </button>
-        <h2 className="text-xl font-bold">Daily Training</h2>
+        {step !== 'plan' && <h2 className="text-xl font-bold">Daily Training</h2>}
         <div className="w-10" />
       </div>
 
@@ -103,55 +107,42 @@ export default function DailyTraining({ onBack, onWorkoutComplete }: DailyTraini
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
-              className="flex-1 flex flex-col px-6 py-8"
+              className="flex-1 flex flex-col px-6 py-6"
             >
-              <div className="flex items-center gap-3 mb-6">
-                <div className="w-12 h-12 bg-indigo-500/20 rounded-2xl flex items-center justify-center border border-indigo-500/30">
-                  <Sparkles className="w-6 h-6 text-indigo-400" />
-                </div>
-                <div>
-                  <h3 className="text-2xl font-bold">Your Workout</h3>
-                  <p className="text-white/50 text-sm">Tailored to improve your weak spots</p>
-                </div>
+              <div className="flex items-center gap-4 mb-8">
+                <button onClick={onBack} className="p-2 -ml-2 rounded-full hover:bg-white/10 transition-colors">
+                  <ArrowLeft className="w-6 h-6" />
+                </button>
+                <h2 className="text-[26px] font-bold">Today's Exercises</h2>
               </div>
 
-              <div className="space-y-4 flex-1">
+              <div className="flex-1 overflow-y-auto pb-6">
                 {WORKOUT_PLAN.map((game, index) => (
-                  <motion.button 
+                  <div
                     key={game.id}
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: index * 0.1 }}
                     onClick={() => {
-                      setCurrentGameIndex(index);
-                      setStep('playing');
+                      if (!game.locked) {
+                        setCurrentGameIndex(index);
+                        setStep('playing');
+                      }
                     }}
-                    className="w-full text-left bg-[#1a1a1c] border border-white/5 rounded-3xl p-5 flex items-center gap-4 relative overflow-hidden hover:bg-white/5 transition-colors cursor-pointer"
+                    className={`flex items-center gap-5 mb-6 ${game.locked ? 'opacity-90' : 'cursor-pointer hover:bg-white/5 rounded-xl transition-colors'}`}
                   >
-                    <div className={`absolute top-0 right-0 w-24 h-24 ${game.color.replace('text-', 'bg-')}/10 rounded-full blur-2xl -mr-10 -mt-10`} />
-                    <div className={`w-12 h-12 rounded-2xl bg-[#0a0a0c] border border-white/5 flex items-center justify-center ${game.color} relative z-10`}>
+                    <div className={`w-16 h-16 rounded-full flex items-center justify-center text-3xl relative shrink-0 shadow-lg ${game.iconBg}`}>
                       {game.icon}
+                      {game.locked && (
+                        <div className="absolute -bottom-1 -left-1 w-6 h-6 bg-[#2a303c] rounded-full flex items-center justify-center border-2 border-[#1e232d]">
+                          <Lock className="w-3 h-3 text-white/50" />
+                        </div>
+                      )}
                     </div>
-                    <div className="flex-1 relative z-10">
-                      <p className="text-xs text-white/40 uppercase tracking-wider font-semibold mb-1">Round {index + 1}</p>
-                      <h4 className="font-bold text-lg leading-tight">{game.name}</h4>
+                    <div className="flex-1 -mt-1">
+                      <h3 className="text-[19px] font-bold text-white mb-[2px]">{game.name}</h3>
+                      <p className="text-gray-400 text-[13px] font-semibold tracking-wide uppercase">{game.category}</p>
                     </div>
-                    <div className="relative z-10 bg-white/5 px-3 py-1 rounded-full border border-white/10">
-                      <span className="text-xs font-medium capitalize">{game.difficulty}</span>
-                    </div>
-                  </motion.button>
+                  </div>
                 ))}
               </div>
-
-              <button
-                onClick={() => {
-                  setCurrentGameIndex(0);
-                  setStep('playing');
-                }}
-                className="w-full bg-indigo-500 text-white rounded-2xl p-4 font-bold text-lg flex items-center justify-center gap-2 hover:bg-indigo-600 transition-colors mt-6 shadow-[0_0_30px_rgba(99,102,241,0.3)]"
-              >
-                Start Workout <ArrowRight className="w-5 h-5" />
-              </button>
             </motion.div>
           )}
 
@@ -177,14 +168,29 @@ export default function DailyTraining({ onBack, onWorkoutComplete }: DailyTraini
                 <MemoryGridGame 
                   onBack={onBack} 
                   trainingMode={true} 
-                  trainingDifficulty={WORKOUT_PLAN[currentGameIndex].difficulty}
+                  trainingDifficulty={WORKOUT_PLAN[currentGameIndex].difficulty as any}
+                  onTrainingComplete={handleGameComplete}
+                />
+              ) : WORKOUT_PLAN[currentGameIndex].type === 'math' ? (
+                <MathSprintGame 
+                  onBack={onBack} 
+                  operation="mixed"
+                  title="Speed Math"
+                  description="Solve math problems quickly!"
+                  trainingMode={true} 
+                  onTrainingComplete={handleGameComplete}
+                />
+              ) : WORKOUT_PLAN[currentGameIndex].type === 'logic' ? (
+                <PatternLogicGame 
+                  onBack={onBack} 
+                  trainingMode={true} 
                   onTrainingComplete={handleGameComplete}
                 />
               ) : (
                 <ReactionSpeedGame 
                   onBack={onBack} 
                   trainingMode={true} 
-                  trainingDifficulty={WORKOUT_PLAN[currentGameIndex].difficulty}
+                  trainingDifficulty={WORKOUT_PLAN[currentGameIndex].difficulty as any}
                   onTrainingComplete={handleGameComplete}
                 />
               )}

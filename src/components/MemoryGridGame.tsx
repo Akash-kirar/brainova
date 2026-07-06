@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { ArrowLeft, Clock, Heart, Play, RotateCcw, Trophy, Brain } from 'lucide-react';
+import GameMenu from './GameMenu';
 
 type Difficulty = 'easy' | 'medium' | 'hard';
 type GameState = 'menu' | 'showing' | 'playing' | 'gameover';
@@ -146,36 +147,16 @@ export default function MemoryGridGame({ onBack, trainingMode, trainingDifficult
           
           {/* Menu State */}
           {gameState === 'menu' && (
-            <motion.div 
-              key="menu"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              className="flex-1 flex flex-col items-center justify-center px-6"
-            >
-              <div className="w-24 h-24 bg-indigo-500/20 rounded-3xl flex items-center justify-center mb-8 border border-indigo-500/30">
-                <Brain className="w-12 h-12 text-indigo-400" />
-              </div>
-              <h3 className="text-2xl font-bold mb-2">Select Difficulty</h3>
-              <p className="text-white/50 text-center mb-10 text-sm">
-                Memorize the highlighted tiles and tap them before time runs out.
-              </p>
-
-              <div className="w-full space-y-4">
-                {(['easy', 'medium', 'hard'] as Difficulty[]).map((diff) => (
-                  <button
-                    key={diff}
-                    onClick={() => startGame(diff)}
-                    className="w-full bg-[#1a1a1c] border border-white/5 rounded-2xl p-4 flex items-center justify-between hover:bg-[#2a2a2c] transition-colors group"
-                  >
-                    <span className="capitalize font-semibold text-lg">{diff}</span>
-                    <div className="w-10 h-10 rounded-full bg-indigo-500/10 flex items-center justify-center group-hover:bg-indigo-500 group-hover:text-white transition-colors text-indigo-400">
-                      <Play className="w-5 h-5 ml-1" />
-                    </div>
-                  </button>
-                ))}
-              </div>
-            </motion.div>
+            <GameMenu
+              title="Memory Matrix"
+              description="Memorize the highlighted tiles and tap them before time runs out."
+              icon={<Brain className="w-14 h-14 text-indigo-400" />}
+              iconBgColor="bg-[#1a1a2e]"
+              iconColor="text-indigo-400"
+              onStart={startGame}
+              onBack={onBack}
+              showDifficulty={true}
+            />
           )}
 
           {/* Playing / Showing State */}

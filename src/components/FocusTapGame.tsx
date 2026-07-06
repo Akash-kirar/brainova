@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { ArrowLeft, Play, RotateCcw, Trophy, Target, Zap } from 'lucide-react';
+import {  ArrowLeft, Play, RotateCcw, Trophy, Target, Zap  } from 'lucide-react';
+import GameMenu from './GameMenu';
 
 type GameState = 'menu' | 'playing' | 'gameover';
 
@@ -108,16 +109,16 @@ export default function FocusTapGame({ onBack, onGameComplete }: FocusTapGamePro
       <div className="flex-1 flex flex-col relative overflow-hidden">
         <AnimatePresence mode="wait">
           {gameState === 'menu' && (
-            <motion.div key="menu" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="flex-1 flex flex-col items-center justify-center p-6 text-center">
-              <div className="w-24 h-24 rounded-3xl bg-emerald-500/20 flex items-center justify-center mx-auto mb-8">
-                <Target className="w-12 h-12 text-emerald-400" />
-              </div>
-              <h2 className="text-3xl font-bold mb-4">Focus Tap</h2>
-              <p className="text-white/60 mb-12 max-w-xs mx-auto">Tap the <span className="text-emerald-400 font-bold">Green</span> target. Avoid the red ones. Be quick!</p>
-              <button onClick={startGame} className="w-full max-w-sm bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-4 rounded-2xl transition-colors flex items-center justify-center gap-2">
-                <Play className="w-5 h-5" /> Start Game
-              </button>
-            </motion.div>
+            <GameMenu
+              title="Focus Tap"
+              description="Tap the Green target. Avoid the red ones. Be quick!"
+              icon={<Target className="w-14 h-14 text-emerald-400" />}
+              iconBgColor="bg-emerald-500/20"
+              iconColor="text-emerald-400"
+              onStart={startGame}
+              showDifficulty={false}
+              onBack={onBack}
+            />
           )}
 
           {gameState === 'playing' && (

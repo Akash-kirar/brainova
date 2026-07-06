@@ -1,19 +1,22 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { ArrowLeft, Play, RotateCcw, Trophy, Brain, Heart } from 'lucide-react';
+import GameMenu from './GameMenu';
 
 type GameState = 'menu' | 'playing' | 'gameover';
 
 interface PatternLogicGameProps {
   onBack: () => void;
+  trainingMode?: boolean;
+  onTrainingComplete?: (score: number) => void;
   onGameComplete?: (score: number, maxLevel: number) => void;
 }
 
 const SHAPES = ['circle', 'square', 'triangle', 'diamond'];
 const COLORS = ['bg-rose-500', 'bg-blue-500', 'bg-emerald-500', 'bg-amber-500'];
 
-export default function PatternLogicGame({ onBack, onGameComplete }: PatternLogicGameProps) {
-  const [gameState, setGameState] = useState<GameState>('menu');
+export default function PatternLogicGame({ onBack, trainingMode, onTrainingComplete, onGameComplete }: PatternLogicGameProps) {
+  const [gameState, setGameState] = useState<GameState>(trainingMode ? 'playing' : 'menu');
   const [score, setScore] = useState(0);
   const [level, setLevel] = useState(1);
   const [lives, setLives] = useState(3);
@@ -102,6 +105,7 @@ export default function PatternLogicGame({ onBack, onGameComplete }: PatternLogi
       generatePattern(level);
     } else {
       setGameState('gameover');
+      if (trainingMode && onTrainingComplete) onTrainingComplete(score);
       if (onGameComplete) onGameComplete(score, level);
     }
   };
@@ -147,16 +151,16 @@ export default function PatternLogicGame({ onBack, onGameComplete }: PatternLogi
       <div className="flex-1 flex flex-col items-center justify-center p-6">
         <AnimatePresence mode="wait">
           {gameState === 'menu' && (
-            <motion.div key="menu" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="text-center max-w-sm w-full">
-              <div className="w-24 h-24 rounded-3xl bg-indigo-500/20 flex items-center justify-center mx-auto mb-8">
-                <Brain className="w-12 h-12 text-indigo-400" />
-              </div>
-              <h2 className="text-3xl font-bold mb-4">Pattern Logic</h2>
-              <p className="text-white/60 mb-12">Observe the sequence and select the shape that comes next.</p>
-              <button onClick={startGame} className="w-full bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-4 rounded-2xl transition-colors flex items-center justify-center gap-2">
-                <Play className="w-5 h-5" /> Start Game
-              </button>
-            </motion.div>
+            <GameMenu
+              title="Pattern Logic"
+              description="Observe the sequence and select the shape that comes next."
+              icon={<Brain className="w-14 h-14 text-[#a78bfa]" />}
+              iconBgColor="bg-[#1a1a2e]"
+              iconColor="text-[#a78bfa]"
+              onStart={startGame}
+              onBack={onBack}
+              showDifficulty={false}
+            />
           )}
 
           {gameState === 'playing' && (

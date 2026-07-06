@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { ArrowLeft, Zap, Play, RotateCcw, Trophy } from 'lucide-react';
+import {  ArrowLeft, Zap, Play, RotateCcw, Trophy  } from 'lucide-react';
+import GameMenu from './GameMenu';
 
 type GameState = 'menu' | 'waiting' | 'ready' | 'early' | 'result' | 'gameover';
 
@@ -90,16 +91,16 @@ export default function ReactionTapGame({ onBack, onGameComplete }: ReactionTapG
       <div className="flex-1 flex flex-col items-center justify-center p-6 relative">
         <AnimatePresence mode="wait">
           {gameState === 'menu' && (
-            <motion.div key="menu" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="text-center max-w-sm w-full z-10">
-              <div className="w-24 h-24 rounded-3xl bg-rose-500/20 flex items-center justify-center mx-auto mb-8">
-                <Zap className="w-12 h-12 text-rose-400" />
-              </div>
-              <h2 className="text-3xl font-bold mb-4">Reaction Tap</h2>
-              <p className="text-white/60 mb-12">Wait for the screen to turn green, then tap as fast as you can! Best of 5 rounds.</p>
-              <button onClick={startGame} className="w-full bg-rose-500 hover:bg-rose-600 text-white font-bold py-4 rounded-2xl transition-colors flex items-center justify-center gap-2">
-                <Play className="w-5 h-5" /> Start Game
-              </button>
-            </motion.div>
+            <GameMenu
+              title="Reaction Tap"
+              description="Wait for the screen to turn green, then tap as fast as you can! Best of 5 rounds."
+              icon={<Zap className="w-14 h-14 text-rose-400" />}
+              iconBgColor="bg-rose-500/20"
+              iconColor="text-rose-400"
+              onStart={startGame}
+              onBack={onBack}
+              showDifficulty={false}
+            />
           )}
 
           {(gameState === 'waiting' || gameState === 'ready') && (

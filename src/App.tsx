@@ -3,52 +3,102 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState, useEffect } from 'react';
-import { Brain, Cpu, TrendingUp, ChevronRight, Sparkles, Mail, Lock, User, ArrowLeft, Flame, Zap, Target, Activity, Play, Lightbulb, Calculator, Trophy, Star, Grid, RotateCcw, Box, Puzzle, Search, Clock, Type, Shuffle, BookOpen, ListOrdered, Link, CheckCircle, Copy, Bot, Home, Gamepad2, Sparkle, Settings, FileText, Shield, HelpCircle, Download, Trash2, MessageSquare, Sliders, Globe, X, Mic, Send, CircleDollarSign, Heart, Flag, Moon } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { Brain, Cpu, TrendingUp, ChevronLeft, ChevronRight, ChevronDown, Sparkles, Mail, Lock, User, ArrowLeft, Flame, Zap, Target, Activity, Play, Lightbulb, Calculator, Trophy, Star, Grid, RotateCcw, Box, Puzzle, Search, Clock, Type, Shuffle, BookOpen, ListOrdered, Link, Check, CheckCircle, Copy, Bot, Home, Gamepad2, Sparkle, Settings, FileText, Shield, HelpCircle, Download, Trash2, MessageSquare, Sliders, Globe, X, Mic, Send, CircleDollarSign, Heart, Flag, Moon, Crown, Compass, Camera, Edit2, Instagram, Gift, CreditCard, Building, Wallet, Smartphone, Award, MoreVertical, Bell, Gem, Dumbbell, Calendar, Rocket, Sword, Sun, Hexagon, Octagon, Diamond, Triangle, Infinity, Orbit, Atom } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
-import { AreaChart, Area, ResponsiveContainer } from 'recharts';
-import GameCarousel from './components/GameCarousel';
-import MemoryGridGame from './components/MemoryGridGame';
-import ReactionSpeedGame from './components/ReactionSpeedGame';
-import CardMatchGame from './components/CardMatchGame';
-import SequenceRecallGame from './components/SequenceRecallGame';
-import PatternRecallGame from './components/PatternRecallGame';
-import ImageMemoryGame from './components/ImageMemoryGame';
-import ColorMemoryGame from './components/ColorMemoryGame';
-import NumberRecallGame from './components/NumberRecallGame';
-import WordRecallGame from './components/WordRecallGame';
-import OddOneOutGame from './components/OddOneOutGame';
-import FocusTapGame from './components/FocusTapGame';
-import ColorMatchFocusGame from './components/ColorMatchFocusGame';
-import SlidingPuzzleGame from './components/SlidingPuzzleGame';
-import PatternLogicGame from './components/PatternLogicGame';
-import SequenceLogicGame from './components/SequenceLogicGame';
-import SmartGridPuzzleGame from './components/SmartGridPuzzleGame';
-import CubeRotationPuzzleGame from './components/CubeRotationPuzzleGame';
-import PuzzleMatchGame from './components/PuzzleMatchGame';
-import HiddenPatternPuzzleGame from './components/HiddenPatternPuzzleGame';
-import MathSprintGame from './components/MathSprintGame';
-import NumberComparisonGame from './components/NumberComparisonGame';
-import EquationBuilderGame from './components/EquationBuilderGame';
-import ReactionTapGame from './components/ReactionTapGame';
-import ColorReactionGame from './components/ColorReactionGame';
-import FastButtonGame from './components/FastButtonGame';
-import ReactionLightGame from './components/ReactionLightGame';
-import SpeedCircleGame from './components/SpeedCircleGame';
-import ReactionTimerGame from './components/ReactionTimerGame';
-import TapTheMovingDotGame from './components/TapTheMovingDotGame';
-import FlashTapGame from './components/FlashTapGame';
-import WordBuilderGame from './components/WordBuilderGame';
-import VocabularyMatchGame from './components/VocabularyMatchGame';
-import MissingLetterGame from './components/MissingLetterGame';
-import WordSearchGame from './components/WordSearchGame';
-import WordMemoryGame from './components/WordMemoryGame';
-import WordSequenceGame from './components/WordSequenceGame';
-import WordSpeedGame from './components/WordSpeedGame';
-import VocabularyBuilderGame from './components/VocabularyBuilderGame';
-import DailyTraining from './components/DailyTraining';
-import { useProgress } from './hooks/useProgress';
+import { AreaChart, Area, LineChart, Line, XAxis, YAxis, ResponsiveContainer } from 'recharts';
+
+import QuickTestGame from '@/src/features/quickactions/components/QuickTestGame';
+import PlacementModeGame from '@/src/features/quickactions/components/PlacementModeGame';
+import MemorySprintGame from '@/src/features/quickactions/components/MemorySprintGame';
+import MathDrillGame from '@/src/features/quickactions/components/MathDrillGame';
+import SmartGame from '@/src/features/quickactions/components/SmartGame';
+import GameCarousel from '@/src/components/ui/GameCarousel';
+import MemoryGridGame from '@/src/features/memory/components/MemoryGridGame';
+import ReactionSpeedGame from '@/src/features/reaction/components/ReactionSpeedGame';
+import CardMatchGame from '@/src/features/memory/components/CardMatchGame';
+import SequenceRecallGame from '@/src/features/memory/components/SequenceRecallGame';
+import PatternRecallGame from '@/src/features/memory/components/PatternRecallGame';
+import ImageMemoryGame from '@/src/features/memory/components/ImageMemoryGame';
+import ColorMemoryGame from '@/src/features/memory/components/ColorMemoryGame';
+import NumberRecallGame from '@/src/features/memory/components/NumberRecallGame';
+import WordRecallGame from '@/src/features/memory/components/WordRecallGame';
+import OddOneOutGame from '@/src/features/logic/components/OddOneOutGame';
+import { OnboardingScreens } from '@/src/features/onboarding/components/OnboardingScreens';
+import { SplashAnimation } from '@/src/features/onboarding/components/SplashAnimation';
+import FocusTapGame from '@/src/features/reaction/components/FocusTapGame';
+import ColorMatchFocusGame from '@/src/features/logic/components/ColorMatchFocusGame';
+import SlidingPuzzleGame from '@/src/features/logic/components/SlidingPuzzleGame';
+import PatternLogicGame from '@/src/features/logic/components/PatternLogicGame';
+import SequenceLogicGame from '@/src/features/logic/components/SequenceLogicGame';
+import SmartGridPuzzleGame from '@/src/features/logic/components/SmartGridPuzzleGame';
+import CubeRotationPuzzleGame from '@/src/features/logic/components/CubeRotationPuzzleGame';
+import PuzzleMatchGame from '@/src/features/logic/components/PuzzleMatchGame';
+import HiddenPatternPuzzleGame from '@/src/features/logic/components/HiddenPatternPuzzleGame';
+import MathSprintGame from '@/src/features/logic/components/MathSprintGame';
+import NumberComparisonGame from '@/src/features/logic/components/NumberComparisonGame';
+import EquationBuilderGame from '@/src/features/logic/components/EquationBuilderGame';
+import ReactionTapGame from '@/src/features/reaction/components/ReactionTapGame';
+import ColorReactionGame from '@/src/features/reaction/components/ColorReactionGame';
+import FastButtonGame from '@/src/features/reaction/components/FastButtonGame';
+import ReactionLightGame from '@/src/features/reaction/components/ReactionLightGame';
+import SpeedCircleGame from '@/src/features/reaction/components/SpeedCircleGame';
+import ReactionTimerGame from '@/src/features/reaction/components/ReactionTimerGame';
+import TapTheMovingDotGame from '@/src/features/reaction/components/TapTheMovingDotGame';
+import FlashTapGame from '@/src/features/reaction/components/FlashTapGame';
+import WordBuilderGame from '@/src/features/vocabulary/components/WordBuilderGame';
+import VocabularyMatchGame from '@/src/features/vocabulary/components/VocabularyMatchGame';
+import MissingLetterGame from '@/src/features/vocabulary/components/MissingLetterGame';
+import WordSearchGame from '@/src/features/vocabulary/components/WordSearchGame';
+import WordMemoryGame from '@/src/features/memory/components/WordMemoryGame';
+import WordSequenceGame from '@/src/features/vocabulary/components/WordSequenceGame';
+import WordSpeedGame from '@/src/features/vocabulary/components/WordSpeedGame';
+import VocabularyBuilderGame from '@/src/features/vocabulary/components/VocabularyBuilderGame';
+import DailyTraining from '@/src/features/training/components/DailyTraining';
+import KickOffQuest from '@/src/features/onboarding/components/KickOffQuest';
+import AiCoachView from './components/AiCoachView';
+import BrainScoreCard from './components/BrainScoreCard';
+import TodaysMission from './components/TodaysMission';
+import RecommendedTraining from './components/RecommendedTraining';
+import QuickActions from './components/QuickActions';
+import AiAnalysisPage from './components/AiAnalysisPage';
+import PremiumSubscriptionPage from './components/PremiumSubscriptionPage';
+import GameDetailsView from './components/GameDetailsView';
+import PersonalizedPlanPage from './components/PersonalizedPlanPage';
+import AchievementsPage from './components/AchievementsPage';
+import LeaderboardPage from './components/LeaderboardPage';
+import { ChallengesPage } from './components/ChallengesPage';
+import { useProgress, GameSession } from './hooks/useProgress';
 import { t, Language } from './i18n';
+import CelebrationOverlay from '@/src/components/ui/CelebrationOverlay';
+
+const mapNodesBase = [
+  { id: 25, title: 'Infinite', xp: '106000', maxXP: '1000000', x: 240, y: 150, icon: Atom, color: '#f43f5e', labelColor: '#fb7185', labelPos: 'left' },
+  { id: 24, title: 'Pinnacle', xp: '94000', maxXP: '106000', x: 160, y: 310, icon: Orbit, color: '#ec4899', labelColor: '#f472b6', labelPos: 'right' },
+  { id: 23, title: 'Zenith', xp: '83000', maxXP: '94000', x: 280, y: 470, icon: Infinity, color: '#d946ef', labelColor: '#f0abfc', labelPos: 'left' },
+  { id: 22, title: 'Apex', xp: '73000', maxXP: '83000', x: 180, y: 630, icon: Triangle, color: '#a855f7', labelColor: '#c084fc', labelPos: 'right' },
+  { id: 21, title: 'Transcendent', xp: '64000', maxXP: '73000', x: 260, y: 790, icon: Diamond, color: '#8b5cf6', labelColor: '#a78bfa', labelPos: 'left' },
+  { id: 20, title: 'Ethereal', xp: '56000', maxXP: '64000', x: 150, y: 950, icon: Octagon, color: '#6366f1', labelColor: '#818cf8', labelPos: 'right' },
+  { id: 19, title: 'Omnipotent', xp: '49000', maxXP: '56000', x: 290, y: 1110, icon: Hexagon, color: '#3b82f6', labelColor: '#60a5fa', labelPos: 'left' },
+  { id: 18, title: 'Multiversal', xp: '42500', maxXP: '49000', x: 190, y: 1270, icon: Moon, color: '#0ea5e9', labelColor: '#38bdf8', labelPos: 'right' },
+  { id: 17, title: 'Universal', xp: '36500', maxXP: '42500', x: 270, y: 1430, icon: Sun, color: '#14b8a6', labelColor: '#2dd4bf', labelPos: 'left' },
+  { id: 16, title: 'Galactic', xp: '31000', maxXP: '36500', x: 140, y: 1590, icon: Sword, color: '#10b981', labelColor: '#34d399', labelPos: 'right' },
+  { id: 15, title: 'Astral', xp: '26000', maxXP: '31000', x: 260, y: 1750, icon: Rocket, color: '#84cc16', labelColor: '#a3e635', labelPos: 'left' },
+  { id: 14, title: 'Celestial', xp: '21500', maxXP: '26000', x: 180, y: 1910, icon: Shield, color: '#eab308', labelColor: '#fde047', labelPos: 'right' },
+  { id: 13, title: 'Deity', xp: '17500', maxXP: '21500', x: 280, y: 2070, icon: Gem, color: '#f59e0b', labelColor: '#fbbf24', labelPos: 'left' },
+  { id: 12, title: 'Titan', xp: '14000', maxXP: '17500', x: 160, y: 2230, icon: Crown, color: '#f97316', labelColor: '#fb923c', labelPos: 'right' },
+  { id: 11, title: 'Ascendant', xp: '11000', maxXP: '14000', x: 250, y: 2390, icon: Star, color: '#ef4444', labelColor: '#f87171', labelPos: 'left' },
+  { id: 10, title: 'Mythic', xp: '9000', maxXP: '11000', x: 150, y: 2550, icon: Trophy, color: '#f43f5e', labelColor: '#fb7185', labelPos: 'right' },
+  { id: 9, title: 'Legend', xp: '7200', maxXP: '9000', x: 280, y: 2710, icon: Award, color: '#ec4899', labelColor: '#f472b6', labelPos: 'left' },
+  { id: 8, title: 'Grandmaster', xp: '5600', maxXP: '7200', x: 180, y: 2870, icon: Flame, color: '#d946ef', labelColor: '#f0abfc', labelPos: 'right' },
+  { id: 7, title: 'Master', xp: '4200', maxXP: '5600', x: 260, y: 3030, icon: Compass, color: '#a855f7', labelColor: '#c084fc', labelPos: 'left' },
+  { id: 6, title: 'Expert', xp: '3000', maxXP: '4200', x: 140, y: 3190, icon: Lightbulb, color: '#8b5cf6', labelColor: '#a78bfa', labelPos: 'right' },
+  { id: 5, title: 'Advanced', xp: '2000', maxXP: '3000', x: 240, y: 3350, icon: Activity, color: '#3b82f6', labelColor: '#60a5fa', labelPos: 'left' },
+  { id: 4, title: 'Intermediate', xp: '1200', maxXP: '2000', x: 160, y: 3510, icon: Target, color: '#0ea5e9', labelColor: '#38bdf8', labelPos: 'right' },
+  { id: 3, title: 'Novice', xp: '600', maxXP: '1200', x: 280, y: 3670, icon: Zap, color: '#06b6d4', labelColor: '#22d3ee', labelPos: 'left' },
+  { id: 2, title: 'Learner', xp: '100', maxXP: '300', x: 180, y: 3830, icon: Gift, color: '#eab308', labelColor: '#fde047', labelPos: 'right' },
+  { id: 1, title: 'Beginner', xp: '0', maxXP: '100', x: 240, y: 3990, icon: CheckCircle, color: '#10b981', labelColor: '#34d399', labelPos: 'left' }
+];
 
 const games = [
   { id: 'memory-grid', title: "Memory Grid", category: "Memory", icon: <Brain className="w-5 h-5 text-indigo-400" />, color: "bg-indigo-500/10" },
@@ -189,6 +239,25 @@ const planQuestions = [
   { id: 10, question: "q10", options: ["q10o1", "q10o2", "q10o3", "q10o4"] },
 ];
 
+const MOCK_USERS = [
+  { id: '1', name: 'John Doe', email: 'john@example.com', status: 'active', subscription: 'premium', joinDate: '2026-01-15' },
+  { id: '2', name: 'Jane Smith', email: 'jane@example.com', status: 'active', subscription: 'free', joinDate: '2026-02-20' },
+  { id: '3', name: 'Mike Johnson', email: 'mike@example.com', status: 'banned', subscription: 'free', joinDate: '2026-03-05' },
+  { id: '4', name: 'Sarah Williams', email: 'sarah@example.com', status: 'active', subscription: 'pro', joinDate: '2026-03-10' },
+  { id: '5', name: 'Alex Brown', email: 'alex@example.com', status: 'active', subscription: 'premium', joinDate: '2026-04-01' },
+];
+
+const MOCK_SUBSCRIPTIONS = [
+  { id: 'sub_1', user: 'John Doe', plan: 'Premium', amount: '$9.99/mo', status: 'active', nextBilling: '2026-05-15' },
+  { id: 'sub_2', user: 'Sarah Williams', plan: 'Pro', amount: '$19.99/mo', status: 'active', nextBilling: '2026-05-10' },
+  { id: 'sub_3', user: 'Alex Brown', plan: 'Premium', amount: '$99.99/yr', status: 'active', nextBilling: '2027-04-01' },
+  { id: 'sub_4', user: 'Emily Davis', plan: 'Premium', amount: '$9.99/mo', status: 'cancelled', nextBilling: '-' },
+];
+
+const MOCK_NOTIFICATIONS = [
+  { id: '1', title: 'Welcome to Brainova!', message: 'Start your journey with a daily workout.', time: '2h ago', isRead: false },
+];
+
 export default function App() {
   const getGreeting = () => {
     const hour = new Date().getHours();
@@ -200,21 +269,83 @@ export default function App() {
 
   const [currentStep, setCurrentStep] = useState(0);
   const [isCompleted, setIsCompleted] = useState(false);
+  const [onboardingStep, setOnboardingStep] = useState(0);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [authMode, setAuthMode] = useState<'select' | 'login' | 'signup'>('select');
-  const [currentTab, setCurrentTab] = useState<'home' | 'games' | 'coach' | 'stats' | 'profile'>('home');
+  const [currentTab, setCurrentTab] = useState<'home' | 'games' | 'coach' | 'stats' | 'profile' | 'challenges'>('home');
+  const [activeCategoryFilter, setActiveCategoryFilter] = useState<string>('All');
+  const [activeGameDetails, setActiveGameDetails] = useState<string | null>(null);
   const [activeGame, setActiveGame] = useState<string | null>(null);
+  const [celebrationData, setCelebrationData] = useState<{score: number, coins: number} | null>(null);
+  const [gameSource, setGameSource] = useState<string | null>(null);
+
+  const handleGameCompleteWrapper = (session: Omit<GameSession, 'id' | 'timestamp'>) => {
+    recordGame(session);
+    if (session.score >= 30) { // Set threshold for high score
+      setCelebrationData({
+        score: session.score,
+        coins: Math.max(10, Math.floor(session.score / 5))
+      });
+    }
+  };
+  const [gameDifficulty, setGameDifficulty] = useState<'easy' | 'medium' | 'hard'>('easy');
+  const [transitioningGame, setTransitioningGame] = useState<string | null>(null);
+
+  const handleBackFromGame = () => {
+    if (gameSource) {
+      setActiveGame(gameSource);
+      setGameSource(null);
+    } else {
+      setActiveGame(null);
+    }
+  };
+
+
+  const handlePlayGame = (gameId: string) => {
+    setActiveGameDetails(gameId);
+  };
+
   const [likedGames, setLikedGames] = useState<string[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [profileTab, setProfileTab] = useState<'performance' | 'achievements'>('performance');
+  const [activityDuration, setActivityDuration] = useState<'daily'|'monthly'|'yearly'>('daily');
+  const [isActivityDropdownOpen, setIsActivityDropdownOpen] = useState(false);
   const [isAdminPanelOpen, setIsAdminPanelOpen] = useState(false);
+  const [adminView, setAdminView] = useState<'dashboard' | 'users' | 'subscriptions' | 'analytics' | 'settings'>('dashboard');
+  const [isLeaderboardOpen, setIsLeaderboardOpen] = useState(false);
   const [isStarredGamesOpen, setIsStarredGamesOpen] = useState(false);
+  const [isMyInfoOpen, setIsMyInfoOpen] = useState(false);
+  const [isAddNewGamesOpen, setIsAddNewGamesOpen] = useState(false);
   const [isModeModalOpen, setIsModeModalOpen] = useState(false);
   const [isXpRoadmapOpen, setIsXpRoadmapOpen] = useState(false);
-  const [displayMode, setDisplayMode] = useState<'light' | 'dark' | 'reading' | 'high-contrast'>('dark');
+  const [isQuestPageOpen, setIsQuestPageOpen] = useState(false);
+  const [isTrainingHistoryOpen, setIsTrainingHistoryOpen] = useState(false);
+  const [activeTooltip, setActiveTooltip] = useState<number | null>(null);
+  const [selectedLevel, setSelectedLevel] = useState<any>(null);
+  const mapContainerRef = useRef<HTMLDivElement>(null);
+  const categoryScrollRef = useRef<HTMLDivElement>(null);
+
+  const scrollCategories = (dir: 'left' | 'right') => {
+    if (categoryScrollRef.current) {
+      const scrollAmount = 250;
+      categoryScrollRef.current.scrollBy({ left: dir === 'left' ? -scrollAmount : scrollAmount, behavior: 'smooth' });
+    }
+  };
+
+  useEffect(() => {
+    if (isXpRoadmapOpen && mapContainerRef.current) {
+      // Scroll to the bottom where the current level is
+      mapContainerRef.current.scrollTop = mapContainerRef.current.scrollHeight;
+    }
+  }, [isXpRoadmapOpen]);
+  const [displayMode, setDisplayMode] = useState<'light' | 'dark' | 'reading' | 'high-contrast' | 'night-light'>('dark');
   const [showAllQuickTraining, setShowAllQuickTraining] = useState(false);
   const [mixedGames, setMixedGames] = useState<typeof allGames>([]);
   const [isProModalOpen, setIsProModalOpen] = useState(false);
+  const [isBenefitsModalOpen, setIsBenefitsModalOpen] = useState(false);
+  const [isRewardsHistoryOpen, setIsRewardsHistoryOpen] = useState(false);
+  const [isSubscriptionModalOpen, setIsSubscriptionModalOpen] = useState(false);
+  const [isLpiModalOpen, setIsLpiModalOpen] = useState(false);
   const [isPlanGeneratorOpen, setIsPlanGeneratorOpen] = useState(false);
   const [planStep, setPlanStep] = useState(0);
   const [planAnswers, setPlanAnswers] = useState<Record<number, string>>({});
@@ -224,12 +355,32 @@ export default function App() {
   const [isLanguageModalOpen, setIsLanguageModalOpen] = useState(false);
   const [showSplash, setShowSplash] = useState(true);
   
+  const [selectedPlan, setSelectedPlan] = useState<'1month' | '6months' | '1year' | null>(null);
+  const [isCheckoutModalOpen, setIsCheckoutModalOpen] = useState(false);
+  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
+  const [selectedPayment, setSelectedPayment] = useState<string | null>(null);
+  const [promoCode, setPromoCode] = useState('');
+  const [promoApplied, setPromoApplied] = useState<string | false>(false);
+
   const [profileName, setProfileName] = useState('Akash');
+  const [profileEmail, setProfileEmail] = useState('akashkirar539@gmail.com');
   const [signupName, setSignupName] = useState('');
   const [profilePhoto, setProfilePhoto] = useState<string | null>(null);
   const [isProfileSettingsOpen, setIsProfileSettingsOpen] = useState(false);
+  const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
+  const [notifications, setNotifications] = useState(MOCK_NOTIFICATIONS);
+  const [selectedNotification, setSelectedNotification] = useState<{id: string, title: string, message: string, time: string, isRead: boolean} | null>(null);
+  const [isFeedbackOpen, setIsFeedbackOpen] = useState(false);
+  const [feedbackRating, setFeedbackRating] = useState(0);
+  const [feedbackText, setFeedbackText] = useState('');
   const [isEditNameOpen, setIsEditNameOpen] = useState(false);
   const [tempName, setTempName] = useState('');
+  const [tempEmail, setTempEmail] = useState('');
+  const [isHighScoresOpen, setIsHighScoresOpen] = useState(false);
+  const [isAiAnalysisOpen, setIsAiAnalysisOpen] = useState(false);
+  const [isPremiumSubscriptionOpen, setIsPremiumSubscriptionOpen] = useState(false);
+  const [isPersonalizedPlanOpen, setIsPersonalizedPlanOpen] = useState(false);
+  const [isAchievementsOpen, setIsAchievementsOpen] = useState(false);
   const fileInputRef = React.useRef<HTMLInputElement>(null);
 
   const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -248,16 +399,152 @@ export default function App() {
     if (tempName.trim()) {
       setProfileName(tempName.trim());
     }
+    setProfileEmail(tempEmail.trim());
     setIsEditNameOpen(false);
   };
   
-  const { stats, recordGame } = useProgress();
+  const { stats, sessions, recordGame } = useProgress();
+  const currentLpi = {
+    overall: Math.round(((stats.highScores.speed || 0) + (stats.highScores.memory || 0) + (stats.highScores.focus || 0) + (stats.highScores.logic || 0) + (stats.highScores.math || 0)) / 5) || 0,
+    speed: stats.highScores.speed || 0,
+    memory: stats.highScores.memory || 0,
+    attention: stats.highScores.focus || 0,
+    flexibility: stats.highScores.logic || 0,
+    math: stats.highScores.math || 0
+  };
+
+
+  const getTodayCompletedMissions = () => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const todayTimestamp = today.getTime();
+    const completedTypes = new Set(
+      sessions
+        .filter(s => s.timestamp >= todayTimestamp)
+        .map(s => s.gameType)
+    );
+    return ['memory', 'math', 'logic'].filter(t => completedTypes.has(t as any)).length;
+  };
+  const completedMissionsCount = getTodayCompletedMissions();
+
+  const totalXP = sessions.reduce((acc, curr) => acc + curr.score, 0);
+
+  const levelThresholds = [
+    { level: 1, title: 'Beginner', maxXP: 100 },
+    { level: 2, title: 'Learner', maxXP: 300 },
+    { level: 3, title: 'Novice', maxXP: 1200 },
+    { level: 4, title: 'Intermediate', maxXP: 2000 },
+    { level: 5, title: 'Advanced', maxXP: 3000 },
+    { level: 6, title: 'Expert', maxXP: 4200 },
+    { level: 7, title: 'Master', maxXP: 5600 },
+    { level: 8, title: 'Grandmaster', maxXP: 7200 },
+    { level: 9, title: 'Legend', maxXP: 9000 },
+    { level: 10, title: 'Mythic', maxXP: 11000 },
+    { level: 11, title: 'Ascendant', maxXP: 14000 },
+    { level: 12, title: 'Titan', maxXP: 17500 },
+    { level: 13, title: 'Deity', maxXP: 21500 },
+    { level: 14, title: 'Celestial', maxXP: 26000 },
+    { level: 15, title: 'Astral', maxXP: 31000 },
+    { level: 16, title: 'Galactic', maxXP: 36500 },
+    { level: 17, title: 'Universal', maxXP: 42500 },
+    { level: 18, title: 'Multiversal', maxXP: 49000 },
+    { level: 19, title: 'Omnipotent', maxXP: 56000 },
+    { level: 20, title: 'Ethereal', maxXP: 64000 },
+    { level: 21, title: 'Transcendent', maxXP: 73000 },
+    { level: 22, title: 'Apex', maxXP: 83000 },
+    { level: 23, title: 'Zenith', maxXP: 94000 },
+    { level: 24, title: 'Pinnacle', maxXP: 106000 },
+    { level: 25, title: 'Infinite', maxXP: 1000000 }
+  ];
+
+  let currentLevelData = levelThresholds[0];
+  for (let i = 0; i < levelThresholds.length; i++) {
+    if (totalXP < levelThresholds[i].maxXP) {
+      currentLevelData = levelThresholds[i];
+      break;
+    }
+  }
+  if (totalXP >= levelThresholds[levelThresholds.length - 1].maxXP) {
+     currentLevelData = levelThresholds[levelThresholds.length - 1];
+  }
+
+  const levelProgress = Math.min(100, (totalXP / currentLevelData.maxXP) * 100);
+  
+  const mapNodes = mapNodesBase.map((node, index) => {
+    const requiredXP = parseInt(node.xp) || 0;
+    const nextNode = mapNodesBase[index - 1]; // Array is sorted descending
+    const nextRequiredXP = nextNode ? parseInt(nextNode.xp) || 0 : Infinity;
+    
+    let status = 'locked';
+    let progress = 0;
+    
+    if (totalXP >= nextRequiredXP) {
+      status = 'completed';
+    } else if (totalXP >= requiredXP && totalXP < nextRequiredXP) {
+      status = 'current';
+      progress = ((totalXP - requiredXP) / (nextRequiredXP - requiredXP)) * 100;
+    } else {
+      status = 'locked';
+    }
+
+    if (index === 0 && totalXP >= requiredXP) {
+       status = 'current';
+       progress = 100;
+    }
+
+    return { ...node, status, progress, xp: requiredXP >= 1000000 ? '1M+' : requiredXP.toString() };
+  });
+
+  const mapSegments = [];
+  for (let i = mapNodes.length - 1; i > 0; i--) {
+    const start = mapNodes[i];
+    const end = mapNodes[i - 1];
+    const midY = (start.y + end.y) / 2;
+    const path = `M ${start.x} ${start.y} C ${start.x} ${midY}, ${end.x} ${midY}, ${end.x} ${end.y}`;
+    
+    let status = 'locked';
+    let progress = 0;
+    let currentPoint = null;
+    let topPercent = 100;
+
+    if (start.status === 'completed' && (end.status === 'completed' || end.status === 'current')) {
+      status = 'completed';
+      progress = 100;
+    } else if (start.status === 'current') {
+      status = 'current';
+      progress = start.progress || 0;
+      
+      const t = progress / 100;
+      const mt = 1 - t;
+      const x = mt*mt*mt * start.x + 3*mt*mt*t * start.x + 3*mt*t*t * end.x + t*t*t * end.x;
+      const y = mt*mt*mt * start.y + 3*mt*mt*t * midY + 3*mt*t*t * midY + t*t*t * end.y;
+      currentPoint = { x, y };
+      
+      const totalSegments = mapNodes.length - 1;
+      const currentSegmentIndex = start.id - 1;
+      const overallProgress = ((currentSegmentIndex * 100) + progress) / totalSegments;
+      topPercent = Math.max(1, Math.floor(100 - overallProgress));
+    }
+
+    mapSegments.push({ 
+      id: i,
+      path, 
+      status, 
+      progress, 
+      currentPoint, 
+      topPercent, 
+      color: end.color,
+      startColor: start.color,
+      endColor: end.color,
+      startX: start.x,
+      startY: start.y,
+      endX: end.x,
+      endY: end.y
+    });
+  }
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setShowSplash(false);
-    }, 2500);
-    return () => clearTimeout(timer);
+    // Splash logic is now handled inside the SplashAnimation component
   }, []);
 
   const toggleLikedGame = (gameId: string) => {
@@ -294,6 +581,8 @@ export default function App() {
         return { filter: 'sepia(0.6) contrast(0.9) brightness(0.9)' };
       case 'high-contrast':
         return { filter: 'contrast(1.4) saturate(1.5)' };
+      case 'night-light':
+        return { filter: 'sepia(0.6) hue-rotate(-30deg) saturate(1.8) brightness(0.85) contrast(0.95)' };
       default:
         return {};
     }
@@ -301,324 +590,421 @@ export default function App() {
 
   if (showSplash) {
     return (
-      <div className="min-h-screen bg-[#0a0a0c] text-white flex flex-col items-center justify-center relative overflow-hidden">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(99,102,241,0.15)_0%,transparent_60%)]" />
-        
-        <div className="flex-1 flex flex-col items-center justify-center z-10">
-          <div className="relative mb-6">
-            <div className="absolute inset-0 bg-indigo-500/30 blur-2xl rounded-full" />
-            <Brain className="w-24 h-24 text-indigo-400 relative z-10" />
-          </div>
-          <p className="text-indigo-400 font-bold uppercase tracking-wider">{t('indiaApnaApp', language)}</p>
-        </div>
+      <div className="min-h-screen bg-[#0a0a0f] text-white flex flex-col items-center justify-center relative overflow-hidden">
+        <SplashAnimation onComplete={() => setShowSplash(false)} />
       </div>
     );
+  }
+
+  if (isAiAnalysisOpen) {
+    return (
+      <div className="flex flex-col h-[100dvh] bg-[#0a0a0c] font-sans text-white relative overflow-hidden" style={getModeStyles()}>
+        <AiAnalysisPage onBack={() => setIsAiAnalysisOpen(false)} />
+      </div>
+    );
+  }
+
+  if (isPremiumSubscriptionOpen) {
+    return (
+      <div className="flex flex-col h-[100dvh] bg-[#0a0a0c] font-sans text-white relative overflow-hidden" style={getModeStyles()}>
+        <PremiumSubscriptionPage 
+          onBack={() => setIsPremiumSubscriptionOpen(false)} 
+          onSkip={() => {
+            setIsPremiumSubscriptionOpen(false);
+            setIsPersonalizedPlanOpen(true);
+          }} 
+        />
+      </div>
+    );
+  }
+
+  if (isPersonalizedPlanOpen) {
+    return (
+      <div className="flex flex-col h-[100dvh] bg-[#0a0a0c] font-sans text-white relative overflow-hidden" style={getModeStyles()}>
+        <PersonalizedPlanPage onBack={() => setIsPersonalizedPlanOpen(false)} />
+      </div>
+    );
+  }
+
+  if (isAchievementsOpen) {
+    return (
+      <div className="flex flex-col h-[100dvh] bg-[#0a0a0c] font-sans text-white relative overflow-hidden" style={getModeStyles()}>
+        <AchievementsPage onBack={() => setIsAchievementsOpen(false)} />
+      </div>
+    );
+  }
+
+  if (isLeaderboardOpen) {
+    return (
+      <div className="flex flex-col h-[100dvh] bg-[#0a0a0c] font-sans text-white relative overflow-hidden" style={getModeStyles()}>
+        <LeaderboardPage onBack={() => setIsLeaderboardOpen(false)} />
+      </div>
+    );
+  }
+
+  if (activeGameDetails) {
+    const gameInfo = allGames.find(g => g.id === activeGameDetails);
+    if (gameInfo) {
+      return (
+        <div className="flex flex-col h-[100dvh] bg-[#0a0a0c] font-sans text-white relative overflow-hidden" style={getModeStyles()}>
+          <GameDetailsView 
+            game={gameInfo} 
+            onClose={() => setActiveGameDetails(null)} 
+            onPlay={(difficulty) => {
+              setGameDifficulty(difficulty as 'easy' | 'medium' | 'hard');
+              setActiveGameDetails(null);
+              setTransitioningGame(gameInfo.id);
+              setTimeout(() => {
+                setActiveGame(gameInfo.id);
+                setTransitioningGame(null);
+              }, 400);
+            }} 
+            isFavorite={likedGames.includes(gameInfo.id)}
+            onToggleFavorite={() => toggleLikedGame(gameInfo.id)}
+          />
+        </div>
+      );
+    }
   }
 
   if (isLoggedIn) {
     return (
       <div className="flex flex-col h-[100dvh] bg-[#0a0a0c] font-sans text-white relative overflow-hidden" style={getModeStyles()}>
           
-          {activeGame === 'memory-grid' ? (
-            <MemoryGridGame 
-              onBack={() => setActiveGame(null)} 
-              onTrainingComplete={(score) => recordGame({ gameType: 'memory', score, difficulty: 'normal' })}
+          {activeGame === 'todays-mission' ? (
+            <TodaysMission 
+              onPlay={(gameId) => {
+                setGameSource('todays-mission');
+                setActiveGame(gameId);
+              }} 
+              onBack={handleBackFromGame} 
+              sessions={sessions}
+            />
+                    ) : activeGame === 'quick-test' ? (
+            <QuickTestGame difficulty={gameDifficulty}  
+              onBack={handleBackFromGame} 
+              onGameComplete={(score, maxLevel) => handleGameCompleteWrapper({ gameType: 'logic', score, difficulty: 'normal', maxLevel })}
+            />
+          ) : activeGame === 'placement-mode' ? (
+            <PlacementModeGame difficulty={gameDifficulty}  
+              onBack={handleBackFromGame} 
+              onGameComplete={(score, maxLevel) => handleGameCompleteWrapper({ gameType: 'logic', score, difficulty: 'normal', maxLevel })}
+            />
+          ) : activeGame === 'memory-sprint' ? (
+            <MemorySprintGame difficulty={gameDifficulty}  
+              onBack={handleBackFromGame} 
+              onGameComplete={(score, maxLevel) => handleGameCompleteWrapper({ gameType: 'memory', score, difficulty: 'normal', maxLevel })}
+            />
+          ) : activeGame === 'math-drill' ? (
+            <MathDrillGame difficulty={gameDifficulty}  
+              onBack={handleBackFromGame} 
+              onGameComplete={(score, maxLevel) => handleGameCompleteWrapper({ gameType: 'math', score, difficulty: 'normal', maxLevel })}
+            />
+          ) : activeGame === 'smart-game' ? (
+            <SmartGame difficulty={gameDifficulty}  
+              onBack={handleBackFromGame} 
+              onGameComplete={(score, maxLevel) => handleGameCompleteWrapper({ gameType: 'logic', score, difficulty: 'normal', maxLevel })}
+            />
+          ) : activeGame === 'memory-grid' ? (
+            <MemoryGridGame difficulty={gameDifficulty}  
+              onBack={handleBackFromGame} 
+              onGameComplete={(score, maxLevel) => handleGameCompleteWrapper({ gameType: 'memory', score, difficulty: 'normal', maxLevel })}
             />
           ) : activeGame === 'card-match' ? (
-            <CardMatchGame 
-              onBack={() => setActiveGame(null)} 
-              onGameComplete={(score, maxLevel) => recordGame({ gameType: 'memory', score, difficulty: 'normal', maxLevel })}
+            <CardMatchGame difficulty={gameDifficulty}  
+              onBack={handleBackFromGame} 
+              onGameComplete={(score, maxLevel) => handleGameCompleteWrapper({ gameType: 'memory', score, difficulty: 'normal', maxLevel })}
             />
           ) : activeGame === 'sequence-recall' ? (
-            <SequenceRecallGame 
-              onBack={() => setActiveGame(null)} 
-              onGameComplete={(score, maxLevel) => recordGame({ gameType: 'memory', score, difficulty: 'normal', maxLevel })}
+            <SequenceRecallGame difficulty={gameDifficulty}  
+              onBack={handleBackFromGame} 
+              onGameComplete={(score, maxLevel) => handleGameCompleteWrapper({ gameType: 'memory', score, difficulty: 'normal', maxLevel })}
             />
           ) : activeGame === 'pattern-recall' ? (
-            <PatternRecallGame 
-              onBack={() => setActiveGame(null)} 
-              onGameComplete={(score, maxLevel) => recordGame({ gameType: 'memory', score, difficulty: 'normal', maxLevel })}
+            <PatternRecallGame difficulty={gameDifficulty}  
+              onBack={handleBackFromGame} 
+              onGameComplete={(score, maxLevel) => handleGameCompleteWrapper({ gameType: 'memory', score, difficulty: 'normal', maxLevel })}
             />
           ) : activeGame === 'image-memory' ? (
-            <ImageMemoryGame 
-              onBack={() => setActiveGame(null)} 
-              onGameComplete={(score, maxLevel) => recordGame({ gameType: 'memory', score, difficulty: 'normal', maxLevel })}
+            <ImageMemoryGame difficulty={gameDifficulty}  
+              onBack={handleBackFromGame} 
+              onGameComplete={(score, maxLevel) => handleGameCompleteWrapper({ gameType: 'memory', score, difficulty: 'normal', maxLevel })}
             />
           ) : activeGame === 'color-memory' ? (
-            <ColorMemoryGame 
-              onBack={() => setActiveGame(null)} 
-              onGameComplete={(score, maxLevel) => recordGame({ gameType: 'memory', score, difficulty: 'normal', maxLevel })}
+            <ColorMemoryGame difficulty={gameDifficulty}  
+              onBack={handleBackFromGame} 
+              onGameComplete={(score, maxLevel) => handleGameCompleteWrapper({ gameType: 'memory', score, difficulty: 'normal', maxLevel })}
             />
           ) : activeGame === 'number-recall' ? (
-            <NumberRecallGame 
-              onBack={() => setActiveGame(null)} 
-              onGameComplete={(score, maxLevel) => recordGame({ gameType: 'memory', score, difficulty: 'normal', maxLevel })}
+            <NumberRecallGame difficulty={gameDifficulty}  
+              onBack={handleBackFromGame} 
+              onGameComplete={(score, maxLevel) => handleGameCompleteWrapper({ gameType: 'memory', score, difficulty: 'normal', maxLevel })}
             />
           ) : activeGame === 'word-recall' ? (
-            <WordRecallGame 
-              onBack={() => setActiveGame(null)} 
-              onGameComplete={(score, maxLevel) => recordGame({ gameType: 'memory', score, difficulty: 'normal', maxLevel })}
+            <WordRecallGame difficulty={gameDifficulty}  
+              onBack={handleBackFromGame} 
+              onGameComplete={(score, maxLevel) => handleGameCompleteWrapper({ gameType: 'memory', score, difficulty: 'normal', maxLevel })}
             />
           ) : activeGame === 'odd-one-out' ? (
-            <OddOneOutGame 
-              onBack={() => setActiveGame(null)} 
-              onGameComplete={(score, maxLevel) => recordGame({ gameType: 'focus', score, difficulty: 'normal', maxLevel })}
+            <OddOneOutGame difficulty={gameDifficulty}  
+              onBack={handleBackFromGame} 
+              onGameComplete={(score, maxLevel) => handleGameCompleteWrapper({ gameType: 'focus', score, difficulty: 'normal', maxLevel })}
             />
           ) : activeGame === 'focus-tap' ? (
-            <FocusTapGame 
-              onBack={() => setActiveGame(null)} 
-              onGameComplete={(score, maxLevel) => recordGame({ gameType: 'focus', score, difficulty: 'normal', maxLevel })}
+            <FocusTapGame difficulty={gameDifficulty}  
+              onBack={handleBackFromGame} 
+              onGameComplete={(score, maxLevel) => handleGameCompleteWrapper({ gameType: 'focus', score, difficulty: 'normal', maxLevel })}
             />
           ) : activeGame === 'color-match-focus' ? (
-            <ColorMatchFocusGame 
-              onBack={() => setActiveGame(null)} 
-              onGameComplete={(score, maxLevel) => recordGame({ gameType: 'focus', score, difficulty: 'normal', maxLevel })}
+            <ColorMatchFocusGame difficulty={gameDifficulty}  
+              onBack={handleBackFromGame} 
+              onGameComplete={(score, maxLevel) => handleGameCompleteWrapper({ gameType: 'focus', score, difficulty: 'normal', maxLevel })}
             />
           ) : activeGame === 'sliding-puzzle' ? (
-            <SlidingPuzzleGame 
-              onBack={() => setActiveGame(null)} 
-              onGameComplete={(score, maxLevel) => recordGame({ gameType: 'logic', score, difficulty: 'normal', maxLevel })}
+            <SlidingPuzzleGame difficulty={gameDifficulty}  
+              onBack={handleBackFromGame} 
+              onGameComplete={(score, maxLevel) => handleGameCompleteWrapper({ gameType: 'logic', score, difficulty: 'normal', maxLevel })}
             />
           ) : activeGame === 'pattern-logic' ? (
-            <PatternLogicGame 
-              onBack={() => setActiveGame(null)} 
-              onGameComplete={(score, maxLevel) => recordGame({ gameType: 'logic', score, difficulty: 'normal', maxLevel })}
+            <PatternLogicGame difficulty={gameDifficulty}  
+              onBack={handleBackFromGame} 
+              onGameComplete={(score, maxLevel) => handleGameCompleteWrapper({ gameType: 'logic', score, difficulty: 'normal', maxLevel })}
             />
           ) : activeGame === 'sequence-logic' ? (
-            <SequenceLogicGame 
-              onBack={() => setActiveGame(null)} 
-              onGameComplete={(score, maxLevel) => recordGame({ gameType: 'logic', score, difficulty: 'normal', maxLevel })}
+            <SequenceLogicGame difficulty={gameDifficulty}  
+              onBack={handleBackFromGame} 
+              onGameComplete={(score, maxLevel) => handleGameCompleteWrapper({ gameType: 'logic', score, difficulty: 'normal', maxLevel })}
             />
-          ) : activeGame === 'smart-grid' ? (
-            <SmartGridPuzzleGame 
-              onBack={() => setActiveGame(null)} 
-              onGameComplete={(score, maxLevel) => recordGame({ gameType: 'logic', score, difficulty: 'normal', maxLevel })}
+          ) : activeGame === 'smart-grid' || activeGame === 'sudoku-lite' ? (
+            <SmartGridPuzzleGame difficulty={gameDifficulty}  
+              onBack={handleBackFromGame} 
+              onGameComplete={(score, maxLevel) => handleGameCompleteWrapper({ gameType: 'logic', score, difficulty: 'normal', maxLevel })}
             />
           ) : activeGame === 'cube-rotation' ? (
-            <CubeRotationPuzzleGame 
-              onBack={() => setActiveGame(null)} 
-              onGameComplete={(score, maxLevel) => recordGame({ gameType: 'logic', score, difficulty: 'normal', maxLevel })}
+            <CubeRotationPuzzleGame difficulty={gameDifficulty}  
+              onBack={handleBackFromGame} 
+              onGameComplete={(score, maxLevel) => handleGameCompleteWrapper({ gameType: 'logic', score, difficulty: 'normal', maxLevel })}
             />
           ) : activeGame === 'puzzle-match' ? (
-            <PuzzleMatchGame 
-              onBack={() => setActiveGame(null)} 
-              onGameComplete={(score, maxLevel) => recordGame({ gameType: 'logic', score, difficulty: 'normal', maxLevel })}
+            <PuzzleMatchGame difficulty={gameDifficulty}  
+              onBack={handleBackFromGame} 
+              onGameComplete={(score, maxLevel) => handleGameCompleteWrapper({ gameType: 'logic', score, difficulty: 'normal', maxLevel })}
             />
           ) : activeGame === 'hidden-pattern' ? (
-            <HiddenPatternPuzzleGame 
-              onBack={() => setActiveGame(null)} 
-              onGameComplete={(score, maxLevel) => recordGame({ gameType: 'logic', score, difficulty: 'normal', maxLevel })}
+            <HiddenPatternPuzzleGame difficulty={gameDifficulty}  
+              onBack={handleBackFromGame} 
+              onGameComplete={(score, maxLevel) => handleGameCompleteWrapper({ gameType: 'logic', score, difficulty: 'normal', maxLevel })}
             />
           ) : activeGame === 'quick-addition' ? (
-            <MathSprintGame 
+            <MathSprintGame difficulty={gameDifficulty}  
               operation="addition"
               title="Quick Addition"
               description="Solve as many addition problems as you can in 60 seconds."
-              onBack={() => setActiveGame(null)} 
-              onGameComplete={(score, maxLevel) => recordGame({ gameType: 'math', score, difficulty: 'normal', maxLevel })}
+              onBack={handleBackFromGame} 
+              onGameComplete={(score, maxLevel) => handleGameCompleteWrapper({ gameType: 'math', score, difficulty: 'normal', maxLevel })}
             />
           ) : activeGame === 'fast-subtraction' ? (
-            <MathSprintGame 
+            <MathSprintGame difficulty={gameDifficulty}  
               operation="subtraction"
               title="Fast Subtraction"
               description="Solve as many subtraction problems as you can in 60 seconds."
-              onBack={() => setActiveGame(null)} 
-              onGameComplete={(score, maxLevel) => recordGame({ gameType: 'math', score, difficulty: 'normal', maxLevel })}
+              onBack={handleBackFromGame} 
+              onGameComplete={(score, maxLevel) => handleGameCompleteWrapper({ gameType: 'math', score, difficulty: 'normal', maxLevel })}
             />
           ) : activeGame === 'multiplication-sprint' ? (
-            <MathSprintGame 
+            <MathSprintGame difficulty={gameDifficulty}  
               operation="multiplication"
               title="Multiplication Sprint"
               description="Solve as many multiplication problems as you can in 60 seconds."
-              onBack={() => setActiveGame(null)} 
-              onGameComplete={(score, maxLevel) => recordGame({ gameType: 'math', score, difficulty: 'normal', maxLevel })}
+              onBack={handleBackFromGame} 
+              onGameComplete={(score, maxLevel) => handleGameCompleteWrapper({ gameType: 'math', score, difficulty: 'normal', maxLevel })}
             />
           ) : activeGame === 'division-master' ? (
-            <MathSprintGame 
+            <MathSprintGame difficulty={gameDifficulty}  
               operation="division"
               title="Division Master"
               description="Solve as many division problems as you can in 60 seconds."
-              onBack={() => setActiveGame(null)} 
-              onGameComplete={(score, maxLevel) => recordGame({ gameType: 'math', score, difficulty: 'normal', maxLevel })}
+              onBack={handleBackFromGame} 
+              onGameComplete={(score, maxLevel) => handleGameCompleteWrapper({ gameType: 'math', score, difficulty: 'normal', maxLevel })}
             />
           ) : activeGame === 'mental-math' ? (
-            <MathSprintGame 
+            <MathSprintGame difficulty={gameDifficulty}  
               operation="mixed"
               title="Mental Math Challenge"
               description="Solve mixed arithmetic problems as fast as you can."
-              onBack={() => setActiveGame(null)} 
-              onGameComplete={(score, maxLevel) => recordGame({ gameType: 'math', score, difficulty: 'normal', maxLevel })}
+              onBack={handleBackFromGame} 
+              onGameComplete={(score, maxLevel) => handleGameCompleteWrapper({ gameType: 'math', score, difficulty: 'normal', maxLevel })}
             />
           ) : activeGame === 'number-comparison' ? (
-            <NumberComparisonGame 
-              onBack={() => setActiveGame(null)} 
-              onGameComplete={(score, maxLevel) => recordGame({ gameType: 'math', score, difficulty: 'normal', maxLevel })}
+            <NumberComparisonGame difficulty={gameDifficulty}  
+              onBack={handleBackFromGame} 
+              onGameComplete={(score, maxLevel) => handleGameCompleteWrapper({ gameType: 'math', score, difficulty: 'normal', maxLevel })}
             />
           ) : activeGame === 'equation-builder' ? (
-            <EquationBuilderGame 
-              onBack={() => setActiveGame(null)} 
-              onGameComplete={(score, maxLevel) => recordGame({ gameType: 'math', score, difficulty: 'normal', maxLevel })}
+            <EquationBuilderGame difficulty={gameDifficulty}  
+              onBack={handleBackFromGame} 
+              onGameComplete={(score, maxLevel) => handleGameCompleteWrapper({ gameType: 'math', score, difficulty: 'normal', maxLevel })}
             />
           ) : activeGame === 'reaction-tap' ? (
-            <ReactionTapGame 
-              onBack={() => setActiveGame(null)} 
-              onGameComplete={(score, reactionTime) => recordGame({ gameType: 'speed', score, difficulty: 'normal', reactionTime })}
+            <ReactionTapGame difficulty={gameDifficulty}  
+              onBack={handleBackFromGame} 
+              onGameComplete={(score, reactionTime) => handleGameCompleteWrapper({ gameType: 'speed', score, difficulty: 'normal', reactionTime })}
             />
           ) : activeGame === 'color-reaction' ? (
-            <ColorReactionGame 
-              onBack={() => setActiveGame(null)} 
-              onGameComplete={(score, maxLevel) => recordGame({ gameType: 'speed', score, difficulty: 'normal', maxLevel })}
+            <ColorReactionGame difficulty={gameDifficulty}  
+              onBack={handleBackFromGame} 
+              onGameComplete={(score, maxLevel) => handleGameCompleteWrapper({ gameType: 'speed', score, difficulty: 'normal', maxLevel })}
             />
           ) : activeGame === 'tap-the-target' ? (
-            <ReactionSpeedGame 
-              onBack={() => setActiveGame(null)} 
-              onGameComplete={(score, reactionTime) => recordGame({ gameType: 'speed', score, difficulty: 'normal', reactionTime })}
+            <ReactionSpeedGame difficulty={gameDifficulty}  
+              onBack={handleBackFromGame} 
+              onGameComplete={(score, reactionTime) => handleGameCompleteWrapper({ gameType: 'speed', score, difficulty: 'normal', reactionTime })}
             />
           ) : activeGame === 'fast-button' ? (
-            <FastButtonGame 
-              onBack={() => setActiveGame(null)} 
-              onGameComplete={(score, maxLevel) => recordGame({ gameType: 'speed', score, difficulty: 'normal', maxLevel })}
+            <FastButtonGame difficulty={gameDifficulty}  
+              onBack={handleBackFromGame} 
+              onGameComplete={(score, maxLevel) => handleGameCompleteWrapper({ gameType: 'speed', score, difficulty: 'normal', maxLevel })}
             />
           ) : activeGame === 'reaction-light' ? (
-            <ReactionLightGame 
-              onBack={() => setActiveGame(null)} 
-              onGameComplete={(score, reactionTime) => recordGame({ gameType: 'speed', score, difficulty: 'normal', reactionTime })}
+            <ReactionLightGame difficulty={gameDifficulty}  
+              onBack={handleBackFromGame} 
+              onGameComplete={(score, reactionTime) => handleGameCompleteWrapper({ gameType: 'speed', score, difficulty: 'normal', reactionTime })}
             />
           ) : activeGame === 'speed-circle' ? (
-            <SpeedCircleGame 
-              onBack={() => setActiveGame(null)} 
-              onGameComplete={(score, maxLevel) => recordGame({ gameType: 'speed', score, difficulty: 'normal', maxLevel })}
+            <SpeedCircleGame difficulty={gameDifficulty}  
+              onBack={handleBackFromGame} 
+              onGameComplete={(score, maxLevel) => handleGameCompleteWrapper({ gameType: 'speed', score, difficulty: 'normal', maxLevel })}
             />
           ) : activeGame === 'tap-when-green' || activeGame === 'lightning-reaction' ? (
-            <ReactionTapGame 
-              onBack={() => setActiveGame(null)} 
-              onGameComplete={(score, reactionTime) => recordGame({ gameType: 'speed', score, difficulty: 'normal', reactionTime })}
+            <ReactionTapGame difficulty={gameDifficulty}  
+              onBack={handleBackFromGame} 
+              onGameComplete={(score, reactionTime) => handleGameCompleteWrapper({ gameType: 'speed', score, difficulty: 'normal', reactionTime })}
             />
           ) : activeGame === 'quick-reflex' || activeGame === 'reflex-challenge' ? (
-            <ReactionSpeedGame 
-              onBack={() => setActiveGame(null)} 
-              onGameComplete={(score, reactionTime) => recordGame({ gameType: 'speed', score, difficulty: 'normal', reactionTime })}
+            <ReactionSpeedGame difficulty={gameDifficulty}  
+              onBack={handleBackFromGame} 
+              onGameComplete={(score, reactionTime) => handleGameCompleteWrapper({ gameType: 'speed', score, difficulty: 'normal', reactionTime })}
             />
           ) : activeGame === 'reaction-timer' ? (
-            <ReactionTimerGame 
-              onBack={() => setActiveGame(null)} 
-              onGameComplete={(score, reactionTime) => recordGame({ gameType: 'speed', score, difficulty: 'normal', reactionTime })}
+            <ReactionTimerGame difficulty={gameDifficulty}  
+              onBack={handleBackFromGame} 
+              onGameComplete={(score, reactionTime) => handleGameCompleteWrapper({ gameType: 'speed', score, difficulty: 'normal', reactionTime })}
             />
           ) : activeGame === 'tap-the-moving-dot' ? (
-            <TapTheMovingDotGame 
-              onBack={() => setActiveGame(null)} 
-              onGameComplete={(score, reactionTime) => recordGame({ gameType: 'speed', score, difficulty: 'normal', reactionTime })}
+            <TapTheMovingDotGame difficulty={gameDifficulty}  
+              onBack={handleBackFromGame} 
+              onGameComplete={(score, reactionTime) => handleGameCompleteWrapper({ gameType: 'speed', score, difficulty: 'normal', reactionTime })}
             />
           ) : activeGame === 'speed-match' ? (
-            <ColorReactionGame 
-              onBack={() => setActiveGame(null)} 
-              onGameComplete={(score, maxLevel) => recordGame({ gameType: 'speed', score, difficulty: 'normal', maxLevel })}
+            <ColorReactionGame difficulty={gameDifficulty}  
+              onBack={handleBackFromGame} 
+              onGameComplete={(score, maxLevel) => handleGameCompleteWrapper({ gameType: 'speed', score, difficulty: 'normal', maxLevel })}
             />
           ) : activeGame === 'flash-tap' ? (
-            <FlashTapGame 
-              onBack={() => setActiveGame(null)} 
-              onGameComplete={(score, reactionTime) => recordGame({ gameType: 'speed', score, difficulty: 'normal', reactionTime })}
+            <FlashTapGame difficulty={gameDifficulty}  
+              onBack={handleBackFromGame} 
+              onGameComplete={(score, reactionTime) => handleGameCompleteWrapper({ gameType: 'speed', score, difficulty: 'normal', reactionTime })}
             />
           ) : activeGame === 'quick-click' ? (
-            <FastButtonGame 
-              onBack={() => setActiveGame(null)} 
-              onGameComplete={(score, maxLevel) => recordGame({ gameType: 'speed', score, difficulty: 'normal', maxLevel })}
+            <FastButtonGame difficulty={gameDifficulty}  
+              onBack={handleBackFromGame} 
+              onGameComplete={(score, maxLevel) => handleGameCompleteWrapper({ gameType: 'speed', score, difficulty: 'normal', maxLevel })}
             />
           ) : activeGame === 'word-builder' ? (
-            <WordBuilderGame 
-              onBack={() => setActiveGame(null)} 
-              onGameComplete={(score, maxLevel) => recordGame({ gameType: 'language', score, difficulty: 'normal', maxLevel })}
+            <WordBuilderGame difficulty={gameDifficulty}  
+              onBack={handleBackFromGame} 
+              onGameComplete={(score, maxLevel) => handleGameCompleteWrapper({ gameType: 'language', score, difficulty: 'normal', maxLevel })}
               gameType="builder"
             />
           ) : activeGame === 'word-scramble' ? (
-            <WordBuilderGame 
-              onBack={() => setActiveGame(null)} 
-              onGameComplete={(score, maxLevel) => recordGame({ gameType: 'language', score, difficulty: 'normal', maxLevel })}
+            <WordBuilderGame difficulty={gameDifficulty}  
+              onBack={handleBackFromGame} 
+              onGameComplete={(score, maxLevel) => handleGameCompleteWrapper({ gameType: 'language', score, difficulty: 'normal', maxLevel })}
               gameType="scramble"
             />
           ) : activeGame === 'word-puzzle' ? (
-            <WordBuilderGame 
-              onBack={() => setActiveGame(null)} 
-              onGameComplete={(score, maxLevel) => recordGame({ gameType: 'language', score, difficulty: 'normal', maxLevel })}
+            <WordBuilderGame difficulty={gameDifficulty}  
+              onBack={handleBackFromGame} 
+              onGameComplete={(score, maxLevel) => handleGameCompleteWrapper({ gameType: 'language', score, difficulty: 'normal', maxLevel })}
               gameType="puzzle"
             />
           ) : activeGame === 'vocabulary-match' ? (
-            <VocabularyMatchGame 
-              onBack={() => setActiveGame(null)} 
-              onGameComplete={(score, maxLevel) => recordGame({ gameType: 'language', score, difficulty: 'normal', maxLevel })}
+            <VocabularyMatchGame difficulty={gameDifficulty}  
+              onBack={handleBackFromGame} 
+              onGameComplete={(score, maxLevel) => handleGameCompleteWrapper({ gameType: 'language', score, difficulty: 'normal', maxLevel })}
               gameType="vocabulary"
             />
           ) : activeGame === 'synonym-match' ? (
-            <VocabularyMatchGame 
-              onBack={() => setActiveGame(null)} 
-              onGameComplete={(score, maxLevel) => recordGame({ gameType: 'language', score, difficulty: 'normal', maxLevel })}
+            <VocabularyMatchGame difficulty={gameDifficulty}  
+              onBack={handleBackFromGame} 
+              onGameComplete={(score, maxLevel) => handleGameCompleteWrapper({ gameType: 'language', score, difficulty: 'normal', maxLevel })}
               gameType="synonym"
             />
           ) : activeGame === 'word-association' ? (
-            <VocabularyMatchGame 
-              onBack={() => setActiveGame(null)} 
-              onGameComplete={(score, maxLevel) => recordGame({ gameType: 'language', score, difficulty: 'normal', maxLevel })}
+            <VocabularyMatchGame difficulty={gameDifficulty}  
+              onBack={handleBackFromGame} 
+              onGameComplete={(score, maxLevel) => handleGameCompleteWrapper({ gameType: 'language', score, difficulty: 'normal', maxLevel })}
               gameType="association"
             />
           ) : activeGame === 'missing-letter' ? (
-            <MissingLetterGame 
-              onBack={() => setActiveGame(null)} 
-              onGameComplete={(score, maxLevel) => recordGame({ gameType: 'language', score, difficulty: 'normal', maxLevel })}
+            <MissingLetterGame difficulty={gameDifficulty}  
+              onBack={handleBackFromGame} 
+              onGameComplete={(score, maxLevel) => handleGameCompleteWrapper({ gameType: 'language', score, difficulty: 'normal', maxLevel })}
               gameType="missing"
             />
           ) : activeGame === 'spelling-challenge' ? (
-            <MissingLetterGame 
-              onBack={() => setActiveGame(null)} 
-              onGameComplete={(score, maxLevel) => recordGame({ gameType: 'language', score, difficulty: 'normal', maxLevel })}
+            <MissingLetterGame difficulty={gameDifficulty}  
+              onBack={handleBackFromGame} 
+              onGameComplete={(score, maxLevel) => handleGameCompleteWrapper({ gameType: 'language', score, difficulty: 'normal', maxLevel })}
               gameType="spelling"
             />
           ) : activeGame === 'find-the-word' ? (
-            <WordSearchGame 
-              onBack={() => setActiveGame(null)} 
-              onGameComplete={(score, maxLevel) => recordGame({ gameType: 'language', score, difficulty: 'normal', maxLevel })}
+            <WordSearchGame difficulty={gameDifficulty}  
+              onBack={handleBackFromGame} 
+              onGameComplete={(score, maxLevel) => handleGameCompleteWrapper({ gameType: 'language', score, difficulty: 'normal', maxLevel })}
               gameType="find"
             />
           ) : activeGame === 'letter-grid-search' ? (
-            <WordSearchGame 
-              onBack={() => setActiveGame(null)} 
-              onGameComplete={(score, maxLevel) => recordGame({ gameType: 'language', score, difficulty: 'normal', maxLevel })}
+            <WordSearchGame difficulty={gameDifficulty}  
+              onBack={handleBackFromGame} 
+              onGameComplete={(score, maxLevel) => handleGameCompleteWrapper({ gameType: 'language', score, difficulty: 'normal', maxLevel })}
               gameType="grid"
             />
           ) : activeGame === 'word-memory' ? (
-            <WordMemoryGame 
-              onBack={() => setActiveGame(null)} 
-              onGameComplete={(score, maxLevel) => recordGame({ gameType: 'language', score, difficulty: 'normal', maxLevel })}
+            <WordMemoryGame difficulty={gameDifficulty}  
+              onBack={handleBackFromGame} 
+              onGameComplete={(score, maxLevel) => handleGameCompleteWrapper({ gameType: 'language', score, difficulty: 'normal', maxLevel })}
             />
           ) : activeGame === 'letter-sequence' ? (
-            <WordSequenceGame 
-              onBack={() => setActiveGame(null)} 
-              onGameComplete={(score, maxLevel) => recordGame({ gameType: 'language', score, difficulty: 'normal', maxLevel })}
+            <WordSequenceGame difficulty={gameDifficulty}  
+              onBack={handleBackFromGame} 
+              onGameComplete={(score, maxLevel) => handleGameCompleteWrapper({ gameType: 'language', score, difficulty: 'normal', maxLevel })}
               gameType="sequence"
             />
           ) : activeGame === 'word-pattern' ? (
-            <WordSequenceGame 
-              onBack={() => setActiveGame(null)} 
-              onGameComplete={(score, maxLevel) => recordGame({ gameType: 'language', score, difficulty: 'normal', maxLevel })}
+            <WordSequenceGame difficulty={gameDifficulty}  
+              onBack={handleBackFromGame} 
+              onGameComplete={(score, maxLevel) => handleGameCompleteWrapper({ gameType: 'language', score, difficulty: 'normal', maxLevel })}
               gameType="pattern"
             />
           ) : activeGame === 'word-speed-test' ? (
-            <WordSpeedGame 
-              onBack={() => setActiveGame(null)} 
-              onGameComplete={(score, maxLevel) => recordGame({ gameType: 'language', score, difficulty: 'normal', maxLevel })}
+            <WordSpeedGame difficulty={gameDifficulty}  
+              onBack={handleBackFromGame} 
+              onGameComplete={(score, maxLevel) => handleGameCompleteWrapper({ gameType: 'language', score, difficulty: 'normal', maxLevel })}
             />
           ) : activeGame === 'vocabulary-builder' ? (
-            <VocabularyBuilderGame 
-              onBack={() => setActiveGame(null)} 
-              onGameComplete={(score, maxLevel) => recordGame({ gameType: 'language', score, difficulty: 'normal', maxLevel })}
+            <VocabularyBuilderGame difficulty={gameDifficulty}  
+              onBack={handleBackFromGame} 
+              onGameComplete={(score, maxLevel) => handleGameCompleteWrapper({ gameType: 'language', score, difficulty: 'normal', maxLevel })}
             />
           ) : activeGame === 'speed' ? (
-            <ReactionSpeedGame 
-              onBack={() => setActiveGame(null)} 
-              onTrainingComplete={(score) => recordGame({ gameType: 'speed', score, difficulty: 'normal' })}
+            <ReactionSpeedGame difficulty={gameDifficulty}  
+              onBack={handleBackFromGame} 
+              onTrainingComplete={(score) => handleGameCompleteWrapper({ gameType: 'speed', score, difficulty: 'normal' })}
             />
           ) : activeGame === 'daily-training' ? (
             <DailyTraining 
-              onBack={() => setActiveGame(null)} 
+              onBack={handleBackFromGame} 
             />
           ) : activeGame ? (
             <div className="flex-1 flex flex-col items-center justify-center p-6 text-center">
@@ -639,96 +1025,35 @@ export default function App() {
               {/* Main Content Area */}
               <div className="flex-1 overflow-y-auto hide-scrollbar pb-24 relative">
                 {/* Global Header Actions */}
-                <div className="px-6 pt-12 pb-2 flex justify-between items-center sticky top-0 bg-[#0a0a0c]/90 backdrop-blur-md z-30">
-                  <div className="flex items-center gap-3">
-                    {currentTab !== 'profile' ? (
-                      <>
-                        <div className="flex items-center gap-2 bg-orange-500/10 border border-orange-500/30 px-3 py-1.5 rounded-full">
-                          <Flame className="w-4 h-4 text-orange-500" />
-                          <span className="text-orange-500 font-bold text-sm">12</span>
-                        </div>
-                        <div className="flex items-center gap-2 bg-yellow-500/10 border border-yellow-500/30 px-3 py-1.5 rounded-full">
-                          <div className="w-4 h-4 bg-yellow-500 rounded-full"></div>
-                          <span className="text-yellow-500 font-bold text-sm">150</span>
-                        </div>
-                      </>
-                    ) : (
-                      <span className="text-amber-400 font-bold text-xs tracking-wider uppercase border border-amber-400/30 bg-amber-400/10 px-3 py-1.5 rounded-full whitespace-nowrap">Unlock Brainova</span>
-                    )}
-                  </div>
-                  <div className="flex gap-4">
-                    {currentTab === 'profile' && (
-                      <div className="relative">
-                        <div className="w-2 h-2 bg-red-500 rounded-full absolute top-0 right-0"></div>
-                        <svg className="w-6 h-6 text-white/80" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-                        </svg>
-                      </div>
-                    )}
-                    <div className="relative">
-                      <button onClick={() => setIsProfileSettingsOpen(!isProfileSettingsOpen)}>
-                        <svg className="w-6 h-6 text-white/80" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                        </svg>
+                {currentTab !== 'profile' && (
+                  <div className="px-6 pt-12 pb-2 flex justify-between items-center sticky top-0 bg-[#0a0a0c]/90 backdrop-blur-md z-30">
+                    <div className="flex justify-between items-center w-full">
+                      <button 
+                        onClick={() => setIsTrainingHistoryOpen(true)}
+                        className="flex items-center gap-2 bg-[#1a120b] border-[1.5px] border-[#cc5500] px-3 py-1 rounded-full hover:bg-[#2a1b12] transition-colors cursor-pointer"
+                      >
+                        <Flame className="w-4 h-4 text-[#ff7a00]" strokeWidth={2.5} />
+                        <span className="text-white font-bold text-base">{stats.dailyStreak}</span>
                       </button>
-                      
-                      <AnimatePresence>
-                        {isProfileSettingsOpen && (
-                          <>
-                            <div 
-                              className="fixed inset-0 z-40"
-                              onClick={() => setIsProfileSettingsOpen(false)}
-                            />
-                            <motion.div 
-                              initial={{ opacity: 0, scale: 0.95 }}
-                              animate={{ opacity: 1, scale: 1 }}
-                              exit={{ opacity: 0, scale: 0.95 }}
-                              className="absolute right-0 mt-2 w-48 bg-[#1a1a1c] border border-white/10 rounded-xl shadow-xl z-50 overflow-hidden"
-                            >
-                            <button 
-                              onClick={() => {
-                                fileInputRef.current?.click();
-                              }}
-                              className="w-full text-left px-4 py-3 text-sm text-white hover:bg-white/5 transition-colors border-b border-white/5"
-                            >
-                              {t('changeProfilePhoto', language) || 'Change Profile Photo'}
-                            </button>
-                            <button 
-                              onClick={() => {
-                                setTempName(profileName);
-                                setIsEditNameOpen(true);
-                                setIsProfileSettingsOpen(false);
-                              }}
-                              className="w-full text-left px-4 py-3 text-sm text-white hover:bg-white/5 transition-colors border-b border-white/5"
-                            >
-                              {t('changeName', language) || 'Change Name'}
-                            </button>
-                            <button 
-                              onClick={() => {
-                                setIsProfileSettingsOpen(false);
-                                setIsModeModalOpen(true);
-                              }}
-                              className="w-full text-left px-4 py-3 text-sm text-white hover:bg-white/5 transition-colors border-b border-white/5"
-                            >
-                              {t('changeMode', language) || 'Change Mode'}
-                            </button>
-                            <button 
-                              onClick={() => {
-                                setIsProfileSettingsOpen(false);
-                                setIsLanguageModalOpen(true);
-                              }}
-                              className="w-full text-left px-4 py-3 text-sm text-white hover:bg-white/5 transition-colors"
-                            >
-                              {t('changeLanguage', language) || 'Change Language'}
-                            </button>
-                          </motion.div>
-                          </>
-                        )}
-                      </AnimatePresence>
+                      <button 
+                        onClick={() => setIsLpiModalOpen(true)}
+                        className="flex items-center gap-2 bg-[#fbbf24]/10 border border-[#fbbf24]/30 px-3 py-1.5 rounded-full hover:bg-[#fbbf24]/20 transition-colors cursor-pointer"
+                      >
+                        <Brain className="w-4 h-4 text-[#fbbf24]" />
+                        <span className="text-[#fbbf24] font-bold text-sm">{stats.novaCoins || 0}</span>
+                      </button>
+                      <button 
+                        onClick={() => setIsXpRoadmapOpen(true)}
+                        className="flex items-center gap-2 bg-[#3b82f6]/10 border border-[#3b82f6]/30 px-3 py-1.5 rounded-full hover:bg-[#3b82f6]/20 transition-colors cursor-pointer"
+                      >
+                        <div className="w-4 h-4 bg-[#3b82f6] rounded-full flex items-center justify-center">
+                          <span className="text-white font-bold text-[8px]">XP</span>
+                        </div>
+                        <span className="text-[#3b82f6] font-bold text-sm">{totalXP}</span>
+                      </button>
                     </div>
                   </div>
-                </div>
+                )}
             
             {currentTab === 'home' && (
               <motion.div 
@@ -738,159 +1063,94 @@ export default function App() {
               >
                 {/* Header */}
                 <div className="px-6 pt-6 pb-6 flex justify-between items-center">
-                  <div>
-                    <p className="text-white/60 text-sm font-medium mb-1">{getGreeting()},</p>
-                    <h2 className="text-2xl font-bold">{profileName}</h2>
+                  <div className="flex flex-col">
+                    <span className="text-2xl font-bold text-white mb-0.5">
+                      {(() => {
+                        const hour = new Date().getHours();
+                        let greeting = '';
+                        if (hour >= 5 && hour < 12) greeting = t('goodMorning', language) === 'goodMorning' ? 'Good morning' : t('goodMorning', language);
+                        else if (hour >= 12 && hour < 17) greeting = t('goodAfternoon', language) === 'goodAfternoon' ? 'Good afternoon' : t('goodAfternoon', language);
+                        else if (hour >= 17 && hour < 21) greeting = t('goodEvening', language) === 'goodEvening' ? 'Good evening' : t('goodEvening', language);
+                        else greeting = t('goodNight', language) === 'goodNight' ? 'Good night' : t('goodNight', language);
+                        return `${greeting}, ${profileName} 👋`;
+                      })()}
+                    </span>
                   </div>
-                  <button 
-                    onClick={() => setIsXpRoadmapOpen(true)}
-                    className="flex flex-col items-center hover:scale-105 transition-transform"
-                  >
-                    <div className="relative w-8 h-8 mb-1 flex items-center justify-center">
-                      <div className="absolute inset-0 bg-[#4871b6] rotate-45 rounded-sm border-[3px] border-[#93bfe6] shadow-[inset_0_0_8px_rgba(0,0,0,0.3)]">
-                        <div className="absolute inset-0 m-0.5 bg-[#324a76] shadow-[inset_0_0_4px_rgba(0,0,0,0.5)]"></div>
+                </div>
+
+                {/* Brain Score Section */}
+                <div className="px-6 mb-8">
+                  <BrainScoreCard onClick={() => setCurrentTab('stats')} stats={stats} />
+                </div>
+
+                {/* Combined Daily Workout & Exercises Card */}
+                <div className="px-6 mb-8">
+                  <div className="relative">
+                    
+
+                    {/* Main Target Card */}
+                    <div className="bg-[#0f1f1a] rounded-[24px] p-5 mb-3 border border-[#10b981]/20 flex flex-col sm:flex-row justify-between items-center gap-4 relative overflow-hidden">
+                      <div className="absolute top-0 left-0 w-32 h-32 bg-[#10b981]/20 blur-[50px] -translate-x-1/2 -translate-y-1/2 rounded-full pointer-events-none"></div>
+                      
+                      <div className="flex flex-col gap-1 z-10 w-full sm:w-auto self-start sm:self-center">
+                        <div className="flex items-center gap-4">
+                          <div className="w-16 h-16 rounded-full bg-[#10b981]/10 flex items-center justify-center border border-[#10b981]/30 relative shrink-0">
+                            <div className="absolute inset-0 bg-[#10b981]/20 rounded-full animate-pulse blur-sm"></div>
+                            <Target className="w-8 h-8 text-[#10b981] relative z-10" />
+                          </div>
+                          <div>
+                            <div className="text-3xl font-bold text-[#10b981] mb-1 leading-none">{completedMissionsCount}/3</div>
+                            <p className="text-white/70 text-sm mb-2">Games Completed</p>
+                            <div className="flex gap-1.5">
+                              {[1, 2, 3].map((step) => (
+                                <div key={step} className={`w-8 h-1.5 rounded-full ${step <= completedMissionsCount ? 'bg-[#10b981]' : 'bg-white/10'}`}></div>
+                              ))}
+                            </div>
+                          </div>
+                        </div>
                       </div>
-                      <span className="relative z-10 text-[#93bfe6] font-bold text-xs tracking-tighter" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.5)' }}>XP</span>
+
+                      <button 
+                        onClick={() => setActiveGame('todays-mission')}
+                        className="w-full sm:w-auto bg-gradient-to-r from-[#fb923c] to-[#ea580c] text-white font-bold py-4 px-6 rounded-2xl shadow-[0_4px_16px_rgba(234,88,12,0.4)] hover:shadow-[0_6px_20px_rgba(234,88,12,0.6)] hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2 z-10"
+                      >
+                        Start Workout <ChevronRight className="w-5 h-5" />
+                      </button>
                     </div>
-                    <span className="text-sm font-bold">36</span>
+
+                  </div>
+                </div>
+
+                {/* Challenges */}
+                <div className="px-6 mb-8 mt-2">
+                  <button 
+                    onClick={() => setCurrentTab('challenges')}
+                    className="w-full flex items-center justify-between p-4 bg-[#1a1130] border border-[#2a1b4a] rounded-[24px] hover:bg-[#231740] transition-colors group relative overflow-hidden"
+                  >
+                    <div className="flex items-center gap-4 relative z-10">
+                      <div className="w-14 h-14 rounded-2xl bg-[#341a5f] flex items-center justify-center shrink-0">
+                        <Brain className="w-7 h-7 text-[#d8b4fe]" />
+                      </div>
+                      <div className="text-left">
+                        <h3 className="text-[19px] font-bold text-white mb-0.5 tracking-wide">Challenges</h3>
+                        <p className="text-[15px] text-[#9ca3af]">View your cognitive overview</p>
+                      </div>
+                    </div>
+                    <ChevronRight className="w-6 h-6 text-[#4b5563] group-hover:text-white transition-colors relative z-10" />
                   </button>
                 </div>
 
-                {/* New Daily Workout Card */}
-                <div className="px-6 mb-8">
-                  <div className="bg-[#1e293b] rounded-3xl p-8 flex flex-col items-center justify-center border border-white/5 shadow-lg relative overflow-hidden">
-                    {/* Icon Area */}
-                    <div className="relative w-32 h-32 mb-6 flex items-center justify-center">
-                      {/* Segmented Ring */}
-                      <svg className="absolute inset-0 w-full h-full text-slate-600" viewBox="0 0 100 100" style={{ transform: 'rotate(-45deg)' }}>
-                        <circle cx="50" cy="50" r="42" fill="none" stroke="currentColor" strokeWidth="12" strokeDasharray="50 16" />
-                      </svg>
-                      {/* Brainova Theme Circle */}
-                      <div className="w-20 h-20 rounded-full bg-gradient-to-br from-cyan-400 to-indigo-500 flex items-center justify-center z-10 shadow-inner">
-                        <Brain className="w-10 h-10 text-white" />
-                      </div>
-                    </div>
-                    
-                    <h3 className="text-2xl font-bold text-white mb-2">{t('dailyWorkout', language)}</h3>
-                    <p className="text-slate-400 text-sm mb-8">
-                      {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })} | 3 Games
-                    </p>
-                    
-                    <button 
-                      onClick={() => setActiveGame('daily-training')}
-                      className="w-full max-w-[200px] bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-3 px-8 rounded-full transition-colors shadow-lg text-lg"
-                    >
-                      Start
-                    </button>
-                  </div>
+                {/* Quick Actions */}
+                <div className="px-6 mt-8">
+                  <QuickActions onPlay={handlePlayGame} />
                 </div>
 
-                {/* Favorite Games */}
-                {likedGames.length > 0 && (
-                  <div className="mb-8">
-                    <div className="px-6 flex justify-between items-center mb-4">
-                      <h3 className="text-lg font-bold">{t('favoriteGames', language) || "Starred Games"}</h3>
-                    </div>
-                    <GameCarousel className="flex gap-4 pb-4 px-6 hide-scrollbar">
-                      {allGames.filter(g => likedGames.includes(g.id)).map((game, idx) => (
-                        <div 
-                          key={idx} 
-                          onClick={() => setActiveGame(game.id)}
-                          className="bg-[#1a1a1c] rounded-2xl p-4 border border-white/5 hover:bg-[#2a2a2c] transition-colors cursor-pointer group relative flex-shrink-0 w-[calc(40vw-22px)] sm:w-[160px] snap-start"
-                        >
-                          <button 
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              toggleLikedGame(game.id);
-                            }}
-                            className="absolute top-3 right-3 p-1.5 rounded-full hover:bg-white/10 transition-colors z-10"
-                          >
-                            <Star className={`w-4 h-4 ${likedGames.includes(game.id) ? 'fill-yellow-400 text-yellow-400' : 'text-white/40'}`} />
-                          </button>
-                          <div className={`w-12 h-12 rounded-xl ${game.color} flex items-center justify-center mb-4 group-hover:scale-110 transition-transform`}>
-                            {game.icon}
-                          </div>
-                          <h4 className="font-bold mb-1 truncate">{game.title}</h4>
-                          <p className="text-sm text-white/50">{game.category}</p>
-                        </div>
-                      ))}
-                    </GameCarousel>
-                  </div>
-                )}
-
-                {/* More Workouts */}
-                <div className="px-6 mb-24">
-                  <div className="flex justify-between items-center mb-4">
-                    <h3 className="text-lg font-bold">More Workouts</h3>
-                    <button className="bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-bold px-3 py-1.5 rounded-full flex items-center gap-1 transition-colors">
-                      UNLOCK <Lock className="w-3 h-3" />
-                    </button>
-                  </div>
-                  
-                  <div className="flex flex-col gap-3">
-                    {[
-                      {
-                        title: "Math",
-                        desc: "Challenge your estimation and calculation skills.",
-                        icon: <Calculator className="w-6 h-6 text-white" />,
-                        bgColor: "bg-pink-500",
-                        progress: "0/5"
-                      },
-                      {
-                        title: "Language",
-                        desc: "Dive deep into your vocabulary and reading skills.",
-                        icon: <Type className="w-6 h-6 text-white" />,
-                        bgColor: "bg-teal-500",
-                        progress: "0/5"
-                      },
-                      {
-                        title: "Favorites",
-                        desc: "Treat your brain to the games you play the most.",
-                        icon: <Heart className="w-6 h-6 text-white" />,
-                        bgColor: "bg-orange-400",
-                        progress: "0/5"
-                      },
-                      {
-                        title: "Strengthen",
-                        desc: "Play your weakest games and raise your low game scores.",
-                        icon: <Flag className="w-6 h-6 text-white" />,
-                        bgColor: "bg-cyan-600",
-                        progress: "0/5"
-                      },
-                      {
-                        title: "Quick",
-                        desc: "Race through short games in 8 minutes or less.",
-                        icon: <Clock className="w-6 h-6 text-white" />,
-                        bgColor: "bg-green-500",
-                        progress: "0/5"
-                      }
-                    ].map((workout, idx) => (
-                      <div 
-                        key={idx} 
-                        className="bg-[#1a1a1c] rounded-2xl p-4 border border-white/10 flex items-center gap-4 relative overflow-hidden cursor-pointer hover:bg-[#2a2a2c] transition-colors"
-                      >
-                        <div className="absolute top-3 right-4 flex items-center gap-1.5">
-                          <div className="w-1.5 h-1.5 rounded-full bg-yellow-400"></div>
-                          <span className="text-xs text-white/80 font-medium">{workout.progress}</span>
-                        </div>
-                        
-                        <div className="relative">
-                          <div className={`w-14 h-14 rounded-full ${workout.bgColor} flex items-center justify-center`}>
-                            {workout.icon}
-                          </div>
-                          <div className="absolute -bottom-1 -left-1 w-6 h-6 bg-[#111] rounded-full flex items-center justify-center border-2 border-[#1a1a1c]">
-                            <Lock className="w-3 h-3 text-white/80" />
-                          </div>
-                        </div>
-                        
-                        <div className="flex-1 pr-8">
-                          <h4 className="font-bold text-base mb-1">{workout.title}</h4>
-                          <p className="text-sm text-white/60 leading-snug">{workout.desc}</p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
+                {/* Recommended Training */}
+                <div className="px-6 mb-8 mt-8">
+                  <RecommendedTraining onPlay={handlePlayGame} />
                 </div>
+
+
               </motion.div>
             )}
 
@@ -904,42 +1164,75 @@ export default function App() {
                   <h2 className="text-3xl font-bold mb-2">{t('allGames', language)}</h2>
                   <p className="text-white/60 text-sm mb-6">{t('selectGame', language)}</p>
                   
-                  <div className="relative">
-                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/40" />
-                    <input
-                      type="text"
-                      placeholder={t('searchGames', language)}
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      className="w-full bg-[#1a1a1c] border border-white/10 rounded-2xl py-4 pl-12 pr-4 text-white placeholder:text-white/40 focus:outline-none focus:border-indigo-500/50 transition-colors"
-                    />
+                  <div className="flex overflow-x-auto hide-scrollbar gap-4 pb-6 pt-2 -mx-6 px-6 items-center">
+                    {['All', 'Recent', 'Logic', 'Memory', 'Focus', 'Math', 'Reaction Speed', 'Language & Word'].map(category => (
+                      <button
+                        key={category}
+                        onClick={() => setActiveCategoryFilter(category)}
+                        className={`whitespace-nowrap px-7 py-3 rounded-3xl font-extrabold text-[17px] transition-all duration-75 leading-none shrink-0 ${
+                          activeCategoryFilter === category 
+                            ? 'bg-[#10b981] text-white shadow-[0_4px_0_#059669] active:shadow-[0_0px_0_#059669] active:translate-y-[4px] -translate-y-[4px]' 
+                            : 'bg-white text-[#1a1a1c] shadow-[0_4px_0_#e2e8f0] active:shadow-[0_0px_0_#e2e8f0] active:translate-y-[4px] -translate-y-[4px]'
+                        }`}
+                      >
+                        {category}
+                      </button>
+                    ))}
                   </div>
                 </div>
 
                 <div className="space-y-8 pb-24">
-                  {Array.from(new Set(allGames.map(g => g.category)))
+                  {activeCategoryFilter === 'AI Recommended' && (
+                    <div key="ai-recommended">
+                      <h3 className="text-xl font-bold mb-4 text-[#10b981] px-6 flex items-center gap-2">
+                        <Sparkles className="w-5 h-5" />
+                        AI Recommended For You
+                      </h3>
+                      <GameCarousel className="flex gap-4 pb-4 px-6 hide-scrollbar">
+                        {allGames.slice(0, 4).map(game => (
+                          <button 
+                            key={`ai-${game.id}`} 
+                            onClick={() => handlePlayGame(game.id)}
+                            className={`w-[calc(40vw-22px)] sm:w-[160px] shrink-0 bg-[#1a1a1c] border border-white/5 rounded-3xl p-5 flex flex-col items-start hover:bg-[#2a2a2c] transition-all duration-300 ease-in-out group text-left relative overflow-hidden snap-start ${
+                              transitioningGame === game.id ? 'transform -translate-x-[200vw] opacity-0 z-50 pointer-events-none' : ''
+                            }`}
+                          >
+                            <div 
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                toggleLikedGame(game.id);
+                              }}
+                              className="absolute top-4 right-4 p-1.5 rounded-full hover:bg-white/10 transition-colors z-20"
+                            >
+                              <Heart className={`w-5 h-5 ${likedGames.includes(game.id) ? 'fill-[#ff7b54] text-[#ff7b54]' : 'text-white/40'}`} />
+                            </div>
+                            <div className={`w-14 h-14 rounded-2xl ${game.color} flex items-center justify-center mb-4 group-hover:scale-110 transition-transform ${game.border} border`}>
+                              {game.icon}
+                            </div>
+                            <h3 className="text-white font-bold mb-1 truncate w-full">{game.title}</h3>
+                            <p className="text-white/50 text-xs w-full line-clamp-2">{game.description}</p>
+                          </button>
+                        ))}
+                      </GameCarousel>
+                    </div>
+                  )}
+
+                  {activeCategoryFilter !== 'AI Recommended' && Array.from(new Set(allGames.map(g => g.category)))
                     .filter(category => {
-                      const categoryGames = allGames.filter(g => g.category === category);
-                      const filteredGames = categoryGames.filter(g => 
-                        g.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                        g.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                        g.description.toLowerCase().includes(searchQuery.toLowerCase())
-                      );
-                      return filteredGames.length > 0;
+                      if (activeCategoryFilter === 'All' || activeCategoryFilter === 'Recent') return true;
+                      return category === activeCategoryFilter;
                     })
                     .map(category => (
                     <div key={category}>
                       <h3 className="text-xl font-bold mb-4 text-white/80 px-6">{t(category.toLowerCase(), language)} {t('games', language)}</h3>
                       <GameCarousel className="flex gap-4 pb-4 px-6 hide-scrollbar">
-                        {allGames.filter(g => g.category === category && (
-                          g.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                          g.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                          g.description.toLowerCase().includes(searchQuery.toLowerCase())
-                        )).map(game => (
+                        {allGames.filter(g => g.category === category).map(game => (
                           <button 
                             key={game.id} 
-                            onClick={() => setActiveGame(game.id)}
-                            className="w-[calc(40vw-22px)] sm:w-[160px] shrink-0 bg-[#1a1a1c] border border-white/5 rounded-3xl p-5 flex flex-col items-start hover:bg-[#2a2a2c] transition-colors group text-left relative overflow-hidden snap-start"
+                            onClick={() => handlePlayGame(game.id)}
+                            className={`w-[calc(40vw-22px)] sm:w-[160px] shrink-0 bg-[#1a1a1c] border border-white/5 rounded-3xl p-5 flex flex-col items-start hover:bg-[#2a2a2c] transition-all duration-300 ease-in-out group text-left relative overflow-hidden snap-start ${
+                              transitioningGame === game.id ? 'transform -translate-x-[200vw] opacity-0 z-50 pointer-events-none' : ''
+                            }`}
                           >
                             <div 
                               onClick={(e) => {
@@ -966,110 +1259,23 @@ export default function App() {
             )}
 
             {currentTab === 'coach' && (
+              <AiCoachView 
+                profileName={profileName || 'Player'} 
+                onSend={() => setIsPremiumSubscriptionOpen(true)}
+              />
+            )}
+
+            {currentTab === 'challenges' && (
               <motion.div 
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -10 }}
               >
-                <div className="px-6 pt-6 pb-6">
-                  <h2 className="text-3xl font-bold mb-2 leading-tight">
-                    Your personal coach,<br/>
-                    <span className="inline-flex items-center mt-1">
-                      <motion.span 
-                        initial={{ clipPath: "inset(0 100% 0 0)" }}
-                        animate={{ clipPath: "inset(0 0% 0 0)" }}
-                        transition={{ duration: 1.5, delay: 0.2, ease: "linear" }}
-                        className="bg-gradient-to-r from-cyan-400 to-indigo-400 bg-clip-text text-transparent pr-1"
-                      >
-                        Brainova Ai
-                      </motion.span>
-                    </span>
-                  </h2>
-                  <p className="text-white/60 text-sm">Your personalized training plan and insights.</p>
-                </div>
-
-                <div className="px-6 space-y-6">
-                  <div className="bg-gradient-to-br from-indigo-500/20 to-purple-500/20 border border-indigo-500/30 rounded-3xl p-6 relative overflow-hidden">
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-500/20 rounded-full blur-3xl -mr-10 -mt-10" />
-                    <div className="flex items-start gap-4 relative z-10">
-                      <div className="w-12 h-12 rounded-2xl bg-indigo-500/20 flex items-center justify-center shrink-0">
-                        <Bot className="w-6 h-6 text-indigo-400" />
-                      </div>
-                      <div>
-                        <h3 className="text-lg font-bold mb-1">{t('todaysAnalysis', language)}</h3>
-                        <p className="text-sm text-white/70 leading-relaxed">
-                          Your memory scores are improving! I recommend focusing on Logic games today to balance your cognitive profile.
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="bg-[#1a1a1c] border border-white/5 rounded-3xl p-6">
-                    <h3 className="text-lg font-bold mb-4">{t('whatToImprove', language)}</h3>
-                    <p className="text-sm text-white/60 mb-4">Tell Brainova AI what you want to focus on, like "improve calculation speed" or "better focus".</p>
-                    <div className="relative flex items-center">
-                      <input 
-                        type="text" 
-                        placeholder="e.g., I want to improve my focus..." 
-                        className="w-full bg-[#2a2a2c] border border-white/10 rounded-2xl py-4 pl-4 pr-24 text-white placeholder-white/40 focus:outline-none focus:border-indigo-500 transition-colors"
-                      />
-                      <div className="absolute right-2 flex items-center gap-1">
-                        <button className="p-2 text-white/50 hover:text-white hover:bg-white/10 rounded-xl transition-colors">
-                          <Mic className="w-5 h-5" />
-                        </button>
-                        <button className="p-2 bg-indigo-500 hover:bg-indigo-600 text-white rounded-xl transition-colors">
-                          <Send className="w-5 h-5" />
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="bg-gradient-to-br from-emerald-500/20 to-teal-500/20 border border-emerald-500/30 rounded-3xl p-6 relative overflow-hidden">
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/20 rounded-full blur-3xl -mr-10 -mt-10" />
-                    <div className="relative z-10">
-                      <div className="flex items-center gap-3 mb-4">
-                        <div className="w-10 h-10 rounded-xl bg-emerald-500/20 flex items-center justify-center">
-                          <Sparkles className="w-5 h-5 text-emerald-400" />
-                        </div>
-                        <h3 className="text-lg font-bold">{t('personalizedPlan', language)}</h3>
-                      </div>
-                      <p className="text-sm text-white/70 mb-6">{t('letNovaCreate', language)}</p>
-                      <button 
-                        onClick={() => {
-                          setPlanStep(0);
-                          setPlanAnswers({});
-                          setGeneratedPlan(null);
-                          setIsPlanGeneratorOpen(true);
-                        }}
-                        className="w-full py-3 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-semibold transition-colors"
-                      >
-                        {t('createMyPlan', language)}
-                      </button>
-                    </div>
-                  </div>
-
-                  <div className="bg-[#1a1a1c] border border-white/5 rounded-3xl p-6">
-                    <h3 className="text-lg font-bold mb-4">{t('recommendedTraining', language)}</h3>
-                    <div className="space-y-4">
-                      {allGames.filter(g => g.category === 'Logic').slice(0, 2).map(game => (
-                        <button 
-                          key={game.id}
-                          onClick={() => setActiveGame(game.id)}
-                          className="w-full flex items-center gap-4 p-4 rounded-2xl bg-[#2a2a2c] hover:bg-[#3a3a3c] transition-colors text-left"
-                        >
-                          <div className={`w-12 h-12 rounded-xl ${game.color} flex items-center justify-center shrink-0`}>
-                            {game.icon}
-                          </div>
-                          <div className="flex-1">
-                            <h4 className="font-bold">{game.title}</h4>
-                            <p className="text-xs text-white/50">{game.category}</p>
-                          </div>
-                          <Play className="w-5 h-5 text-white/40" />
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                </div>
+                <ChallengesPage 
+                  onBack={() => setCurrentTab('home')} 
+                  onPlay={handlePlayGame} 
+                  sessions={sessions}
+                />
               </motion.div>
             )}
 
@@ -1080,21 +1286,42 @@ export default function App() {
                 exit={{ opacity: 0, y: -10 }}
               >
                 <div className="px-6 pt-6 pb-6">
-                  <h2 className="text-3xl font-bold mb-2">{t('yourProgress', language)}</h2>
-                  <p className="text-white/60 text-sm">Track your cognitive improvement.</p>
+                  <h2 className="text-3xl font-bold mb-2">{t('yourProgress', language) || 'Your Progress'}</h2>
+                </div>
+
+                {/* AI Analysis Entry Card */}
+                <div className="px-6 mb-6">
+                  <button 
+                    onClick={() => setIsAiAnalysisOpen(true)}
+                    className="w-full bg-gradient-to-r from-[#4c1d95]/40 to-[#1e1b4b]/40 border border-purple-500/20 rounded-3xl p-5 flex items-center justify-between hover:bg-[#4c1d95]/50 transition-all text-left"
+                  >
+                    <div className="flex items-center gap-4">
+                      <div className="w-12 h-12 bg-purple-500/20 rounded-2xl flex items-center justify-center">
+                        <Brain className="w-6 h-6 text-purple-400" />
+                      </div>
+                      <div>
+                        <h3 className="text-lg font-bold text-white mb-1">AI Analysis</h3>
+                        <p className="text-sm text-white/50">View your cognitive overview</p>
+                      </div>
+                    </div>
+                    <ChevronRight className="w-6 h-6 text-white/40" />
+                  </button>
                 </div>
 
                 <div className="px-6 mb-8 grid grid-cols-2 gap-4">
-                  <div className="bg-[#1a1a1c] rounded-3xl p-5 border border-white/5">
+                  <button 
+                    onClick={() => setIsTrainingHistoryOpen(true)}
+                    className="bg-[#1a1a1c] rounded-3xl p-5 border border-white/5 text-left hover:bg-[#2a2a2c] transition-colors cursor-pointer"
+                  >
                     <div className="flex items-center gap-2 text-rose-400 mb-2">
                       <Flame className="w-5 h-5" />
-                      <span className="font-medium">{t('dailyStreak', language)}</span>
+                      <span className="font-medium">{t('dailyStreak', language) === 'dailyStreak' ? 'Daily Streak' : t('dailyStreak', language)}</span>
                     </div>
                     <div className="flex items-baseline gap-1">
                       <span className="text-3xl font-bold">{stats.dailyStreak}</span>
                       <span className="text-white/50 text-sm">{t('days', language)}</span>
                     </div>
-                  </div>
+                  </button>
                   <div className="bg-[#1a1a1c] rounded-3xl p-5 border border-white/5">
                     <div className="flex items-center gap-2 text-indigo-400 mb-2">
                       <Trophy className="w-5 h-5" />
@@ -1108,111 +1335,438 @@ export default function App() {
 
                 {/* Progress Chart */}
                 <div className="px-6 mb-8">
-                  <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-lg font-bold">{t('activity', language)}</h3>
-                    <div className="flex bg-[#1a1a1c] rounded-lg p-1 border border-white/5">
-                      <button className="px-3 py-1 rounded-md bg-white/10 text-xs font-medium text-white">{t('daily', language)}</button>
-                      <button className="px-3 py-1 rounded-md text-xs font-medium text-white/50 hover:text-white transition-colors">{t('monthly', language)}</button>
+                  <div className="flex items-center justify-between mb-6 relative z-20">
+                    <h3 className="text-[22px] font-bold text-white tracking-tight leading-none">{t('activity', language) || 'Activity'}</h3>
+                    <div className="relative">
+                      <button 
+                        onClick={() => setIsActivityDropdownOpen(!isActivityDropdownOpen)}
+                        className="flex items-center gap-2 bg-[#121213] border border-white/5 hover:bg-[#1a1a1c] px-4 py-2 rounded-xl text-sm font-bold text-white shadow-sm transition-colors"
+                      >
+                        {activityDuration === 'daily' ? 'Day' : activityDuration === 'monthly' ? 'Month' : 'Year'}
+                        <ChevronDown className={`w-4 h-4 text-white/50 transition-transform duration-200 ${isActivityDropdownOpen ? 'rotate-180' : ''}`} />
+                      </button>
+                      
+                      {/* Dropdown Menu */}
+                      <AnimatePresence>
+                        {isActivityDropdownOpen && (
+                          <>
+                            <div 
+                              className="fixed inset-0 z-40" 
+                              onClick={() => setIsActivityDropdownOpen(false)}
+                            />
+                            <motion.div 
+                              initial={{ opacity: 0, y: -10 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              exit={{ opacity: 0, y: -10 }}
+                              transition={{ duration: 0.15 }}
+                              className="absolute right-0 top-full mt-2 w-32 bg-[#1a1a1c] border border-white/10 rounded-xl shadow-2xl overflow-hidden z-50 origin-top-right"
+                            >
+                              <div className="p-1">
+                                <button 
+                                  onClick={() => { setActivityDuration('daily'); setIsActivityDropdownOpen(false); }}
+                                  className={`w-full flex items-center justify-between px-3 py-2.5 text-sm font-bold rounded-lg transition-colors ${activityDuration === 'daily' ? 'bg-[#2a2a2c] text-white' : 'text-white/60 hover:text-white hover:bg-white/5'}`}
+                                >
+                                  Day
+                                  {activityDuration === 'daily' && <div className="w-1.5 h-1.5 rounded-full bg-emerald-400" />}
+                                </button>
+                                <button 
+                                  onClick={() => { setActivityDuration('monthly'); setIsActivityDropdownOpen(false); }}
+                                  className={`w-full flex items-center justify-between px-3 py-2.5 text-sm font-bold rounded-lg transition-colors ${activityDuration === 'monthly' ? 'bg-[#2a2a2c] text-white' : 'text-white/60 hover:text-white hover:bg-white/5'}`}
+                                >
+                                  Month
+                                  {activityDuration === 'monthly' && <div className="w-1.5 h-1.5 rounded-full bg-emerald-400" />}
+                                </button>
+                                <button 
+                                  onClick={() => { setActivityDuration('yearly'); setIsActivityDropdownOpen(false); }}
+                                  className={`w-full flex items-center justify-between px-3 py-2.5 text-sm font-bold rounded-lg transition-colors ${activityDuration === 'yearly' ? 'bg-[#2a2a2c] text-white' : 'text-white/60 hover:text-white hover:bg-white/5'}`}
+                                >
+                                  Year
+                                  {activityDuration === 'yearly' && <div className="w-1.5 h-1.5 rounded-full bg-emerald-400" />}
+                                </button>
+                              </div>
+                            </motion.div>
+                          </>
+                        )}
+                      </AnimatePresence>
                     </div>
                   </div>
-                  <div className="bg-[#1a1a1c] rounded-3xl p-5 border border-white/5 h-48 flex items-end justify-between gap-2">
-                    {/* Mock Daily Chart Bars */}
-                    {[40, 60, 30, 80, 50, 90, 70].map((height, i) => (
-                      <div key={i} className="flex flex-col items-center gap-2 flex-1">
-                        <div className="w-full bg-white/5 rounded-t-sm relative flex-1 flex items-end">
-                          <motion.div 
-                            initial={{ height: 0 }}
-                            animate={{ height: `${height}%` }}
-                            transition={{ duration: 1, delay: i * 0.1, ease: "easeOut" }}
-                            className={`w-full rounded-t-sm ${i === 6 ? 'bg-indigo-500' : 'bg-indigo-500/40'}`}
+                  <div className="bg-[#121213] rounded-[24px] p-6 h-64 flex relative z-10 w-full pl-14 pt-8">
+                    {/* Y-axis grid lines */}
+                    {(() => {
+                      const chartData = activityDuration === 'daily'
+                        ? [ {label: 'Mon', xp: 120}, {label: 'Tue', xp: 350}, {label: 'Wed', xp: 80}, {label: 'Thu', xp: 420}, {label: 'Fri', xp: 210}, {label: 'Sat', xp: 580}, {label: 'Sun', xp: 300} ]
+                        : activityDuration === 'monthly'
+                        ? [ {label: 'Jan', xp: 1200}, {label: 'Feb', xp: 2100}, {label: 'Mar', xp: 800}, {label: 'Apr', xp: 3200}, {label: 'May', xp: 2500}, {label: 'Jun', xp: 4100}, {label: 'Jul', xp: 3800}, {label: 'Aug', xp: 1500}, {label: 'Sep', xp: 2900}, {label: 'Oct', xp: 3600}, {label: 'Nov', xp: 4500}, {label: 'Dec', xp: 3200} ]
+                        : [ {label: '2023', xp: 12500}, {label: '2024', xp: 24000}, {label: '2025', xp: 38500}, {label: '2026', xp: 15200}, {label: '2027', xp: 0} ];
+
+                      const maxXP = Math.max(...chartData.map(d => d.xp), 100);
+
+                      return (
+                        <div className="relative w-full h-full flex flex-col">
+                          <div className="absolute left-0 right-0 top-6 bottom-7 flex flex-col justify-between pointer-events-none z-0">
+                            {[1, 0.5, 0].map((step, i) => {
+                              const value = maxXP * step;
+                              const displayValue = value === 0 ? '0' : (value >= 1000 ? (value / 1000).toFixed(1).replace(/\.0$/, '') + 'k' : Math.round(value));
+                              return (
+                                <div key={i} className="relative w-full border-t border-white/5">
+                                  <span className="absolute -left-12 -top-[9px] text-[10px] text-white/30 font-bold font-mono tracking-tighter w-10 text-right pr-2">
+                                    {displayValue}
+                                  </span>
+                                </div>
+                              );
+                            })}
+                          </div>
+
+                          <div 
+                            className="flex items-end justify-between gap-3 h-full relative z-10 w-full overflow-x-auto snap-x pb-0 pt-6"
+                            style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+                          >
+                            <style>{`
+                              div::-webkit-scrollbar {
+                                display: none;
+                              }
+                            `}</style>
+                            {chartData.map((data, i) => {
+                              const heightPercent = (data.xp / maxXP) * 100;
+                              return (
+                                <div key={i} className="flex flex-col items-center gap-2 h-full min-w-[40px] flex-1 snap-start group cursor-pointer">
+                                  <div className="w-full rounded-t-md relative flex-1 flex items-end overflow-visible">
+                                    <motion.div 
+                                      initial={{ height: 0 }}
+                                      animate={{ height: `${heightPercent}%` }}
+                                      transition={{ duration: 0.6, delay: i * 0.03, type: 'spring', bounce: 0.3 }}
+                                      className="w-full rounded-t-md bg-gradient-to-t from-indigo-900/40 to-indigo-500/50 group-hover:from-indigo-600 group-hover:to-indigo-400 group-hover:shadow-[0_0_15px_rgba(99,102,241,0.5)] transition-all duration-300 relative"
+                                    >
+                                      {/* Tooltip */}
+                                      <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-white text-black text-[10px] font-bold py-1 px-2 rounded opactiy-0 scale-95 origin-bottom pointer-events-none transition-all duration-200 group-hover:opacity-100 group-hover:scale-100 shadow-xl z-50 shadow-black/50 invisible group-hover:visible whitespace-nowrap">
+                                        {data.xp} XP
+                                        <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-white" />
+                                      </div>
+                                    </motion.div>
+                                  </div>
+                                  <span className="text-[11px] text-white/30 font-bold uppercase tracking-wider h-5 flex items-center justify-center shrink-0 transition-colors duration-200 group-hover:text-indigo-400">
+                                    {data.label}
+                                  </span>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      );
+                    })()}
+                  </div>
+                </div>
+
+                {/* Circular Brain Score */}
+                <div className="px-6 mb-8 mt-4">
+                  <div className="bg-[#0b0b10] rounded-[24px] p-5 relative overflow-hidden border border-white/5 shadow-xl">
+                    <h3 className="text-[15px] text-white font-medium mb-3 relative z-10">Brain Score</h3>
+                    <div className="flex flex-col items-center justify-center relative z-10">
+                      <div className="relative w-[130px] h-[130px] flex items-center justify-center mb-4 mt-0">
+                        <svg className="absolute inset-0 w-full h-full transform -rotate-90" viewBox="0 0 100 100">
+                          <defs>
+                            <linearGradient id="scoreGradient" x1="0%" y1="100%" x2="100%" y2="0%">
+                              <stop offset="0%" stopColor="#d946ef" />
+                              <stop offset="50%" stopColor="#8b5cf6" />
+                              <stop offset="100%" stopColor="#3b82f6" />
+                            </linearGradient>
+                            <filter id="glow">
+                              <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+                              <feMerge>
+                                <feMergeNode in="coloredBlur"/>
+                                <feMergeNode in="SourceGraphic"/>
+                              </feMerge>
+                            </filter>
+                          </defs>
+                          <circle cx="50" cy="50" r="42" fill="none" stroke="#2a2a35" strokeWidth="6" />
+                          <circle 
+                            cx="50" 
+                            cy="50" 
+                            r="42" 
+                            fill="none" 
+                            stroke="url(#scoreGradient)" 
+                            strokeWidth="6" 
+                            strokeLinecap="round"
+                            strokeDasharray="263.89" 
+                            strokeDashoffset={263.89 - (263.89 * 0.842)}
+                            filter="url(#glow)"
                           />
+                        </svg>
+                        <div className="absolute inset-0 flex flex-col items-center justify-center">
+                          <span className="text-[34px] font-bold text-white leading-none tracking-tight">842</span>
+                          <span className="text-[14px] font-medium text-[#a855f7] mt-1">Great</span>
                         </div>
-                        <span className="text-[10px] text-white/40 font-medium">
-                          {['M', 'T', 'W', 'T', 'F', 'S', 'S'][i]}
-                        </span>
                       </div>
-                    ))}
+                      <div className="flex items-center gap-1.5 text-[#22c55e] font-medium text-[13px]">
+                        <TrendingUp className="w-3.5 h-3.5" />
+                        <span>+62 this week</span>
+                        <TrendingUp className="w-3.5 h-3.5" />
+                      </div>
+                    </div>
                   </div>
                 </div>
 
-                {/* Last Activity */}
+                {/* Brain Score Trend */}
+                <div className="px-6 mb-8">
+                  <h3 className="text-[16px] text-white font-medium tracking-wide mb-4">Score Trend</h3>
+                  <div className="bg-[#141416] rounded-3xl p-6 pb-2 border border-white/5 relative overflow-hidden">
+                    <div className="absolute top-0 right-0 w-full h-full bg-gradient-to-br from-indigo-500/5 to-transparent pointer-events-none" />
+                    <div className="flex items-baseline gap-2 mb-6 relative z-10">
+                      <span className="text-[44px] font-bold text-white leading-none tracking-tight">{currentLpi.overall}</span>
+                      <span className="text-emerald-400 font-bold text-[16px]">+8%</span>
+                    </div>
+                    <div className="h-[120px] -mx-4 relative z-10">
+                      <ResponsiveContainer width="100%" height="100%">
+                        <AreaChart data={chartData.length > 0 ? chartData : [{ day: "M", score: 0 }]}
+                          margin={{ top: 10, right: 10, left: -20, bottom: 0 }}
+                        >
+                          <defs>
+                            <linearGradient id="colorScore" x1="0" y1="0" x2="0" y2="1">
+                              <stop offset="0%" stopColor="#8b5cf6" stopOpacity={0.4}/>
+                              <stop offset="100%" stopColor="#141416" stopOpacity={0}/>
+                            </linearGradient>
+                          </defs>
+                          <XAxis 
+                            dataKey="day" 
+                            axisLine={{ stroke: '#ffffff', strokeOpacity: 0.1 }} 
+                            tickLine={false} 
+                            tick={{ fill: '#71717a', fontSize: 13, dy: 10 }} 
+                          />
+                          <YAxis 
+                            axisLine={false} 
+                            tickLine={false} 
+                            tick={{ fill: '#71717a', fontSize: 13, dx: -5 }} 
+                            ticks={[0, 100]} 
+                          />
+                          <Area 
+                            type="monotone" 
+                            dataKey="score" 
+                            stroke="#a855f7" 
+                            strokeWidth={3} 
+                            fillOpacity={1}
+                            fill="url(#colorScore)" 
+                            activeDot={{ r: 6, fill: '#a855f7', strokeWidth: 0 }} 
+                            dot={{ r: 4, fill: '#141416', stroke: '#a855f7', strokeWidth: 2 }} 
+                          />
+                        </AreaChart>
+                      </ResponsiveContainer>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Activity This Week */}
+                <div className="px-6 mb-8">
+                  <h3 className="text-[16px] text-white font-medium tracking-wide mb-4">Activity This Week</h3>
+                  <div className="grid grid-cols-3 gap-3">
+                    {/* Games Played */}
+                    <div className="bg-[#121217] border border-indigo-500/20 rounded-[20px] p-4 flex flex-col items-center relative overflow-hidden">
+                      <div className="absolute inset-0 bg-indigo-500/5" />
+                      <div className="flex items-center gap-1 mb-3 w-full justify-center relative z-10">
+                        <div className="w-7 h-7 rounded-full bg-indigo-500/10 flex items-center justify-center relative flex-shrink-0">
+                          <Gamepad2 className="w-3.5 h-3.5 text-indigo-400 relative z-10" />
+                        </div>
+                        <span className="text-[10px] text-white/50 font-medium">Games Played</span>
+                      </div>
+                      <span className="text-[26px] font-bold text-white mt-1 mb-1 leading-none tracking-tight relative z-10">12</span>
+                      <span className="text-emerald-400 text-[13px] font-bold relative z-10">+ 3</span>
+                    </div>
+                    
+                    {/* Total Time */}
+                    <div className="bg-[#121614] border border-emerald-500/20 rounded-[20px] p-4 flex flex-col items-center relative overflow-hidden">
+                      <div className="absolute inset-0 bg-emerald-500/5" />
+                      <div className="flex items-center gap-1.5 mb-3 w-full justify-center relative z-10">
+                        <div className="w-7 h-7 rounded-full bg-emerald-500/10 flex items-center justify-center relative flex-shrink-0">
+                          <Clock className="w-3.5 h-3.5 text-emerald-400 relative z-10" />
+                        </div>
+                        <span className="text-[11px] text-white/50 font-medium">Total Time</span>
+                      </div>
+                      <span className="text-[26px] font-bold text-white mt-1 mb-1 leading-none tracking-tight relative z-10">1h 35m</span>
+                      <span className="text-emerald-400 text-[13px] font-bold relative z-10">+ 20m</span>
+                    </div>
+
+                    {/* Accuracy */}
+                    <div className="bg-[#161311] border border-orange-500/20 rounded-[20px] p-4 flex flex-col items-center relative overflow-hidden">
+                      <div className="absolute inset-0 bg-orange-500/5" />
+                      <div className="flex items-center gap-1.5 mb-3 w-full justify-center relative z-10">
+                        <div className="w-7 h-7 rounded-full bg-orange-500/10 flex items-center justify-center relative flex-shrink-0">
+                          <Target className="w-3.5 h-3.5 text-orange-400 relative z-10" />
+                        </div>
+                        <span className="text-[11px] text-white/50 font-medium whitespace-nowrap">Accuracy</span>
+                      </div>
+                      <span className="text-[26px] font-bold text-white mt-1 mb-1 leading-none tracking-tight relative z-10">88%</span>
+                      <span className="text-emerald-400 text-[13px] font-bold relative z-10">+ 5%</span>
+                    </div>
+                  </div>
+                </div>
+
                 <div className="px-6 mb-6">
-                  <h3 className="text-lg font-bold mb-4">{t('lastActivity', language)}</h3>
-                  <div className="bg-[#1a1a1c] rounded-2xl p-4 border border-white/5 flex items-center justify-between">
+                  <button 
+                    onClick={() => setIsHighScoresOpen(!isHighScoresOpen)}
+                    className="w-full flex items-center justify-between p-4 bg-gradient-to-r from-[#1e1536] to-[#2a1635] border border-purple-500/20 rounded-2xl mb-4 hover:from-[#251a42] hover:to-[#351c42] transition-colors shadow-[0_4px_20px_rgba(168,85,247,0.15)] group"
+                  >
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center">
-                        <Target className="w-5 h-5 text-emerald-400" />
-                      </div>
-                      <div>
-                        <div className="font-medium">{t('sequenceRecall', language)}</div>
-                        <div className="text-sm text-white/50">{t('today', language)}, 10:42 AM</div>
+                      <div className="flex items-center justify-center xl:py-2 px-2">
+                        <span className="text-[18px] font-bold tracking-wide bg-gradient-to-r from-fuchsia-400 to-purple-400 bg-clip-text text-transparent drop-shadow-sm">{t('highScores', language)}</span>
                       </div>
                     </div>
-                    <div className="text-right">
-                      <div className="font-bold text-emerald-400">{t('level', language)} 4</div>
-                      <div className="text-xs text-white/50">Score: 1250</div>
-                    </div>
-                  </div>
-                </div>
+                    <ChevronRight className={`w-5 h-5 text-purple-400/70 group-hover:text-purple-300 transition-transform ${isHighScoresOpen ? 'rotate-90' : ''}`} />
+                  </button>
+                  
+                  <AnimatePresence>
+                    {isHighScoresOpen && (
+                      <motion.div 
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: 'auto' }}
+                        exit={{ opacity: 0, height: 0 }}
+                        className="overflow-hidden space-y-4"
+                      >
+                        {/* Memory Games */}
+                        <div className="bg-[#1c1c1e] rounded-[20px] p-5 shadow-lg relative overflow-hidden border border-white/5 border-t-white/10">
+                          <div className="flex items-center justify-between mb-6">
+                            <div className="flex items-center gap-4">
+                              <div className="w-12 h-12 rounded-[14px] bg-[#6366f1]/10 flex items-center justify-center">
+                                <Brain className="w-6 h-6 text-[#818cf8]" />
+                              </div>
+                              <span className="font-bold text-[17px] text-white">{t('memoryGames', language)}</span>
+                            </div>
+                            <span className="font-bold text-[20px] text-white">{stats.highScores.memory || 0}</span>
+                          </div>
+                          <div className="flex justify-between items-end mb-2.5 px-0.5">
+                            <span className="text-[11px] font-bold tracking-[0.1em] text-[#818cf8] uppercase">{t('level', language)} 4</span>
+                            <span className="text-[11px] font-bold tracking-[0.1em] text-[#8a8a93] uppercase">INTERMEDIATE</span>
+                          </div>
+                          <div className="h-1.5 bg-[#2a2a2c] flex rounded-md overflow-hidden">
+                            <div className="h-full bg-[#6366f1] flex-1 border-r-2 border-[#1c1c1e]"></div>
+                            <div className="h-full bg-[#6366f1] flex-1 border-r-2 border-[#1c1c1e]"></div>
+                            <div className="h-full bg-[#6366f1] flex-1 border-r-2 border-[#1c1c1e]"></div>
+                            <div className="h-full bg-[#6366f1]/30 flex-1 border-r-2 border-[#1c1c1e]"></div>
+                            <div className="h-full bg-transparent flex-1"></div>
+                          </div>
+                        </div>
 
-                <div className="px-6 mb-6">
-                  <h3 className="text-lg font-bold mb-4">{t('highScores', language)}</h3>
-                  <div className="space-y-4">
-                    <div className="bg-[#1a1a1c] rounded-2xl p-4 border border-white/5 flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-xl bg-indigo-500/10 flex items-center justify-center">
-                          <Brain className="w-5 h-5 text-indigo-400" />
+                        {/* Focus Games */}
+                        <div className="bg-[#1c1c1e] rounded-[20px] p-5 shadow-lg relative overflow-hidden border border-white/5 border-t-white/10">
+                          <div className="flex items-center justify-between mb-6">
+                            <div className="flex items-center gap-4">
+                              <div className="w-12 h-12 rounded-[14px] bg-[#10b981]/10 flex items-center justify-center">
+                                <Target className="w-6 h-6 text-[#34d399]" />
+                              </div>
+                              <span className="font-bold text-[17px] text-white">{t('focusGames', language)}</span>
+                            </div>
+                            <span className="font-bold text-[20px] text-white">{stats.highScores.focus || 0}</span>
+                          </div>
+                          <div className="flex justify-between items-end mb-2.5 px-0.5">
+                            <span className="text-[11px] font-bold tracking-[0.1em] text-[#34d399] uppercase">{t('level', language)} 5</span>
+                            <span className="text-[11px] font-bold tracking-[0.1em] text-[#8a8a93] uppercase">ADVANCED</span>
+                          </div>
+                          <div className="h-1.5 bg-[#2a2a2c] flex rounded-md overflow-hidden">
+                            <div className="h-full bg-[#10b981] flex-1 border-r-2 border-[#1c1c1e]"></div>
+                            <div className="h-full bg-[#10b981] flex-1 border-r-2 border-[#1c1c1e]"></div>
+                            <div className="h-full bg-[#10b981] flex-1 border-r-2 border-[#1c1c1e]"></div>
+                            <div className="h-full bg-[#10b981] flex-1 border-r-2 border-[#1c1c1e]"></div>
+                            <div className="h-full bg-[#10b981]/30 flex-1"></div>
+                          </div>
                         </div>
-                        <span className="font-medium">{t('memoryGames', language)}</span>
-                      </div>
-                      <span className="font-bold text-lg">{stats.highScores.memory}</span>
-                    </div>
-                    <div className="bg-[#1a1a1c] rounded-2xl p-4 border border-white/5 flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center">
-                          <Target className="w-5 h-5 text-emerald-400" />
+
+                        {/* Logic Games */}
+                        <div className="bg-[#1c1c1e] rounded-[20px] p-5 shadow-lg relative overflow-hidden border border-white/5 border-t-white/10">
+                          <div className="flex items-center justify-between mb-6">
+                            <div className="flex items-center gap-4">
+                              <div className="w-12 h-12 rounded-[14px] bg-[#f59e0b]/10 flex items-center justify-center">
+                                <Lightbulb className="w-6 h-6 text-[#fbbf24]" />
+                              </div>
+                              <span className="font-bold text-[17px] text-white">{t('logicGames', language)}</span>
+                            </div>
+                            <span className="font-bold text-[20px] text-white">{stats.highScores.logic || 0}</span>
+                          </div>
+                          <div className="flex justify-between items-end mb-2.5 px-0.5">
+                            <span className="text-[11px] font-bold tracking-[0.1em] text-[#fbbf24] uppercase">{t('level', language)} 3</span>
+                            <span className="text-[11px] font-bold tracking-[0.1em] text-[#8a8a93] uppercase">BEGINNER</span>
+                          </div>
+                          <div className="h-1.5 bg-[#2a2a2c] flex rounded-md overflow-hidden">
+                            <div className="h-full bg-[#f59e0b] flex-1 border-r-2 border-[#1c1c1e]"></div>
+                            <div className="h-full bg-[#f59e0b] flex-1 border-r-2 border-[#1c1c1e]"></div>
+                            <div className="h-full bg-[#f59e0b]/30 flex-1 border-r-2 border-[#1c1c1e]"></div>
+                            <div className="h-full bg-transparent flex-1 border-r-2 border-[#1c1c1e]"></div>
+                            <div className="h-full bg-transparent flex-1"></div>
+                          </div>
                         </div>
-                        <span className="font-medium">{t('focusGames', language)}</span>
-                      </div>
-                      <span className="font-bold text-lg">{stats.highScores.focus}</span>
-                    </div>
-                    <div className="bg-[#1a1a1c] rounded-2xl p-4 border border-white/5 flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center">
-                          <Lightbulb className="w-5 h-5 text-amber-400" />
+
+                        {/* Math Games */}
+                        <div className="bg-[#1c1c1e] rounded-[20px] p-5 shadow-lg relative overflow-hidden border border-white/5 border-t-white/10">
+                          <div className="flex items-center justify-between mb-6">
+                            <div className="flex items-center gap-4">
+                              <div className="w-12 h-12 rounded-[14px] bg-[#3b82f6]/10 flex items-center justify-center">
+                                <Calculator className="w-6 h-6 text-[#60a5fa]" />
+                              </div>
+                              <span className="font-bold text-[17px] text-white">{t('mathGames', language)}</span>
+                            </div>
+                            <span className="font-bold text-[20px] text-white">{stats.highScores.math || 0}</span>
+                          </div>
+                          <div className="flex justify-between items-end mb-2.5 px-0.5">
+                            <span className="text-[11px] font-bold tracking-[0.1em] text-[#60a5fa] uppercase">{t('level', language)} 4</span>
+                            <span className="text-[11px] font-bold tracking-[0.1em] text-[#8a8a93] uppercase">INTERMEDIATE</span>
+                          </div>
+                          <div className="h-1.5 bg-[#2a2a2c] flex rounded-md overflow-hidden">
+                            <div className="h-full bg-[#3b82f6] flex-1 border-r-2 border-[#1c1c1e]"></div>
+                            <div className="h-full bg-[#3b82f6] flex-1 border-r-2 border-[#1c1c1e]"></div>
+                            <div className="h-full bg-[#3b82f6] flex-1 border-r-2 border-[#1c1c1e]"></div>
+                            <div className="h-full bg-[#3b82f6]/30 flex-1 border-r-2 border-[#1c1c1e]"></div>
+                            <div className="h-full bg-transparent flex-1"></div>
+                          </div>
                         </div>
-                        <span className="font-medium">{t('logicGames', language)}</span>
-                      </div>
-                      <span className="font-bold text-lg">{stats.highScores.logic}</span>
-                    </div>
-                    <div className="bg-[#1a1a1c] rounded-2xl p-4 border border-white/5 flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center">
-                          <Calculator className="w-5 h-5 text-blue-400" />
+
+                        {/* Reaction Speed */}
+                        <div className="bg-[#1c1c1e] rounded-[20px] p-5 shadow-lg relative overflow-hidden border border-white/5 border-t-white/10">
+                          <div className="flex items-center justify-between mb-6">
+                            <div className="flex items-center gap-4">
+                              <div className="w-12 h-12 rounded-[14px] bg-[#f43f5e]/10 flex items-center justify-center">
+                                <Zap className="w-6 h-6 text-[#fb7185]" />
+                              </div>
+                              <span className="font-bold text-[17px] text-white">{t('reactionSpeed', language)}</span>
+                            </div>
+                            <span className="font-bold text-[20px] text-white">{stats.highScores.speed || 0}</span>
+                          </div>
+                          <div className="flex justify-between items-end mb-2.5 px-0.5">
+                            <span className="text-[11px] font-bold tracking-[0.1em] text-[#fb7185] uppercase">{t('level', language)} 5</span>
+                            <span className="text-[11px] font-bold tracking-[0.1em] text-[#8a8a93] uppercase">ADVANCED</span>
+                          </div>
+                          <div className="h-1.5 bg-[#2a2a2c] flex rounded-md overflow-hidden">
+                            <div className="h-full bg-[#f43f5e] flex-1 border-r-2 border-[#1c1c1e]"></div>
+                            <div className="h-full bg-[#f43f5e] flex-1 border-r-2 border-[#1c1c1e]"></div>
+                            <div className="h-full bg-[#f43f5e] flex-1 border-r-2 border-[#1c1c1e]"></div>
+                            <div className="h-full bg-[#f43f5e] flex-1 border-r-2 border-[#1c1c1e]"></div>
+                            <div className="h-full bg-[#f43f5e]/30 flex-1"></div>
+                          </div>
                         </div>
-                        <span className="font-medium">{t('mathGames', language)}</span>
-                      </div>
-                      <span className="font-bold text-lg">{stats.highScores.math}</span>
-                    </div>
-                    <div className="bg-[#1a1a1c] rounded-2xl p-4 border border-white/5 flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-xl bg-rose-500/10 flex items-center justify-center">
-                          <Zap className="w-5 h-5 text-rose-400" />
+
+                        {/* Language & Word */}
+                        <div className="bg-[#1c1c1e] rounded-[20px] p-5 shadow-lg relative overflow-hidden border border-white/5 border-t-white/10">
+                          <div className="flex items-center justify-between mb-6">
+                            <div className="flex items-center gap-4">
+                              <div className="w-12 h-12 rounded-[14px] bg-[#06b6d4]/10 flex items-center justify-center">
+                                <Type className="w-6 h-6 text-[#22d3ee]" />
+                              </div>
+                              <span className="font-bold text-[17px] text-white">{t('languageWord', language)}</span>
+                            </div>
+                            <span className="font-bold text-[20px] text-white">{stats.highScores.language || 0}</span>
+                          </div>
+                          <div className="flex justify-between items-end mb-2.5 px-0.5">
+                            <span className="text-[11px] font-bold tracking-[0.1em] text-[#22d3ee] uppercase">{t('level', language)} 6</span>
+                            <span className="text-[11px] font-bold tracking-[0.1em] text-[#8a8a93] uppercase">EXPERT</span>
+                          </div>
+                          <div className="h-1.5 bg-[#2a2a2c] flex rounded-md overflow-hidden">
+                            <div className="h-full bg-[#06b6d4] flex-1 border-r-2 border-[#1c1c1e]"></div>
+                            <div className="h-full bg-[#06b6d4] flex-1 border-r-2 border-[#1c1c1e]"></div>
+                            <div className="h-full bg-[#06b6d4] flex-1 border-r-2 border-[#1c1c1e]"></div>
+                            <div className="h-full bg-[#06b6d4] flex-1 border-r-2 border-[#1c1c1e]"></div>
+                            <div className="h-full bg-[#06b6d4] flex-1"></div>
+                          </div>
                         </div>
-                        <span className="font-medium">{t('reactionSpeed', language)}</span>
-                      </div>
-                      <span className="font-bold text-lg">{stats.highScores.speed}</span>
-                    </div>
-                    <div className="bg-[#1a1a1c] rounded-2xl p-4 border border-white/5 flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-xl bg-cyan-500/10 flex items-center justify-center">
-                          <Type className="w-5 h-5 text-cyan-400" />
-                        </div>
-                        <span className="font-medium">{t('languageWord', language)}</span>
-                      </div>
-                      <span className="font-bold text-lg">{stats.highScores.language}</span>
-                    </div>
-                  </div>
+
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                 </div>
               </motion.div>
             )}
@@ -1224,52 +1778,146 @@ export default function App() {
                 exit={{ opacity: 0, y: -10 }}
                 className="pb-24 pt-6"
               >
-                {/* Avatar & Basic Stats */}
-                <div className="px-6 flex flex-col items-center justify-center mb-8 w-full text-center">
-                  <div className="w-24 h-24 rounded-full bg-[#1e5b6b] flex items-center justify-center overflow-hidden mb-4 mx-auto">
-                    {profilePhoto ? (
-                      <img src={profilePhoto} alt="Profile" className="w-full h-full object-cover" style={{ filter: displayMode === 'light' ? 'invert(1) hue-rotate(180deg)' : 'none' }} />
-                    ) : (
-                      <span className="text-4xl font-medium text-white">{profileName.charAt(0).toUpperCase()}</span>
-                    )}
-                  </div>
-                  <h2 className="text-2xl font-medium mb-8 text-center w-full">{profileName}</h2>
-                  
-                  <div className="grid grid-cols-3 gap-2 w-full max-w-md mx-auto">
-                    <div className="flex flex-col items-center justify-start">
-                      <Flame className="w-8 h-8 text-orange-500 mb-2 fill-orange-500" />
-                      <span className="text-[10px] text-cyan-400 font-bold tracking-wider mb-1 uppercase text-center">{t('dailyStreak', language)}</span>
-                      <span className="text-sm font-medium">0 {t('days', language)}</span>
-                    </div>
-                    <div className="flex flex-col items-center justify-start">
-                      <CircleDollarSign className="w-8 h-8 text-yellow-500 mb-2 fill-yellow-500" />
-                      <span className="text-[10px] text-cyan-400 font-bold tracking-wider mb-1 uppercase text-center">COINS</span>
-                      <span className="text-sm font-medium">150</span>
-                    </div>
-                    <div className="flex flex-col items-center justify-start">
-                      <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center mb-2">
-                        <span className="text-white font-bold text-xs">{t('xp', language)}</span>
+                {/* Avatar & Basic Stats design update */}
+                <div className="flex flex-col px-4 pt-8 pb-6 w-full border-b border-white/5">
+                  <div className="bg-[#0b101a] border border-white/5 rounded-[24px] p-5 w-full">
+                    {/* Top row: Avatar & details */}
+                    <div className="flex justify-between items-start mb-6 w-full relative">
+                      <div className="flex items-center gap-4 w-full">
+                        <div className="relative w-[76px] h-[76px] shrink-0">
+                          {/* Gradient Ring */}
+                          <div className="absolute inset-0 bg-gradient-to-tr from-blue-600 via-purple-500 to-transparent rounded-full p-[2px]">
+                            <div className="w-full h-full bg-[#0b101a] rounded-full overflow-hidden flex items-center justify-center p-[3px] relative group">
+                              <input 
+                                type="file" 
+                                ref={fileInputRef}
+                                className="hidden" 
+                                accept="image/*"
+                                onChange={handlePhotoUpload}
+                              />
+                              <div 
+                                className="absolute inset-0 bg-black/50 hidden group-hover:flex items-center justify-center cursor-pointer transition-all z-10 rounded-full"
+                                onClick={() => fileInputRef.current?.click()}
+                              >
+                                <Camera className="w-6 h-6 text-white/50" />
+                              </div>
+                              <div className="w-full h-full bg-[#1b2532] rounded-full overflow-hidden shadow-inner">
+                                {profilePhoto ? (
+                                  <img src={profilePhoto} alt="Profile" className="w-full h-full object-cover" style={{ filter: displayMode === 'light' ? 'invert(1) hue-rotate(180deg)' : 'none' }} />
+                                ) : (
+                                  <div className="w-full h-full flex items-center justify-center pt-[2px]">
+                                    <span className="text-[32px] font-medium text-white">{profileName.charAt(0).toUpperCase()}</span>
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        
+                        <div className="flex flex-col items-start pt-1 flex-1">
+                          <div className="flex items-center gap-3">
+                            <h2 className="text-[26px] font-bold text-white tracking-tight leading-none mb-1">{profileName}</h2>
+                            <button 
+                              onClick={() => {
+                                setTempName(profileName);
+                                setIsEditNameOpen(true);
+                              }}
+                              className="w-[30px] h-[30px] rounded-lg bg-white/5 flex items-center justify-center border border-white/10 hover:bg-white/10 text-white/70 mt-[-2px] transition-colors"
+                            >
+                              <Edit2 className="w-4 h-4" />
+                            </button>
+                          </div>
+                          <span className="text-white/60 text-[15px]">{profileEmail || 'Not Provided'}</span>
+                        </div>
                       </div>
-                      <span className="text-[10px] text-cyan-400 font-bold tracking-wider mb-1 uppercase text-center">{t('totalXp', language)}</span>
-                      <span className="text-sm font-medium">36</span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Premium Upgrade Card */}
-                <div className="px-6 mb-8">
-                  <div className="bg-gradient-to-br from-amber-500/20 to-orange-500/10 border border-amber-500/30 rounded-3xl p-6 relative overflow-hidden">
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-amber-500/20 rounded-full blur-3xl -mr-10 -mt-10" />
-                    <div className="relative z-10">
-                      <div className="flex items-center gap-2 mb-2">
-                        <Star className="w-5 h-5 text-amber-400 fill-amber-400" />
-                        <h3 className="text-xl font-bold text-amber-400">{t('brainovaPro', language)}</h3>
-                      </div>
-                      <p className="text-white/80 text-sm mb-4">{t('unlockAllGames', language)}</p>
-                      <button className="w-full bg-amber-500 hover:bg-amber-600 text-black font-bold py-3 rounded-xl transition-colors">
-                        {t('upgradeNow', language)}
+                      
+                      <button 
+                        onClick={() => setIsProfileSettingsOpen(true)}
+                        className="absolute -right-1 -top-1 p-2 text-white/50 hover:text-white transition-colors"
+                      >
+                        <Settings className="w-5 h-5" />
                       </button>
                     </div>
+
+                    {/* Badge Box */}
+                    <div className="bg-gradient-to-r from-[#0d1726] to-[#0d1720] border border-white/5 rounded-[20px] p-5 relative overflow-hidden flex flex-col justify-between h-[126px]">
+                       <div className="flex justify-between items-start z-10 w-full relative">
+                         <div>
+                           <h3 className="text-[24px] font-bold text-white mb-0.5 leading-none">Level {currentLevelData.level}</h3>
+                           <p className="text-white/60 text-[15px] p-0 m-0">{currentLevelData.title}</p>
+                         </div>
+                         {/* Badge rendering */}
+                         <div className="absolute right-0 top-0 w-20 flex items-center justify-center pointer-events-none -mt-3 mr-1">
+                            {/* Glow */}
+                            <div className="absolute w-[80px] h-[80px] bg-gradient-to-tr from-[#10b981]/30 to-[#34d399]/10 blur-xl rounded-full"></div>
+                            
+                            {/* Hexagon Shield */}
+                            <div className="relative mt-1">
+                                <div className="w-[60px] h-[68px] bg-gradient-to-b from-[#34d399] to-[#047857] flex justify-center items-center" style={{ clipPath: 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)', padding: '2px' }}>
+                                    <div className="w-full h-full bg-[#022c22] flex flex-col justify-center items-center" style={{ clipPath: 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)' }}>
+                                        <Star className="w-6 h-6 text-white fill-white mt-0.5 drop-shadow-[0_0_8px_rgba(255,255,255,0.8)]" />
+                                        <div className="w-2 h-2 rotate-45 bg-[#34d399] mt-1 shadow-[0_0_8px_rgba(52,211,153,0.8)]"></div>
+                                    </div>
+                                </div>
+                                <div className="absolute -left-1.5 -right-1.5 bottom-1 h-3 border-b-2 border-white/20 rounded-[50%] blur-[1px]"></div>
+                            </div>
+                         </div>
+                       </div>
+
+                       <div className="relative z-10 w-full mt-auto pt-4">
+                         <div className="flex justify-end pr-1 text-[13px] text-white/80 font-medium mb-1.5 leading-none">
+                           {totalXP} / {currentLevelData.maxXP} XP
+                         </div>
+                         <div className="w-full h-[6px] bg-[#1e293b] rounded-full overflow-hidden">
+                            <div className="h-full bg-[#3b82f6] rounded-full shadow-[0_0_10px_rgb(59,130,246,0.5)]" style={{ width: `${levelProgress}%` }}></div>
+                         </div>
+                       </div>
+                    </div>
+                  </div>
+                  
+                  <div className="grid grid-cols-3 gap-0 w-full relative mt-2">
+                    <div className="absolute top-2 bottom-2 left-1/3 w-[1px] bg-white/5"></div>
+                    <div className="absolute top-2 bottom-2 left-2/3 w-[1px] bg-white/5"></div>
+                    
+                    <button 
+                      onClick={() => setIsTrainingHistoryOpen(true)}
+                      className="flex flex-col items-center justify-center py-4 hover:bg-white/5 transition-colors rounded-l-xl cursor-pointer"
+                    >
+                      <div className="flex flex-col items-center justify-center mb-1.5">
+                        <div className="flex items-center justify-center mb-1.5">
+                          <Flame className="w-6 h-6 text-[#f97316] fill-[#f97316] drop-shadow-[0_0_8px_rgba(249,115,22,0.6)]" />
+                        </div>
+                        <span className="text-[24px] text-[#f97316] font-bold leading-none" style={{ textShadow: '0 0 10px rgba(249,115,22,0.5)' }}>{stats.dailyStreak}</span>
+                      </div>
+                      <span className="text-[14px] text-[#9ca3af] font-medium">Day Streak</span>
+                    </button>
+
+                    <button 
+                      onClick={() => setIsLpiModalOpen(true)}
+                      className="flex flex-col items-center justify-center py-4 hover:bg-white/5 transition-colors cursor-pointer"
+                    >
+                      <div className="flex flex-col items-center justify-center mb-1.5">
+                        <div className="flex items-center justify-center mb-1.5 drop-shadow-[0_0_8px_rgba(251,191,36,0.3)]">
+                          <img src="/logo.png" alt="Brainova" className="w-6 h-6 brightness-0" style={{ filter: 'invert(75%) sepia(85%) saturate(718%) hue-rotate(352deg) brightness(101%) contrast(106%)' }} onError={(e) => { e.currentTarget.style.display = 'none'; e.currentTarget.nextElementSibling?.classList.remove('hidden') }} />
+                          <Brain className="w-6 h-6 text-[#fbbf24] hidden" />
+                        </div>
+                        <span className="text-[24px] text-[#fbbf24] font-bold leading-none" style={{ textShadow: '0 0 10px rgba(251,191,36,0.5)' }}>{stats.novaCoins || 0}</span>
+                      </div>
+                      <span className="text-[14px] text-[#9ca3af] font-medium">Nova Coins</span>
+                    </button>
+
+                    <button 
+                      onClick={() => setIsXpRoadmapOpen(true)}
+                      className="flex flex-col items-center justify-center py-4 hover:bg-white/5 transition-colors rounded-r-xl cursor-pointer"
+                    >
+                      <div className="flex flex-col items-center justify-center mb-1.5">
+                        <div className="flex items-center justify-center mb-1.5 opacity-90 drop-shadow-[0_0_8px_rgba(96,165,250,0.4)]">
+                          <div className="bg-[#60a5fa] text-[10px] font-bold px-1.5 py-0.5 rounded-sm uppercase tracking-wider text-black">XP</div>
+                        </div>
+                        <span className="text-[24px] text-[#60a5fa] font-bold leading-none" style={{ textShadow: '0 0 10px rgba(96,165,250,0.5)' }}>{sessions.reduce((acc, curr) => acc + curr.score, 0)}</span>
+                      </div>
+                      <span className="text-[14px] text-[#9ca3af] font-medium">Total XP</span>
+                    </button>
                   </div>
                 </div>
 
@@ -1280,274 +1928,301 @@ export default function App() {
                       onClick={() => setProfileTab('performance')}
                       className={`flex-1 pb-4 text-sm font-medium transition-colors ${profileTab === 'performance' ? 'text-white border-b-2 border-white' : 'text-white/40 hover:text-white/60'}`}
                     >
-                      {t('performance', language)}
+                      Leaderboard
                     </button>
                     <button 
                       onClick={() => setProfileTab('achievements')}
                       className={`flex-1 pb-4 text-sm font-medium transition-colors ${profileTab === 'achievements' ? 'text-white border-b-2 border-white' : 'text-white/40 hover:text-white/60'}`}
                     >
-                      {t('achievements', language)}
+                      {t('Achievements', language) || 'Achievements'}
                     </button>
                   </div>
                 </div>
 
                 {/* Performance Content */}
                 {profileTab === 'performance' && (
-                  <div className="px-6">
-                    <div className="flex items-center justify-center mb-6 relative">
-                      <h3 className="text-4xl font-light">{t('epq', language)}</h3>
-                      <button className="absolute right-0 w-5 h-5 rounded-full bg-white/20 flex items-center justify-center text-xs text-white/60">?</button>
-                    </div>
-
-                    {/* Filter Pills */}
-                    <div className="flex justify-center gap-3 mb-10">
-                      <button className="px-4 py-1 rounded-full bg-white/20 text-[10px] font-bold tracking-wider">{t('all', language)}</button>
-                      <button className="w-7 h-7 rounded-full border border-teal-400 text-teal-400 flex items-center justify-center text-[10px] font-bold">W</button>
-                      <button className="w-7 h-7 rounded-full border border-orange-400 text-orange-400 flex items-center justify-center text-[10px] font-bold">S</button>
-                      <button className="w-7 h-7 rounded-full border border-pink-400 text-pink-400 flex items-center justify-center text-[10px] font-bold">R</button>
-                      <button className="w-7 h-7 rounded-full border border-purple-400 text-purple-400 flex items-center justify-center text-[10px] font-bold">M</button>
-                      <button className="w-7 h-7 rounded-full border border-amber-400 text-amber-400 flex items-center justify-center text-[10px] font-bold">M</button>
-                    </div>
-
-                    {/* Progress Bars */}
-                    <div className="space-y-6">
-                      {/* Writing */}
-                      <div>
-                        <div className="flex justify-between items-end mb-2">
-                          <div className="flex items-baseline gap-2">
-                            <span className="text-[10px] font-bold tracking-widest text-white/60 uppercase">{t('writing', language)}:</span>
-                            <span className="text-base font-bold">1648</span>
-                          </div>
-                          <span className="text-[10px] font-bold tracking-widest text-white/40 uppercase">{t('intermediate', language)}</span>
-                        </div>
-                        <div className="h-1.5 bg-white/10 flex">
-                          <div className="h-full bg-teal-400 w-[20%] border-r border-[#0a0a0c]"></div>
-                          <div className="h-full bg-teal-400 w-[10%] border-r border-[#0a0a0c]"></div>
-                          <div className="h-full bg-transparent w-[20%] border-r border-[#0a0a0c]"></div>
-                          <div className="h-full bg-transparent w-[20%] border-r border-[#0a0a0c]"></div>
-                          <div className="h-full bg-transparent w-[20%] border-r border-[#0a0a0c]"></div>
-                          <div className="h-full bg-transparent w-[10%]"></div>
-                        </div>
+                  <div className="px-6 mb-8">
+                    {/* Rankings Card */}
+                    <div className="bg-[#121124] rounded-[32px] p-8 relative overflow-hidden border border-[#2a1b4a] shadow-[0_10px_40px_rgba(0,0,0,0.5)] text-center">
+                      {/* Confetti / Sparkles */}
+                      <div className="absolute inset-0 pointer-events-none">
+                        <div className="absolute top-[20%] left-[20%] w-2 h-2 bg-purple-500 rotate-45 opacity-80" />
+                        <div className="absolute top-[30%] left-[10%] w-1.5 h-3 bg-blue-500 -rotate-12 opacity-70" />
+                        <div className="absolute top-[50%] left-[15%] w-2 h-1 bg-orange-400 rotate-45 opacity-90" />
+                        <div className="absolute top-[60%] left-[25%] w-1.5 h-1.5 bg-purple-400 opacity-60" />
+                        
+                        <div className="absolute top-[25%] right-[20%] w-2 h-1 bg-purple-500 -rotate-45 opacity-80" />
+                        <div className="absolute top-[40%] right-[10%] w-1.5 h-3 bg-purple-400 rotate-12 opacity-70" />
+                        <div className="absolute top-[55%] right-[15%] w-2 h-1.5 bg-orange-400 -rotate-45 opacity-90" />
+                        <div className="absolute top-[70%] right-[25%] w-2 h-2 bg-purple-600 opacity-60" />
+                        
+                        <div className="absolute top-[80%] left-[30%] w-1 h-2 bg-blue-400 rotate-45 opacity-50" />
+                        <div className="absolute top-[75%] right-[35%] w-2 h-1 bg-purple-300 -rotate-12 opacity-50" />
+                        
+                        {/* Glow Behind Circle */}
+                        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 bg-purple-600/20 blur-[40px] rounded-full" />
                       </div>
 
-                      {/* Speaking */}
-                      <div>
-                        <div className="flex justify-between items-end mb-2">
-                          <div className="flex items-baseline gap-2">
-                            <span className="text-[10px] font-bold tracking-widest text-white/60 uppercase">{t('speaking', language)}:</span>
-                            <span className="text-base font-bold">1607</span>
-                          </div>
-                          <span className="text-[10px] font-bold tracking-widest text-white/40 uppercase">{t('intermediate', language)}</span>
-                        </div>
-                        <div className="h-1.5 bg-white/10 flex">
-                          <div className="h-full bg-orange-400 w-[20%] border-r border-[#0a0a0c]"></div>
-                          <div className="h-full bg-orange-400 w-[5%] border-r border-[#0a0a0c]"></div>
-                          <div className="h-full bg-transparent w-[25%] border-r border-[#0a0a0c]"></div>
-                          <div className="h-full bg-transparent w-[20%] border-r border-[#0a0a0c]"></div>
-                          <div className="h-full bg-transparent w-[20%] border-r border-[#0a0a0c]"></div>
-                          <div className="h-full bg-transparent w-[10%]"></div>
-                        </div>
-                      </div>
-
-                      {/* Reading */}
-                      <div>
-                        <div className="flex justify-between items-end mb-2">
-                          <div className="flex items-baseline gap-2">
-                            <span className="text-[10px] font-bold tracking-widest text-white/60 uppercase">{t('reading', language)}:</span>
-                            <span className="text-base font-bold">1660</span>
-                          </div>
-                          <span className="text-[10px] font-bold tracking-widest text-white/40 uppercase">{t('intermediate', language)}</span>
-                        </div>
-                        <div className="h-1.5 bg-white/10 flex">
-                          <div className="h-full bg-pink-400 w-[20%] border-r border-[#0a0a0c]"></div>
-                          <div className="h-full bg-pink-400 w-[10%] border-r border-[#0a0a0c]"></div>
-                          <div className="h-full bg-transparent w-[20%] border-r border-[#0a0a0c]"></div>
-                          <div className="h-full bg-transparent w-[20%] border-r border-[#0a0a0c]"></div>
-                          <div className="h-full bg-transparent w-[20%] border-r border-[#0a0a0c]"></div>
-                          <div className="h-full bg-transparent w-[10%]"></div>
-                        </div>
-                      </div>
-
-                      {/* Math */}
-                      <div>
-                        <div className="flex justify-between items-end mb-2">
-                          <div className="flex items-baseline gap-2">
-                            <span className="text-[10px] font-bold tracking-widest text-white/60 uppercase">{t('math', language)}:</span>
-                            <span className="text-base font-bold">2322</span>
-                          </div>
-                          <span className="text-[10px] font-bold tracking-widest text-white/40 uppercase">{t('intermediate', language)}</span>
-                        </div>
-                        <div className="h-1.5 bg-white/10 flex">
-                          <div className="h-full bg-purple-400 w-[20%] border-r border-[#0a0a0c]"></div>
-                          <div className="h-full bg-purple-400 w-[20%] border-r border-[#0a0a0c]"></div>
-                          <div className="h-full bg-transparent w-[10%] border-r border-[#0a0a0c]"></div>
-                          <div className="h-full bg-transparent w-[20%] border-r border-[#0a0a0c]"></div>
-                          <div className="h-full bg-transparent w-[20%] border-r border-[#0a0a0c]"></div>
-                          <div className="h-full bg-transparent w-[10%]"></div>
-                        </div>
-                      </div>
-
-                      {/* Memory */}
-                      <div>
-                        <div className="flex justify-between items-end mb-2">
-                          <div className="flex items-baseline gap-2">
-                            <span className="text-[10px] font-bold tracking-widest text-white/60 uppercase">{t('memory', language)}:</span>
-                            <Lock className="w-3 h-3 text-white/40" />
-                          </div>
-                          <span className="text-[10px] font-bold tracking-widest text-white/40 uppercase">{t('intermediate', language)}</span>
-                        </div>
-                        <div className="h-1.5 bg-white/10 flex">
-                          <div className="h-full bg-amber-400 w-[20%] border-r border-[#0a0a0c]"></div>
-                          <div className="h-full bg-amber-400 w-[5%] border-r border-[#0a0a0c]"></div>
-                          <div className="h-full bg-transparent w-[25%] border-r border-[#0a0a0c]"></div>
-                          <div className="h-full bg-transparent w-[20%] border-r border-[#0a0a0c]"></div>
-                          <div className="h-full bg-transparent w-[20%] border-r border-[#0a0a0c]"></div>
-                          <div className="h-full bg-transparent w-[10%]"></div>
-                        </div>
-                      </div>
-
-                      {/* Average */}
-                      <div className="pt-4">
-                        <div className="flex justify-between items-end mb-2">
-                          <div className="flex items-baseline gap-2">
-                            <span className="text-[10px] font-bold tracking-widest text-white/60 uppercase">{t('average', language)}:</span>
-                            <span className="text-base font-bold">1769</span>
-                          </div>
-                        </div>
-                        <div className="h-1.5 bg-white/10 flex">
-                          <div className="h-full bg-cyan-400 w-[30%] border-r border-[#0a0a0c]"></div>
-                          <div className="h-full bg-transparent w-[70%]"></div>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Rankings */}
-                    <div className="mt-12 pt-8 border-t border-white/10 text-center relative">
-                      <h3 className="text-4xl font-light mb-8">{t('rankings', language)}</h3>
-                      <button className="absolute right-0 top-8 w-5 h-5 rounded-full bg-white/20 flex items-center justify-center text-xs text-white/60">?</button>
+                      <h3 className="text-3xl font-semibold mb-8 text-white relative z-10 tracking-tight">{t('Rankings', language) || 'Rankings'}</h3>
                       
-                      <div className="flex justify-center gap-4 mb-6">
-                        <div className="flex flex-col items-center">
-                          <div className="relative w-16 h-16 mb-2">
-                            <div className="absolute inset-0 bg-yellow-400 rounded-full border-4 border-yellow-500 shadow-lg flex items-center justify-center">
-                              <span className="text-yellow-700 font-bold text-2xl">1</span>
+                      <div className="flex justify-center mb-8 relative z-10">
+                        {(() => {
+                          const totalXP = sessions.reduce((acc, curr) => acc + curr.score, 0);
+                          const userRank = Math.max(1, 1000 - Math.floor(totalXP / 10));
+                          return (
+                            <div className="flex flex-col items-center">
+                              <div className="relative w-[140px] h-[140px] flex items-center justify-center">
+                                {/* Outer Glow Ring */}
+                                <div className="absolute inset-0 rounded-full border-[2px] border-purple-500/50 shadow-[0_0_30px_rgba(168,85,247,0.4)] blur-[1px]"></div>
+                                {/* Main Thick Ring */}
+                                <div className="absolute inset-2 rounded-full border-[6px] border-[#a855f7] shadow-inner"></div>
+                                {/* Inner Thin Ring */}
+                                <div className="absolute inset-5 rounded-full border-[1px] border-cyan-400/30"></div>
+                                
+                                <span className="text-white font-bold text-5xl tracking-tight drop-shadow-md relative z-10">{userRank}</span>
+                              </div>
                             </div>
-                            <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 flex gap-1">
-                              <div className="w-3 h-4 bg-blue-500 transform -skew-x-12"></div>
-                              <div className="w-3 h-4 bg-blue-500 transform skew-x-12"></div>
-                            </div>
-                          </div>
-                        </div>
-                        <div className="flex flex-col items-center">
-                          <div className="relative w-16 h-16 mb-2">
-                            <div className="absolute inset-0 bg-gray-300 rounded-full border-4 border-gray-400 shadow-lg flex items-center justify-center">
-                              <span className="text-gray-600 font-bold text-2xl">2</span>
-                            </div>
-                            <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 flex gap-1">
-                              <div className="w-3 h-4 bg-blue-500 transform -skew-x-12"></div>
-                              <div className="w-3 h-4 bg-blue-500 transform skew-x-12"></div>
-                            </div>
-                          </div>
-                        </div>
-                        <div className="flex flex-col items-center">
-                          <div className="relative w-16 h-16 mb-2">
-                            <div className="absolute inset-0 bg-orange-400 rounded-full border-4 border-orange-500 shadow-lg flex items-center justify-center">
-                              <span className="text-orange-700 font-bold text-2xl">3</span>
-                            </div>
-                            <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 flex gap-1">
-                              <div className="w-3 h-4 bg-blue-500 transform -skew-x-12"></div>
-                              <div className="w-3 h-4 bg-blue-500 transform skew-x-12"></div>
-                            </div>
-                          </div>
-                        </div>
+                          );
+                        })()}
                       </div>
                       
-                      <p className="text-white/60 font-medium mb-6">{t('completeWorkouts', language)}</p>
-                      
-                      <button className="text-cyan-400 font-bold text-sm tracking-widest hover:text-cyan-300 transition-colors uppercase">
-                        {t('goToTraining', language)}
+                      <button 
+                        onClick={() => setIsLeaderboardOpen(true)}
+                        className="font-bold text-[13px] tracking-widest text-[#00e5ff] hover:text-white transition-colors uppercase flex items-center gap-2 justify-center w-full relative z-10 group"
+                      >
+                        GO TO RANKING
+                        <div className="w-5 h-5 rounded-full border border-[#00e5ff] flex items-center justify-center group-hover:bg-[#00e5ff] group-hover:text-[#121124] transition-colors">
+                          <ChevronRight className="w-3.5 h-3.5" />
+                        </div>
                       </button>
                     </div>
                   </div>
                 )}
                 
                 {profileTab === 'achievements' && (
-                  <div className="text-center py-12">
-                    <Trophy className="w-12 h-12 text-white/20 mx-auto mb-4" />
-                    <p className="text-white/60">{t('noAchievements', language)}</p>
+                  <div className="flex flex-col items-center text-center py-6 px-6">
+                    <button 
+                      onClick={() => setIsAchievementsOpen(true)}
+                      className="w-full flex items-center justify-between p-5 rounded-[24px] bg-[#121217] border border-white/5 hover:bg-white/5 transition-all"
+                    >
+                      <div className="flex items-center gap-4">
+                        <div className="w-14 h-14 rounded-full bg-[#f59e0b]/10 border border-[#f59e0b]/20 flex items-center justify-center">
+                          <Award className="w-7 h-7 text-[#f59e0b]" />
+                        </div>
+                        <div className="text-left">
+                          <h3 className="font-bold text-white text-[16px] tracking-wide mb-1">Your Achievements</h3>
+                          <div className="flex items-center gap-1.5 text-[14px]">
+                            <span className="text-[#a855f7] font-bold">4 / 24</span>
+                            <span className="text-white/50 font-medium">unlocked</span>
+                          </div>
+                        </div>
+                      </div>
+                      <ChevronRight className="w-5 h-5 text-white/30" />
+                    </button>
                   </div>
                 )}
+                
+                {/* Starred Games & Benefits at the bottom of profile */}
+                <div className="px-4 mt-8 mb-4 flex flex-col gap-2">
+                  <button 
+                    onClick={() => setIsStarredGamesOpen(true)}
+                    className="w-full flex items-center gap-4 text-left px-4 py-4 text-base text-white bg-white/5 border border-white/10 hover:bg-white/10 transition-all duration-300 rounded-xl"
+                  >
+                    <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center">
+                      <Star className="w-5 h-5 text-white/90" />
+                    </div>
+                    <span className="font-medium">{t('favoriteGames', language) || 'Starred Games'}</span>
+                  </button>
 
-                {/* Support Information Section */}
-                <div className="mt-8 border-t border-white/10">
-                  <div className="px-6 py-4 bg-[#0a1922]">
-                    <h3 className="text-sm font-medium text-white/80">{t('supportInformation', language)}</h3>
-                  </div>
-                  <div className="bg-[#06141c] flex flex-col">
-                    <button 
-                      onClick={() => setIsStarredGamesOpen(true)}
-                      className="flex items-center gap-4 px-6 py-5 hover:bg-white/5 transition-colors text-left"
-                    >
-                      <Star className="w-6 h-6 text-white/60" />
-                      <span className="font-medium text-sm">{t('favoriteGames', language)}</span>
-                    </button>
-                    <button className="flex items-center gap-4 px-6 py-5 hover:bg-white/5 transition-colors text-left">
-                      <Settings className="w-6 h-6 text-white/60" />
-                      <span className="font-medium text-sm">{t('settings', language)}</span>
-                    </button>
-                    <button 
-                      onClick={() => setIsModeModalOpen(true)}
-                      className="flex items-center gap-4 px-6 py-5 hover:bg-white/5 transition-colors text-left"
-                    >
-                      <Moon className="w-6 h-6 text-white/60" />
-                      <span className="font-medium text-sm">{t('changeMode', language)}</span>
-                    </button>
-                    <button 
-                      onClick={() => setIsLanguageModalOpen(true)}
-                      className="flex items-center gap-4 px-6 py-5 hover:bg-white/5 transition-colors text-left"
-                    >
-                      <Globe className="w-6 h-6 text-white/60" />
-                      <span className="font-medium text-sm">{t('language', language)}</span>
-                    </button>
-                    <button className="flex items-center gap-4 px-6 py-5 hover:bg-white/5 transition-colors text-left">
-                      <FileText className="w-6 h-6 text-white/60" />
-                      <span className="font-medium text-sm">{t('termsOfUse', language)}</span>
-                    </button>
-                    <button className="flex items-center gap-4 px-6 py-5 hover:bg-white/5 transition-colors text-left">
-                      <Shield className="w-6 h-6 text-white/60" />
-                      <span className="font-medium text-sm">{t('privacyPolicy', language)}</span>
-                    </button>
-                    <button className="flex items-center gap-4 px-6 py-5 hover:bg-white/5 transition-colors text-left">
-                      <HelpCircle className="w-6 h-6 text-white/60" />
-                      <span className="font-medium text-sm">{t('help', language)}</span>
-                    </button>
-                    <button className="flex items-center gap-4 px-6 py-5 hover:bg-white/5 transition-colors text-left">
-                      <Download className="w-6 h-6 text-white/60" />
-                      <span className="font-medium text-sm">{t('dataExport', language)}</span>
-                    </button>
-                    <button className="flex items-center gap-4 px-6 py-5 hover:bg-white/5 transition-colors text-left">
-                      <User className="w-6 h-6 text-white/60" />
-                      <span className="font-medium text-sm">{t('deleteAccount', language)}</span>
-                    </button>
-                    <button className="flex items-center gap-4 px-6 py-5 hover:bg-white/5 transition-colors text-left">
-                      <MessageSquare className="w-6 h-6 text-white/60" />
-                      <span className="font-medium text-sm">{t('yourFeedback', language)}</span>
-                    </button>
-                    <button className="flex items-center gap-4 px-6 py-5 hover:bg-white/5 transition-colors text-left">
-                      <Sliders className="w-6 h-6 text-white/60" />
-                      <span className="font-medium text-sm">{t('privacySettings', language)}</span>
-                    </button>
-                    <button 
-                      onClick={() => setIsAdminPanelOpen(true)}
-                      className="flex items-center gap-4 px-6 py-5 hover:bg-white/5 transition-colors text-left"
-                    >
-                      <Lock className="w-6 h-6 text-emerald-400" />
-                      <span className="font-medium text-sm text-emerald-400">{t('adminPanel', language)}</span>
-                    </button>
-                  </div>
+                  <button 
+                    onClick={() => setIsMyInfoOpen(true)}
+                    className="w-full flex items-center gap-4 text-left px-4 py-4 text-base text-white bg-white/5 border border-white/10 hover:bg-white/10 transition-all duration-300 rounded-xl"
+                  >
+                    <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center">
+                      <User className="w-5 h-5 text-blue-400" />
+                    </div>
+                    <span className="font-medium">My Information</span>
+                  </button>
+
+                  <button 
+                    onClick={() => setIsAddNewGamesOpen(true)}
+                    className="w-full flex items-center gap-4 text-left px-4 py-4 text-base text-white bg-white/5 border border-white/10 hover:bg-white/10 transition-all duration-300 rounded-xl"
+                  >
+                    <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center">
+                      <Gamepad2 className="w-5 h-5 text-green-400" />
+                    </div>
+                    <span className="font-medium">Add New Games</span>
+                  </button>
+                  
+                  <button 
+                    onClick={() => setIsBenefitsModalOpen(true)}
+                    className="w-full flex items-center gap-4 text-left px-4 py-4 text-base text-white bg-white/5 border border-white/10 hover:bg-white/10 transition-all duration-300 rounded-xl"
+                  >
+                    <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center">
+                      <Gift className="w-5 h-5 text-amber-400" />
+                    </div>
+                    <span className="font-medium">Our Benefits</span>
+                  </button>
+
+                  <button 
+                    onClick={() => setIsRewardsHistoryOpen(true)}
+                    className="w-full flex items-center gap-4 text-left px-4 py-4 text-base text-white bg-white/5 border border-white/10 hover:bg-white/10 transition-all duration-300 rounded-xl"
+                  >
+                    <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center">
+                      <Award className="w-5 h-5 text-purple-400" />
+                    </div>
+                    <span className="font-medium">Rewards History</span>
+                  </button>
+
+                  <button 
+                    onClick={() => setIsNotificationsOpen(true)}
+                    className="w-full flex items-center gap-4 text-left px-4 py-4 text-base text-white bg-white/5 border border-white/10 hover:bg-white/10 transition-all duration-300 rounded-xl"
+                  >
+                    <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center">
+                      <Bell className="w-5 h-5 text-rose-400" />
+                    </div>
+                    <span className="font-medium">Notifications</span>
+                  </button>
+
+                  <button 
+                    onClick={() => setIsProfileSettingsOpen(true)}
+                    className="w-full flex items-center gap-4 text-left px-4 py-4 text-base text-white bg-white/5 border border-white/10 hover:bg-white/10 transition-all duration-300 rounded-xl"
+                  >
+                    <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center">
+                      <Settings className="w-5 h-5 text-white/90" />
+                    </div>
+                    <span className="font-medium">App Settings</span>
+                  </button>
+
+                  <button 
+                    onClick={() => setIsPremiumSubscriptionOpen(true)}
+                    className="w-full flex items-center justify-center px-4 py-5 mt-4 text-xl font-bold text-white bg-gradient-to-r from-violet-600 via-fuchsia-600 to-pink-500 hover:from-violet-500 hover:via-fuchsia-500 hover:to-pink-400 shadow-[0_0_25px_rgba(217,70,239,0.4)] hover:shadow-[0_0_35px_rgba(217,70,239,0.6)] transition-all duration-300 rounded-full hover:-translate-y-1"
+                  >
+                    Brainova Premium
+                  </button>
                 </div>
               </motion.div>
             )}
+
+            {/* Training History Modal */}
+            <AnimatePresence>
+              {isTrainingHistoryOpen && (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
+                  onClick={() => setIsTrainingHistoryOpen(false)}
+                >
+                  <motion.div
+                    initial={{ scale: 0.95, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    exit={{ scale: 0.95, opacity: 0 }}
+                    className="bg-[#2a3441] rounded-3xl w-full max-w-sm shadow-2xl relative max-h-[90vh] flex flex-col overflow-hidden" 
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <button
+                      onClick={() => setIsTrainingHistoryOpen(false)}
+                      className="absolute top-4 right-4 text-white/60 hover:text-white transition-colors z-10"
+                    >
+                      <X className="w-6 h-6" />
+                    </button>
+
+                    <div className="p-6 pt-8 overflow-y-auto hide-scrollbar flex-1 relative scroll-smooth">
+                      <h2 className="text-2xl font-medium text-white text-center mb-8">Training History</h2>
+
+                      {/* Calendar Grid */}
+                      <div className="mb-8">
+                        <div className="grid grid-cols-7 gap-y-4 gap-x-2 text-center mb-4">
+                          {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((day, i) => (
+                            <div key={i} className="text-[10px] font-bold text-white/50 uppercase tracking-wider">{day}</div>
+                          ))}
+                          
+                          {(() => {
+                            const todayDate = new Date();
+                            const currentMonth = todayDate.getMonth();
+                            const currentYear = todayDate.getFullYear();
+                            
+                            const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+                            const firstDayOfMonth = new Date(currentYear, currentMonth, 1).getDay();
+                            
+                            const calendarDays = [];
+                            for (let i = 0; i < firstDayOfMonth; i++) {
+                              calendarDays.push(null);
+                            }
+                            for (let i = 1; i <= daysInMonth; i++) {
+                              const m = String(currentMonth + 1).padStart(2, '0');
+                              const d = String(i).padStart(2, '0');
+                              calendarDays.push(`${currentYear}-${m}-${d}`);
+                            }
+                            while (calendarDays.length % 7 !== 0) {
+                              calendarDays.push(null);
+                            }
+                            
+                            const todayStrLocal = todayDate.toLocaleDateString('en-CA'); // Gets YYYY-MM-DD
+                            
+                            return calendarDays.map((dateStr, i) => {
+                              if (!dateStr) {
+                                return <div key={i} className="h-8"></div>;
+                              }
+                              
+                              const isCurrentDay = dateStr === todayStrLocal;
+                              const isPastDay = dateStr < todayStrLocal;
+                              const hasPlayed = stats.streakHistory && stats.streakHistory.includes(dateStr);
+                              
+                              return (
+                                <div key={i} className="flex flex-col items-center justify-center h-8 relative">
+                                  {isCurrentDay ? (
+                                    <>
+                                      <Flame className={`w-5 h-5 ${hasPlayed ? 'text-orange-500 fill-orange-500/20' : 'text-white/60 fill-white/60'}`} />
+                                      <div className="absolute -bottom-2 w-0 h-0 border-l-[4px] border-l-transparent border-r-[4px] border-r-transparent border-b-[4px] border-b-white"></div>
+                                    </>
+                                  ) : hasPlayed ? (
+                                    <div className="w-3.5 h-3.5 rounded-full bg-orange-500"></div>
+                                  ) : isPastDay ? (
+                                    <div className="w-3.5 h-3.5 rounded-full bg-white/30"></div>
+                                  ) : (
+                                    <div className="w-3.5 h-3.5 rounded-full border border-white/20"></div>
+                                  )}
+                                </div>
+                              );
+                            });
+                          })()}
+                        </div>
+                      </div>
+
+                      {/* Stats */}
+                      <div className="flex justify-between items-center mb-8 px-4">
+                        <div className="text-center">
+                          <div className={stats.dailyStreak > 0 ? "text-3xl font-light text-white mb-1" : "text-3xl font-light text-white/50 mb-1"}>{stats.dailyStreak}</div>
+                          <div className="text-[10px] font-bold text-white/50 tracking-wider uppercase">CURRENT STREAK</div>
+                        </div>
+                        <div className="text-center">
+                          <div className={stats.longestStreak > 0 ? "text-3xl font-light text-white mb-1" : "text-3xl font-light text-white/50 mb-1"}>{stats.longestStreak || stats.dailyStreak}</div>
+                          <div className="text-[10px] font-bold text-white/50 tracking-wider uppercase">LONGEST STREAK</div>
+                        </div>
+                      </div>
+
+                      {/* Button */}
+                      <button 
+                        onClick={() => {
+                          setIsTrainingHistoryOpen(false);
+                          setCurrentTab('stats');
+                        }}
+                        className="w-full py-4 bg-[#ff7b54] hover:bg-[#ff8f6e] text-white font-bold rounded-2xl transition-colors flex items-center justify-center gap-2 mb-4"
+                      >
+                        More in {t('stats', language)} <ChevronRight className="w-5 h-5" />
+                      </button>
+
+                      {/* Current Date & Time */}
+                      <div className="text-center text-white/40 text-[12px] font-medium tracking-wide">
+                        {new Date().toLocaleDateString(undefined, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })} at {new Date().toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' })}
+                      </div>
+                    </div>
+                  </motion.div>
+                </motion.div>
+              )}
+            </AnimatePresence>
 
             {/* XP Roadmap Modal */}
             <AnimatePresence>
@@ -1558,90 +2233,273 @@ export default function App() {
                   exit={{ opacity: 0, y: '100%' }}
                   className="fixed inset-0 z-50 bg-[#0a0a0c] flex flex-col"
                 >
-                  <div className="flex items-center justify-between px-6 py-4 border-b border-white/10">
+                  <div className="flex items-center justify-between px-5 pt-12 pb-4 bg-[#0a0a0c]">
                     <div className="flex items-center gap-3">
-                      <div className="relative w-6 h-6 flex items-center justify-center">
-                        <div className="absolute inset-0 bg-[#4871b6] rotate-45 rounded-sm border-[2px] border-[#93bfe6]"></div>
-                        <span className="relative z-10 text-[#93bfe6] font-bold text-[10px] tracking-tighter">XP</span>
-                      </div>
-                      <h2 className="text-xl font-bold text-[#93bfe6]">Your Journey</h2>
+                      <button 
+                        onClick={() => setIsXpRoadmapOpen(false)}
+                        className="p-1.5 rounded-full bg-transparent hover:bg-white/10 transition-colors"
+                      >
+                        <ChevronLeft className="w-6 h-6 text-white" />
+                      </button>
+                      <h2 className="text-xl font-bold text-white tracking-tight">Journey Map</h2>
                     </div>
-                    <button 
-                      onClick={() => setIsXpRoadmapOpen(false)}
-                      className="p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
-                    >
-                      <X className="w-6 h-6" />
-                    </button>
+                    
+                    <div className="flex items-center gap-2 bg-[#1a2b5e]/40 border border-[#3b82f6]/20 px-3 py-1.5 rounded-full">
+                      <div className="w-5 h-5 bg-[#3b82f6] rounded-full flex items-center justify-center">
+                        <span className="text-white font-bold text-[10px]">XP</span>
+                      </div>
+                      <span className="text-white font-bold text-sm tracking-wide">{totalXP}</span>
+                    </div>
                   </div>
-                  <div className="flex-1 overflow-y-auto p-6 relative">
-                    {/* Progress Line */}
-                    <div className="absolute left-10 top-12 bottom-12 w-1 bg-white/10 rounded-full"></div>
-                    <div className="absolute left-10 top-12 h-1/4 w-1 bg-indigo-500 rounded-full shadow-[0_0_10px_rgba(99,102,241,0.5)]"></div>
+                  <div ref={mapContainerRef} className="flex-1 overflow-y-auto hide-scrollbar relative bg-[#02020a]">
+                    <div className="relative w-full h-[4200px] max-w-md mx-auto">
+                      {/* Space to Earth Background */}
+                      <svg className="absolute inset-0 w-full h-full pointer-events-none" preserveAspectRatio="none" viewBox="0 0 400 4200" style={{ zIndex: 0 }}>
+                        <defs>
+                          <linearGradient id="skyGrad" x1="0" y1="0" x2="0" y2="1">
+                            {/* Deep Space */}
+                            <stop offset="0%" stopColor="#050117" />
+                            <stop offset="10%" stopColor="#080226" />
+                            <stop offset="20%" stopColor="#020108" />
+                            {/* Transition */}
+                            <stop offset="25%" stopColor="#1e1b4b" />
+                            <stop offset="35%" stopColor="#1e3a8a" />
+                            {/* Atmosphere to Premium Dark */}
+                            <stop offset="45%" stopColor="#0c1122" />
+                            <stop offset="65%" stopColor="#070a14" />
+                            <stop offset="85%" stopColor="#04060d" />
+                            <stop offset="100%" stopColor="#020306" />
+                          </linearGradient>
+                          <linearGradient id="mntBack" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0%" stopColor="#100b33" />
+                            <stop offset="100%" stopColor="#060317" />
+                          </linearGradient>
+                          <linearGradient id="mntMid" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0%" stopColor="#0b1136" />
+                            <stop offset="100%" stopColor="#030412" />
+                          </linearGradient>
+                          <radialGradient id="groundGlow" cx="50%" cy="100%" r="50%">
+                            <stop offset="0%" stopColor="#3b82f6" stopOpacity="0.15" />
+                            <stop offset="50%" stopColor="#6366f1" stopOpacity="0.05" />
+                            <stop offset="100%" stopColor="#010208" stopOpacity="0" />
+                          </radialGradient>
+                          <radialGradient id="greenGlow" cx="50%" cy="100%" r="50%">
+                            <stop offset="0%" stopColor="#8b5cf6" stopOpacity="0.2" />
+                            <stop offset="100%" stopColor="#000000" stopOpacity="0" />
+                          </radialGradient>
+                        </defs>
 
-                    <div className="space-y-12 relative">
-                      {/* Starter Stage */}
-                      <div className="flex items-center gap-6">
-                        <div className="relative z-10 w-8 h-8 rounded-full bg-indigo-500 flex items-center justify-center shadow-[0_0_15px_rgba(99,102,241,0.6)]">
-                          <CheckCircle className="w-5 h-5 text-white" />
-                        </div>
-                        <div className="flex-1 bg-[#1a1a1c] border border-indigo-500/30 rounded-2xl p-4 shadow-[0_4px_20px_rgba(0,0,0,0.2)]">
-                          <h3 className="font-bold text-lg text-indigo-400 mb-1">Starter</h3>
-                          <p className="text-sm text-white/60 mb-2">0 - 100 XP</p>
-                          <p className="text-sm">You've taken the first step on your cognitive journey.</p>
-                        </div>
-                      </div>
+                        {/* Sky Background */}
+                        <rect width="400" height="4200" fill="url(#skyGrad)" />
+                        
+                        {/* Stars (Only in top ~25%) */}
+                        <g fill="#ffffff" opacity="0.4">
+                          <circle cx="30" cy="50" r="1.5" opacity="0.8" />
+                          <circle cx="80" cy="150" r="1" opacity="0.6" />
+                          <circle cx="150" cy="60" r="2" opacity="0.9" />
+                          <circle cx="210" cy="100" r="1" opacity="0.5" />
+                          <circle cx="280" cy="40" r="1.5" opacity="0.7" />
+                          <circle cx="350" cy="120" r="2" opacity="0.8" />
+                          <circle cx="380" cy="200" r="1" opacity="0.4" />
+                          <circle cx="50" cy="280" r="1.5" opacity="0.8" />
+                          <circle cx="120" cy="350" r="1" opacity="0.5" />
+                          <circle cx="250" cy="420" r="2" opacity="0.9" />
+                          <circle cx="330" cy="300" r="1.5" opacity="0.6" />
+                          <circle cx="180" cy="500" r="1" opacity="0.4" />
+                          <circle cx="80" cy="580" r="1.5" opacity="0.7" />
+                          <circle cx="290" cy="650" r="1" opacity="0.5" />
+                          <circle cx="360" cy="550" r="1.5" opacity="0.8" />
+                          <circle cx="140" cy="720" r="1" opacity="0.6" />
+                          <circle cx="220" cy="850" r="1.5" opacity="0.5" />
+                          <circle cx="310" cy="780" r="1" opacity="0.4" />
+                        </g>
 
-                      {/* Learner Stage */}
-                      <div className="flex items-center gap-6">
-                        <div className="relative z-10 w-8 h-8 rounded-full bg-[#1a1a1c] border-2 border-indigo-500 flex items-center justify-center">
-                          <div className="w-3 h-3 rounded-full bg-indigo-500"></div>
-                        </div>
-                        <div className="flex-1 bg-[#1a1a1c] border border-white/10 rounded-2xl p-4 opacity-90">
-                          <h3 className="font-bold text-lg text-white mb-1">Learner</h3>
-                          <p className="text-sm text-white/60 mb-2">100 - 500 XP</p>
-                          <p className="text-sm">Building foundational skills and daily habits.</p>
-                          <div className="mt-3 bg-white/5 rounded-full h-2 overflow-hidden">
-                            <div className="bg-indigo-500 h-full" style={{ width: '36%' }}></div>
+                        {/* Shooting stars */}
+                        <path d="M50,150 L100,180" stroke="#ffffff" strokeWidth="1" opacity="0.8" strokeDasharray="1 3" />
+                        <path d="M300,80 L250,110" stroke="#c084fc" strokeWidth="1.5" opacity="0.6" />
+
+                        {/* Distant Mountains - Top */}
+                        <path d="M-20,500 L60,320 L120,440 L180,280 L250,410 L330,250 L400,380 L440,290 L440,4200 L-20,4200 Z" fill="url(#mntBack)" stroke="#1e1b4b" strokeWidth="1" opacity="0.3" />
+                        <path d="M-20,800 L40,650 L100,740 L160,590 L240,730 L310,610 L380,720 L440,620 L440,4200 L-20,4200 Z" fill="url(#mntMid)" stroke="#0f172a" strokeWidth="1" opacity="0.4" />
+                        
+                        {/* Distant Mountains - Upper Mid */}
+                        <path d="M-20,1200 L50,1020 L110,1130 L190,950 L270,1100 L340,980 L410,1110 L440,1010 L440,4200 L-20,4200 Z" fill="url(#mntBack)" stroke="#1e1b4b" strokeWidth="1" opacity="0.5" />
+                        
+                        {/* Earthy Mountains Transition */}
+                        <path d="M-20,1600 L70,1410 L130,1540 L210,1360 L290,1490 L360,1380 L430,1520 L440,1440 L440,4200 L-20,4200 Z" fill="#080b14" stroke="#080b14" strokeWidth="1" opacity="0.9" />
+                        <path d="M-20,1800 L40,1620 L100,1730 L170,1560 L250,1710 L320,1590 L390,1740 L440,1630 L440,4200 L-20,4200 Z" fill="#0a0e1c" stroke="#0a0e1c" strokeWidth="1" />
+
+                        {/* Lush Green Hills - Grasslands */}
+                        <path d="M-20,2000 C 150,1800 300,2200 440,2050 L 440,4200 L -20,4200 Z" fill="#0c1224" />
+                        <path d="M-20,2300 C 150,2500 300,2100 440,2350 L 440,4200 L -20,4200 Z" fill="#0e152a" />
+                        <path d="M-20,2600 C 100,2400 250,2800 440,2550 L 440,4200 L -20,4200 Z" fill="#101830" />
+                        <path d="M-20,2900 C 150,3100 300,2700 440,3050 L 440,4200 L -20,4200 Z" fill="#121b36" />
+                        <path d="M-20,3200 C 100,3000 250,3400 440,3250 L 440,4200 L -20,4200 Z" fill="#141e3c" />
+                        <path d="M-20,3500 C 150,3700 300,3300 440,3650 L 440,4200 L -20,4200 Z" fill="#162142" />
+                        
+                        {/* Foreground base */}
+                        <path d="M-20,3800 C 100,3600 250,4000 440,3850 L 440,4200 L -20,4200 Z" fill="#182448" />
+                        <path d="M-20,4100 C 150,4300 300,3900 440,4150 L 440,4200 L -20,4200 Z" fill="#1a274e" />
+                        <rect width="400" height="400" y="3800" fill="url(#greenGlow)" />
+
+                      </svg>
+
+                      {/* SVG Paths */}
+                      <svg viewBox="0 0 400 4200" className="absolute inset-0 w-full h-full pointer-events-none" preserveAspectRatio="none" style={{ zIndex: 10 }}>
+                        <defs>
+                          {mapSegments.map((segment) => (
+                            <React.Fragment key={`grads-${segment.id}`}>
+                              <linearGradient id={`grad-${segment.id}`} x1={segment.startX} y1={segment.startY} x2={segment.endX} y2={segment.endY} gradientUnits="userSpaceOnUse">
+                                <stop offset="0%" stopColor={segment.startColor} />
+                                <stop offset="100%" stopColor={segment.endColor} />
+                              </linearGradient>
+                              {segment.status === 'current' && (
+                                <linearGradient id={`grad-partial-${segment.id}`} x1={segment.startX} y1={segment.startY} x2={segment.endX} y2={segment.endY} gradientUnits="userSpaceOnUse">
+                                  <stop offset="0%" stopColor={segment.startColor} />
+                                  <stop offset={`${segment.progress}%`} stopColor={segment.startColor} />
+                                  <stop offset={`${segment.progress}%`} stopColor="transparent" />
+                                  <stop offset="100%" stopColor="transparent" />
+                                </linearGradient>
+                              )}
+                            </React.Fragment>
+                          ))}
+                        </defs>
+                        {mapSegments.map((segment, index) => {
+                          const isEarthPath = segment.endY > 1800; // Earth path vs Space path styling
+                          return (
+                            <g key={segment.id}>
+                              {/* Background path */}
+                              {(segment.status === 'locked' || segment.status === 'current') && (
+                                <path
+                                  d={segment.path}
+                                  fill="none"
+                                  stroke={isEarthPath ? "#ffffff" : `url(#grad-${segment.id})`}
+                                  strokeWidth={isEarthPath ? "6" : "6"}
+                                  strokeDasharray="0 20"
+                                  strokeLinecap="round"
+                                  opacity={isEarthPath ? "0.2" : "0.25"}
+                                />
+                              )}
+                              
+                              {/* Foreground path */}
+                              {(segment.status === 'completed' || segment.status === 'current') && (
+                                <path
+                                  d={segment.path}
+                                  fill="none"
+                                  stroke={segment.status === 'current' ? `url(#grad-partial-${segment.id})` : `url(#grad-${segment.id})`}
+                                  strokeWidth="6"
+                                  strokeLinecap="round"
+                                  style={!isEarthPath ? {
+                                    filter: segment.status === 'current' ? `drop-shadow(0 0 6px ${segment.startColor})` : `drop-shadow(0 0 6px ${segment.startColor}) drop-shadow(0 0 6px ${segment.endColor})`
+                                  } : {
+                                    filter: `drop-shadow(0 0 6px ${segment.startColor})`
+                                  }}
+                                />
+                              )}
+                            </g>
+                          )
+                        })}
+                      </svg>
+
+                      {/* Brainova Marker removed */}
+
+                      {/* Nodes */}
+                      {mapNodes.map((node) => {
+                        const Icon = node.icon;
+                        const isCompleted = node.status === 'completed';
+                        const isCurrent = node.status === 'current';
+                        const isLocked = node.status === 'locked';
+                        const isLeft = node.x > 200;
+
+                        return (
+                          <div
+                            key={node.id}
+                            className="absolute transform -translate-x-1/2 -translate-y-1/2 flex items-center"
+                            style={{ left: `${(node.x / 400) * 100}%`, top: `${(node.y / 4200) * 100}%`, zIndex: 10 }}
+                          >
+                            
+                            <div className="relative">
+                              <AnimatePresence>
+                                {activeTooltip === node.id && isLocked && (
+                                  <motion.div
+                                    initial={{ opacity: 0, y: 10, scale: 0.9 }}
+                                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                                    exit={{ opacity: 0, y: 10, scale: 0.9 }}
+                                    className="absolute bottom-full left-1/2 -translate-x-1/2 mb-4 w-max max-w-[200px] bg-[#1c1c24] border border-white/10 rounded-xl p-3 shadow-xl z-50 pointer-events-none"
+                                  >
+                                    <div className="flex items-center gap-2 mb-1">
+                                      <Lock className="w-4 h-4 text-white/60" />
+                                      <span className="font-bold text-sm text-white">Locked</span>
+                                    </div>
+                                    <p className="text-xs text-white/70">
+                                      You need <span className="font-bold" style={{ color: node.color }}>{node.xp} XP</span> to unlock this level.
+                                    </p>
+                                    <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-[1px] border-8 border-transparent border-t-[#1c1c24]"></div>
+                                    <div className="absolute top-full left-1/2 -translate-x-1/2 border-8 border-transparent border-t-white/10 -z-10 mt-[1px]"></div>
+                                  </motion.div>
+                                )}
+                              </AnimatePresence>
+                              
+                              {(node.id === 25 || node.id === 20 || node.id === 15 || node.id === 10 || node.id === 5) && (
+                                <motion.div
+                                  animate={{ y: [0, -8, 0] }}
+                                  transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
+                                  className="absolute -top-10 left-1/2 -translate-x-1/2 pointer-events-none z-30"
+                                >
+                                  {node.id === 25 ? (
+                                    <Crown className="w-10 h-10 text-yellow-400 drop-shadow-[0_0_15px_rgba(250,204,21,0.8)] fill-yellow-400" strokeWidth={1.5} />
+                                  ) : node.id === 20 ? (
+                                    <Gem className="w-10 h-10 text-yellow-400 drop-shadow-[0_0_15px_rgba(250,204,21,0.8)] fill-yellow-400" strokeWidth={1.5} />
+                                  ) : node.id === 15 ? (
+                                    <Rocket className="w-10 h-10 text-orange-400 drop-shadow-[0_0_15px_rgba(251,146,60,0.8)] fill-orange-400" strokeWidth={1.5} />
+                                  ) : node.id === 10 ? (
+                                    <Trophy className="w-10 h-10 text-yellow-500 drop-shadow-[0_0_15px_rgba(234,179,8,0.8)] fill-yellow-500" strokeWidth={1.5} />
+                                  ) : (
+                                    <Star className="w-10 h-10 text-yellow-400 drop-shadow-[0_0_15px_rgba(250,204,21,0.8)] fill-yellow-400" strokeWidth={1.5} />
+                                  )}
+                                </motion.div>
+                              )}
+                              
+                              <button
+                                onMouseEnter={() => isLocked && setActiveTooltip(node.id)}
+                                onMouseLeave={() => setActiveTooltip(null)}
+                                onClick={() => isLocked ? setActiveTooltip(node.id === activeTooltip ? null : node.id) : setSelectedLevel(node)}
+                                className={`
+                                  relative rounded-full flex items-center justify-center transition-transform hover:scale-110 shadow-lg border-[3px] border-transparent
+                                `}
+                                style={{
+                                  width: isCurrent ? '64px' : isCompleted ? '56px' : '48px',
+                                  height: isCurrent ? '64px' : isCompleted ? '56px' : '48px',
+                                  backgroundColor: isCompleted ? node.color : '#0A0A10',
+                                  borderColor: isCurrent ? '#ffffff' : node.color,
+                                  boxShadow: isCompleted || isCurrent ? `0 0 25px ${node.color}` : `0 0 10px ${node.color}40`,
+                                  zIndex: isCurrent ? 20 : 10
+                                }}
+                              >
+                                {isCompleted ? (
+                                  <Icon className="w-8 h-8 text-white drop-shadow-md" style={{ filter: `drop-shadow(0 0 8px ${node.color})` }} strokeWidth={2.5} />
+                                ) : isCurrent ? (
+                                  <div className="absolute inset-[3px] rounded-full flex items-center justify-center bg-[#0a0a10]">
+                                    <Icon className="w-7 h-7" style={{ color: node.color, filter: `drop-shadow(0 0 10px ${node.color})` }} strokeWidth={2.5} />
+                                  </div>
+                                ) : (
+                                  <Lock className="w-5 h-5" style={{ color: '#ffffff' }} />
+                                )}
+                              </button>
+                            </div>
+                            
+                            {/* Label */}
+                            <div className={`absolute whitespace-nowrap flex flex-col ${node.labelPos === 'left' ? 'right-full mr-5 items-end' : 'left-full ml-5 items-start'}`}>
+                              <span className="font-bold text-[17px] drop-shadow-md" style={{ color: node.labelColor || node.color }}>
+                                {node.id} {node.title}
+                              </span>
+                              <span className="text-[13px] font-medium text-white/60 drop-shadow-md">
+                                {isCurrent ? (totalXP === 0 && node.id === 1 ? '0 XP' : `${totalXP - (parseInt(node.xp) || 0)} / ${parseInt(node.maxXP || node.xp) - (parseInt(node.xp) || 0)} XP`) : node.status === 'completed' ? '' : `${node.xp} XP`}
+                              </span>
+                            </div>
                           </div>
-                          <p className="text-xs text-white/40 mt-1 text-right">36 / 100 XP</p>
-                        </div>
-                      </div>
-
-                      {/* Skilled Stage */}
-                      <div className="flex items-center gap-6">
-                        <div className="relative z-10 w-8 h-8 rounded-full bg-[#1a1a1c] border-2 border-white/20 flex items-center justify-center">
-                          <Lock className="w-4 h-4 text-white/40" />
-                        </div>
-                        <div className="flex-1 bg-[#1a1a1c] border border-white/5 rounded-2xl p-4 opacity-50">
-                          <h3 className="font-bold text-lg text-white/60 mb-1">Skilled</h3>
-                          <p className="text-sm text-white/40 mb-2">500 - 2,000 XP</p>
-                          <p className="text-sm text-white/60">Demonstrating consistent cognitive improvement.</p>
-                        </div>
-                      </div>
-
-                      {/* Expert Stage */}
-                      <div className="flex items-center gap-6">
-                        <div className="relative z-10 w-8 h-8 rounded-full bg-[#1a1a1c] border-2 border-white/20 flex items-center justify-center">
-                          <Lock className="w-4 h-4 text-white/40" />
-                        </div>
-                        <div className="flex-1 bg-[#1a1a1c] border border-white/5 rounded-2xl p-4 opacity-50">
-                          <h3 className="font-bold text-lg text-white/60 mb-1">Expert</h3>
-                          <p className="text-sm text-white/40 mb-2">2,000 - 5,000 XP</p>
-                          <p className="text-sm text-white/60">Mastering complex mental challenges with ease.</p>
-                        </div>
-                      </div>
-
-                      {/* Master Stage */}
-                      <div className="flex items-center gap-6">
-                        <div className="relative z-10 w-8 h-8 rounded-full bg-[#1a1a1c] border-2 border-white/20 flex items-center justify-center">
-                          <Trophy className="w-4 h-4 text-white/40" />
-                        </div>
-                        <div className="flex-1 bg-[#1a1a1c] border border-white/5 rounded-2xl p-4 opacity-50">
-                          <h3 className="font-bold text-lg text-yellow-500/60 mb-1">Master</h3>
-                          <p className="text-sm text-white/40 mb-2">5,000+ XP</p>
-                          <p className="text-sm text-white/60">The pinnacle of cognitive performance.</p>
-                        </div>
-                      </div>
+                        );
+                      })}
                     </div>
                   </div>
                 </motion.div>
@@ -1697,8 +2555,13 @@ export default function App() {
                         <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${displayMode === 'dark' ? 'bg-indigo-500 text-white' : 'bg-white/10 text-white/60'}`}>
                           <Moon className="w-6 h-6" />
                         </div>
-                        <div>
-                          <h3 className="font-bold mb-1">Dark Mode</h3>
+                        <div className="flex-1">
+                          <h3 className="font-bold flex items-center gap-2 mb-1 text-white">
+                            Dark Mode
+                            <span className="px-2 py-0.5 rounded border border-indigo-500/30 bg-indigo-500/20 text-indigo-400 text-[10px] font-bold uppercase tracking-wider">
+                              Recommended
+                            </span>
+                          </h3>
                           <p className="text-sm text-white/60">Dark theme for low-light environments and eye comfort.</p>
                         </div>
                       </button>
@@ -1734,6 +2597,86 @@ export default function App() {
                           <p className="text-sm text-white/60">Maximizes visibility and productivity with distinct colors.</p>
                         </div>
                       </button>
+
+                      <button 
+                        onClick={() => {
+                          setDisplayMode('night-light');
+                          setIsModeModalOpen(false);
+                        }}
+                        className={`flex items-center gap-4 p-4 rounded-2xl border ${displayMode === 'night-light' ? 'bg-indigo-500/20 border-indigo-500' : 'bg-[#1a1a1c] border-white/5 hover:bg-[#2a2a2c]'} transition-colors text-left`}
+                      >
+                        <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${displayMode === 'night-light' ? 'bg-indigo-500 text-white' : 'bg-white/10 text-white/60'}`}>
+                          <Lightbulb className="w-6 h-6" />
+                        </div>
+                        <div>
+                          <h3 className="font-bold mb-1">Night Light</h3>
+                          <p className="text-sm text-white/60">Warmer screen colors to help you fall asleep easier.</p>
+                        </div>
+                      </button>
+                    </div>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            {/* Our Benefits Modal */}
+            <AnimatePresence>
+              {isBenefitsModalOpen && (
+                <motion.div 
+                  initial={{ opacity: 0, y: '100%' }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: '100%' }}
+                  className="fixed inset-0 z-50 bg-[#f4f7f6] dark:bg-[#0a0a0c] flex flex-col"
+                >
+                  <div className="flex items-center justify-between px-6 py-4 border-b border-black/10 dark:border-white/10 bg-white dark:bg-[#0a0a0c]">
+                    <div className="flex items-center gap-3">
+                      <Gift className="w-6 h-6 text-[#2ecc71]" />
+                      <h2 className="text-xl font-bold text-gray-900 dark:text-white">Our Benefits</h2>
+                    </div>
+                    <button 
+                      onClick={() => setIsBenefitsModalOpen(false)}
+                      className="p-2 rounded-full bg-black/5 hover:bg-black/10 dark:bg-white/10 dark:hover:bg-white/20 transition-colors"
+                    >
+                      <X className="w-6 h-6 text-gray-900 dark:text-white" />
+                    </button>
+                  </div>
+                  
+                  <div className="flex-1 overflow-y-auto px-6 py-8 hide-scrollbar scroll-smooth">
+                    <div className="max-w-md mx-auto w-full">
+                      
+                      <div className="space-y-0">
+                        {/* Benefit Items */}
+                        {[
+                          "Access to all 100+ Premium Games",
+                          "Personalized Daily Workouts",
+                          "Detailed Cognitive Analysis",
+                          "Unlimited Performance History",
+                          "Ad-Free Experience",
+                          "Priority Support",
+                          "Early Access to New Features"
+                        ].map((benefit, index) => (
+                          <div key={index} className="flex items-center justify-between py-4 border-b border-black/5 dark:border-white/5 last:border-0">
+                            <span className="text-[17px] text-gray-600 dark:text-white/80">{benefit}</span>
+                            <div className="w-6 h-6 rounded-full bg-[#3498db] flex items-center justify-center shrink-0">
+                              <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                              </svg>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+
+                      <div className="mt-10">
+                        <button 
+                          onClick={() => {
+                            setIsBenefitsModalOpen(false);
+                            setIsSubscriptionModalOpen(true);
+                          }}
+                          className="w-full py-4 bg-[#2ecc71] hover:bg-[#27ae60] text-white font-bold rounded flex items-center justify-center gap-2 transition-colors text-lg"
+                        >
+                          Unlock Premium Now
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </motion.div>
@@ -1774,7 +2717,7 @@ export default function App() {
                           <div 
                             key={idx} 
                             onClick={() => {
-                              setActiveGame(game.id);
+                              setActiveGameDetails(game.id);
                               setIsStarredGamesOpen(false);
                             }}
                             className="bg-[#1a1a1c] rounded-2xl p-4 border border-white/5 hover:bg-[#2a2a2c] transition-colors cursor-pointer group relative"
@@ -1802,6 +2745,212 @@ export default function App() {
               )}
             </AnimatePresence>
 
+            {/* Rewards History Modal */}
+            <AnimatePresence>
+              {isRewardsHistoryOpen && (
+                <motion.div 
+                  initial={{ opacity: 0, y: '100%' }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: '100%' }}
+                  className="fixed inset-0 z-50 bg-[#0a0a0c] flex flex-col"
+                >
+                  <div className="flex items-center justify-between px-6 py-4 border-b border-white/10 bg-[#0a0a0c]">
+                    <div className="flex items-center gap-3">
+                      <Award className="w-6 h-6 text-purple-400" />
+                      <h2 className="text-xl font-bold text-white">Rewards History</h2>
+                    </div>
+                    <button 
+                      onClick={() => setIsRewardsHistoryOpen(false)}
+                      className="p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
+                    >
+                      <X className="w-6 h-6 text-white" />
+                    </button>
+                  </div>
+                  
+                  <div className="flex-1 overflow-y-auto px-6 py-8 hide-scrollbar">
+                    <div className="max-w-md mx-auto w-full space-y-4">
+                      
+                      <div className="bg-white/5 border border-white/10 rounded-2xl p-4 flex items-center justify-between">
+                        <div className="flex flex-col">
+                          <span className="text-white font-bold text-[17px]">Daily Login Streak</span>
+                          <span className="text-white/60 text-sm">May 11, 2026</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span className="text-green-400 font-bold">+50</span>
+                          <Gem className="w-5 h-5 text-[#8b5cf6]" />
+                        </div>
+                      </div>
+
+                      <div className="bg-white/5 border border-white/10 rounded-2xl p-4 flex items-center justify-between">
+                        <div className="flex flex-col">
+                          <span className="text-white font-bold text-[17px]">Memory Matrix Master</span>
+                          <span className="text-white/60 text-sm">May 10, 2026</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span className="text-green-400 font-bold">+120</span>
+                          <Gem className="w-5 h-5 text-[#8b5cf6]" />
+                        </div>
+                      </div>
+
+                      <div className="bg-white/5 border border-white/10 rounded-2xl p-4 flex items-center justify-between">
+                        <div className="flex flex-col">
+                          <span className="text-white font-bold text-[17px]">Weekly Challenge Complete</span>
+                          <span className="text-white/60 text-sm">May 8, 2026</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span className="text-green-400 font-bold">+300</span>
+                          <Gem className="w-5 h-5 text-[#8b5cf6]" />
+                        </div>
+                      </div>
+
+                      <div className="bg-white/5 border border-white/10 rounded-2xl p-4 flex items-center justify-between">
+                        <div className="flex flex-col">
+                          <span className="text-white font-bold text-[17px]">New Level Reached</span>
+                          <span className="text-white/60 text-sm">May 5, 2026</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span className="text-green-400 font-bold">+500</span>
+                          <Gem className="w-5 h-5 text-[#8b5cf6]" />
+                        </div>
+                      </div>
+
+                      <div className="mt-8 text-center pt-4">
+                        <p className="text-white/40 text-sm">That's all your rewards so far!</p>
+                      </div>
+
+                    </div>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            {/* My Information Modal */}
+            <AnimatePresence>
+              {isMyInfoOpen && (
+                <motion.div 
+                  initial={{ opacity: 0, y: '100%' }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: '100%' }}
+                  className="fixed inset-0 z-50 bg-[#0a0a0c] flex flex-col"
+                >
+                  <div className="flex items-center justify-between px-6 py-4 border-b border-white/10">
+                    <div className="flex items-center gap-3">
+                      <User className="w-6 h-6 text-blue-400" />
+                      <h2 className="text-xl font-bold text-white">My Information</h2>
+                    </div>
+                    <button 
+                      onClick={() => setIsMyInfoOpen(false)}
+                      className="p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
+                    >
+                      <X className="w-6 h-6" />
+                    </button>
+                  </div>
+                  <div className="flex-1 overflow-y-auto p-6 flex flex-col gap-6">
+                    <div className="bg-[#1a1a1c] border border-white/10 rounded-2xl p-6 relative">
+                      <div className="flex justify-between items-center mb-4 border-b border-white/10 pb-2">
+                        <h3 className="text-lg font-bold text-blue-400">Profile Details</h3>
+                        <button 
+                          onClick={() => {
+                            setTempName(profileName);
+                            setTempEmail(profileEmail);
+                            setIsEditNameOpen(true);
+                            setIsMyInfoOpen(false);
+                          }}
+                          className="text-white/60 hover:text-white transition-colors flex items-center gap-1 text-sm font-medium"
+                        >
+                          <Edit2 className="w-4 h-4" /> Edit
+                        </button>
+                      </div>
+                      <div className="space-y-4">
+                        <div>
+                          <p className="text-sm text-white/50 mb-1">Name</p>
+                          <p className="text-lg font-medium">{profileName}</p>
+                        </div>
+                        <div>
+                          <p className="text-sm text-white/50 mb-1">Email</p>
+                          <p className="text-lg font-medium">{profileEmail || 'Not Provided'}</p>
+                        </div>
+                        <div>
+                          <p className="text-sm text-white/50 mb-1">XP</p>
+                          <p className="text-lg font-medium text-[#bde85b]">{totalXP}</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="bg-[#1a1a1c] border border-white/10 rounded-2xl p-6 relative">
+                      <div className="flex justify-between items-center mb-4 border-b border-white/10 pb-2">
+                        <h3 className="text-lg font-bold text-indigo-400">Training Information</h3>
+                        <button 
+                          onClick={() => {
+                            setPlanStep(0);
+                            setIsPlanGeneratorOpen(true);
+                            setIsMyInfoOpen(false);
+                          }}
+                          className="text-white/60 hover:text-white transition-colors flex items-center gap-1 text-sm font-medium"
+                        >
+                          <Edit2 className="w-4 h-4" /> Update
+                        </button>
+                      </div>
+                      <div className="space-y-4">
+                        {planQuestions.map((q, idx) => (
+                          <div key={q.id}>
+                            <p className="text-sm text-white/50 mb-1">{t(q.question, language)}</p>
+                            <p className="text-base font-medium">
+                              {planAnswers[idx] ? t(planAnswers[idx], language) : 'Not Answered'}
+                            </p>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            {/* Add New Games Modal */}
+            <AnimatePresence>
+              {isAddNewGamesOpen && (
+                <motion.div 
+                  initial={{ opacity: 0, y: '100%' }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: '100%' }}
+                  className="fixed inset-0 z-50 bg-[#0a0a0c] flex flex-col"
+                >
+                  <div className="flex items-center justify-between px-6 py-4 border-b border-white/10">
+                    <div className="flex items-center gap-3">
+                      <Gamepad2 className="w-6 h-6 text-green-400" />
+                      <h2 className="text-xl font-bold text-white">Add New Games</h2>
+                    </div>
+                    <button 
+                      onClick={() => setIsAddNewGamesOpen(false)}
+                      className="p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
+                    >
+                      <X className="w-6 h-6" />
+                    </button>
+                  </div>
+                  <div className="flex-1 overflow-y-auto p-6 flex flex-col items-center flex-start pt-12 text-center gap-6">
+                    <h3 className="text-xl font-bold text-white mb-2 px-4 leading-relaxed">What kind of brain game do you want next? Tell us on Instagram</h3>
+                    <div className="w-24 h-24 bg-white/5 rounded-full flex items-center justify-center my-4">
+                      <Gamepad2 className="w-12 h-12 text-white/50" />
+                    </div>
+                    <div>
+                      <h3 className="text-2xl font-bold mb-2 text-white">Coming Soon</h3>
+                      <p className="text-white/60 max-w-sm">We are working hard to bring you more exciting games. Stay tuned!</p>
+                    </div>
+                    <a 
+                      href="https://instagram.com/brainova.in" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="mt-6 flex items-center gap-2 px-6 py-3 bg-gradient-to-tr from-yellow-400 via-pink-500 to-purple-500 rounded-full text-white font-bold hover:shadow-lg transition-all transform hover:scale-105"
+                    >
+                      <Instagram className="w-5 h-5" />
+                      brainova.in Profile
+                    </a>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
             {/* Admin Panel Modal */}
             <AnimatePresence>
               {isAdminPanelOpen && (
@@ -1813,11 +2962,27 @@ export default function App() {
                 >
                   <div className="flex items-center justify-between px-6 py-4 border-b border-white/10">
                     <div className="flex items-center gap-3">
+                      {adminView !== 'dashboard' && (
+                        <button 
+                          onClick={() => setAdminView('dashboard')}
+                          className="p-1 rounded-full hover:bg-white/10 transition-colors mr-2"
+                        >
+                          <ArrowLeft className="w-5 h-5 text-white/70" />
+                        </button>
+                      )}
                       <Lock className="w-6 h-6 text-emerald-400" />
-                      <h2 className="text-xl font-bold text-emerald-400">{t('adminPanel', language)}</h2>
+                      <h2 className="text-xl font-bold text-emerald-400">
+                        {adminView === 'dashboard' ? t('adminPanel', language) : 
+                         adminView === 'users' ? 'Manage Users' : 
+                         adminView === 'subscriptions' ? 'Subscriptions' : 
+                         adminView === 'analytics' ? 'Analytics' : 'System Config'}
+                      </h2>
                     </div>
                     <button 
-                      onClick={() => setIsAdminPanelOpen(false)}
+                      onClick={() => {
+                        setIsAdminPanelOpen(false);
+                        setTimeout(() => setAdminView('dashboard'), 300);
+                      }}
                       className="p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
                     >
                       <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -1826,48 +2991,177 @@ export default function App() {
                     </button>
                   </div>
                   <div className="flex-1 overflow-y-auto p-6">
-                    <div className="bg-[#1a1a1c] border border-white/10 rounded-2xl p-6 mb-6">
-                      <h3 className="text-lg font-bold mb-4">{t('systemStatus', language)}</h3>
+                    {adminView === 'dashboard' && (
+                      <>
+                        <div className="bg-[#1a1a1c] border border-white/10 rounded-2xl p-6 mb-6">
+                          <h3 className="text-lg font-bold mb-4">{t('systemStatus', language)}</h3>
+                          <div className="space-y-4">
+                            <div className="flex justify-between items-center">
+                              <span className="text-white/60">{t('server', language)}</span>
+                              <span className="text-emerald-400 font-medium flex items-center gap-2">
+                                <div className="w-2 h-2 rounded-full bg-emerald-400"></div>
+                                Online
+                              </span>
+                            </div>
+                            <div className="flex justify-between items-center">
+                              <span className="text-white/60">{t('activeUsers', language)}</span>
+                              <span className="font-medium">1,248</span>
+                            </div>
+                            <div className="flex justify-between items-center">
+                              <span className="text-white/60">{t('databaseLoad', language)}</span>
+                              <span className="font-medium text-yellow-400">42%</span>
+                            </div>
+                          </div>
+                        </div>
+                        
+                        <div className="bg-[#1a1a1c] border border-white/10 rounded-2xl p-6">
+                          <h3 className="text-lg font-bold mb-4">{t('quickActions', language)}</h3>
+                          <div className="grid grid-cols-2 gap-4">
+                            <button 
+                              onClick={() => setAdminView('users')}
+                              className="bg-white/5 hover:bg-white/10 p-4 rounded-xl flex flex-col items-center justify-center gap-2 transition-colors"
+                            >
+                              <User className="w-6 h-6 text-cyan-400" />
+                              <span className="text-sm font-medium">{t('manageUsers', language)}</span>
+                            </button>
+                            <button 
+                              onClick={() => setAdminView('subscriptions')}
+                              className="bg-white/5 hover:bg-white/10 p-4 rounded-xl flex flex-col items-center justify-center gap-2 transition-colors"
+                            >
+                              <CircleDollarSign className="w-6 h-6 text-green-400" />
+                              <span className="text-sm font-medium">Subscriptions</span>
+                            </button>
+                            <button 
+                              onClick={() => setAdminView('analytics')}
+                              className="bg-white/5 hover:bg-white/10 p-4 rounded-xl flex flex-col items-center justify-center gap-2 transition-colors"
+                            >
+                              <Activity className="w-6 h-6 text-orange-400" />
+                              <span className="text-sm font-medium">{t('analytics', language)}</span>
+                            </button>
+                            <button 
+                              onClick={() => setAdminView('settings')}
+                              className="bg-white/5 hover:bg-white/10 p-4 rounded-xl flex flex-col items-center justify-center gap-2 transition-colors"
+                            >
+                              <Settings className="w-6 h-6 text-white" />
+                              <span className="text-sm font-medium">{t('systemConfig', language)}</span>
+                            </button>
+                          </div>
+                        </div>
+                      </>
+                    )}
+
+                    {adminView === 'users' && (
                       <div className="space-y-4">
-                        <div className="flex justify-between items-center">
-                          <span className="text-white/60">{t('server', language)}</span>
-                          <span className="text-emerald-400 font-medium flex items-center gap-2">
-                            <div className="w-2 h-2 rounded-full bg-emerald-400"></div>
-                            Online
-                          </span>
+                        <div className="flex items-center justify-between mb-6">
+                          <div className="relative flex-1 max-w-md">
+                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40" />
+                            <input 
+                              type="text" 
+                              placeholder="Search users..." 
+                              className="w-full bg-[#1a1a1c] border border-white/10 rounded-xl py-2 pl-10 pr-4 text-sm focus:outline-none focus:border-emerald-500 transition-colors"
+                            />
+                          </div>
+                          <button className="bg-emerald-500/20 text-emerald-400 px-4 py-2 rounded-xl text-sm font-medium hover:bg-emerald-500/30 transition-colors ml-4">
+                            Export CSV
+                          </button>
                         </div>
-                        <div className="flex justify-between items-center">
-                          <span className="text-white/60">{t('activeUsers', language)}</span>
-                          <span className="font-medium">1,248</span>
-                        </div>
-                        <div className="flex justify-between items-center">
-                          <span className="text-white/60">{t('databaseLoad', language)}</span>
-                          <span className="font-medium text-yellow-400">42%</span>
+                        
+                        <div className="bg-[#1a1a1c] border border-white/10 rounded-2xl overflow-hidden">
+                          <table className="w-full text-left text-sm">
+                            <thead className="bg-white/5 border-b border-white/10">
+                              <tr>
+                                <th className="px-6 py-4 font-medium text-white/60">Name</th>
+                                <th className="px-6 py-4 font-medium text-white/60">Email</th>
+                                <th className="px-6 py-4 font-medium text-white/60">Status</th>
+                                <th className="px-6 py-4 font-medium text-white/60">Plan</th>
+                                <th className="px-6 py-4 font-medium text-white/60">Joined</th>
+                                <th className="px-6 py-4 font-medium text-white/60 text-right">Actions</th>
+                              </tr>
+                            </thead>
+                            <tbody className="divide-y divide-white/5">
+                              {MOCK_USERS.map(user => (
+                                <tr key={user.id} className="hover:bg-white/5 transition-colors">
+                                  <td className="px-6 py-4 font-medium">{user.name}</td>
+                                  <td className="px-6 py-4 text-white/60">{user.email}</td>
+                                  <td className="px-6 py-4">
+                                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${user.status === 'active' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-red-500/20 text-red-400'}`}>
+                                      {user.status}
+                                    </span>
+                                  </td>
+                                  <td className="px-6 py-4 capitalize">{user.subscription}</td>
+                                  <td className="px-6 py-4 text-white/60">{user.joinDate}</td>
+                                  <td className="px-6 py-4 text-right">
+                                    <button className="p-1.5 hover:bg-white/10 rounded-lg transition-colors">
+                                      <Edit2 className="w-4 h-4 text-white/60" />
+                                    </button>
+                                  </td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
                         </div>
                       </div>
-                    </div>
-                    
-                    <div className="bg-[#1a1a1c] border border-white/10 rounded-2xl p-6">
-                      <h3 className="text-lg font-bold mb-4">{t('quickActions', language)}</h3>
-                      <div className="grid grid-cols-2 gap-4">
-                        <button className="bg-white/5 hover:bg-white/10 p-4 rounded-xl flex flex-col items-center justify-center gap-2 transition-colors">
-                          <User className="w-6 h-6 text-cyan-400" />
-                          <span className="text-sm font-medium">{t('manageUsers', language)}</span>
-                        </button>
-                        <button className="bg-white/5 hover:bg-white/10 p-4 rounded-xl flex flex-col items-center justify-center gap-2 transition-colors">
-                          <Gamepad2 className="w-6 h-6 text-purple-400" />
-                          <span className="text-sm font-medium">{t('gameSettings', language)}</span>
-                        </button>
-                        <button className="bg-white/5 hover:bg-white/10 p-4 rounded-xl flex flex-col items-center justify-center gap-2 transition-colors">
-                          <Activity className="w-6 h-6 text-orange-400" />
-                          <span className="text-sm font-medium">{t('analytics', language)}</span>
-                        </button>
-                        <button className="bg-white/5 hover:bg-white/10 p-4 rounded-xl flex flex-col items-center justify-center gap-2 transition-colors">
-                          <Settings className="w-6 h-6 text-gray-400" />
-                          <span className="text-sm font-medium">{t('systemConfig', language)}</span>
-                        </button>
+                    )}
+
+                    {adminView === 'subscriptions' && (
+                      <div className="space-y-6">
+                        <div className="grid grid-cols-3 gap-4 mb-6">
+                          <div className="bg-[#1a1a1c] border border-white/10 rounded-2xl p-4">
+                            <h4 className="text-white/60 text-sm mb-1">Total Revenue</h4>
+                            <p className="text-2xl font-bold text-emerald-400">$12,450</p>
+                          </div>
+                          <div className="bg-[#1a1a1c] border border-white/10 rounded-2xl p-4">
+                            <h4 className="text-white/60 text-sm mb-1">Active Subs</h4>
+                            <p className="text-2xl font-bold text-blue-400">842</p>
+                          </div>
+                          <div className="bg-[#1a1a1c] border border-white/10 rounded-2xl p-4">
+                            <h4 className="text-white/60 text-sm mb-1">Churn Rate</h4>
+                            <p className="text-2xl font-bold text-red-400">2.4%</p>
+                          </div>
+                        </div>
+
+                        <div className="bg-[#1a1a1c] border border-white/10 rounded-2xl overflow-hidden">
+                          <table className="w-full text-left text-sm">
+                            <thead className="bg-white/5 border-b border-white/10">
+                              <tr>
+                                <th className="px-6 py-4 font-medium text-white/60">User</th>
+                                <th className="px-6 py-4 font-medium text-white/60">Plan</th>
+                                <th className="px-6 py-4 font-medium text-white/60">Amount</th>
+                                <th className="px-6 py-4 font-medium text-white/60">Status</th>
+                                <th className="px-6 py-4 font-medium text-white/60">Next Billing</th>
+                              </tr>
+                            </thead>
+                            <tbody className="divide-y divide-white/5">
+                              {MOCK_SUBSCRIPTIONS.map(sub => (
+                                <tr key={sub.id} className="hover:bg-white/5 transition-colors">
+                                  <td className="px-6 py-4 font-medium">{sub.user}</td>
+                                  <td className="px-6 py-4">
+                                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${sub.plan === 'Pro' ? 'bg-purple-500/20 text-purple-400' : 'bg-blue-500/20 text-blue-400'}`}>
+                                      {sub.plan}
+                                    </span>
+                                  </td>
+                                  <td className="px-6 py-4 text-white/80">{sub.amount}</td>
+                                  <td className="px-6 py-4">
+                                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${sub.status === 'active' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-white/10 text-white/60'}`}>
+                                      {sub.status}
+                                    </span>
+                                  </td>
+                                  <td className="px-6 py-4 text-white/60">{sub.nextBilling}</td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        </div>
                       </div>
-                    </div>
+                    )}
+
+                    {(adminView === 'analytics' || adminView === 'settings') && (
+                      <div className="flex flex-col items-center justify-center h-64 text-center">
+                        <Settings className="w-16 h-16 text-white/20 mb-4" />
+                        <h3 className="text-xl font-bold mb-2">Coming Soon</h3>
+                        <p className="text-white/60 max-w-xs">This section is currently under development. Please check back later.</p>
+                      </div>
+                    )}
                   </div>
                 </motion.div>
               )}
@@ -1927,7 +3221,7 @@ export default function App() {
                                 key={game.id}
                                 onClick={() => {
                                   setIsPlanGeneratorOpen(false);
-                                  setActiveGame(game.id);
+                                  setActiveGameDetails(game.id);
                                 }}
                                 className="w-full flex items-center gap-4 p-4 rounded-2xl bg-[#2a2a2c] hover:bg-[#3a3a3c] transition-colors text-left"
                               >
@@ -1953,7 +3247,17 @@ export default function App() {
                       ) : (
                         <div className="py-2">
                           <div className="flex items-center justify-between mb-8">
-                            <span className="text-sm font-medium text-indigo-400">{t('question', language)} {planStep + 1} {t('of', language)} {planQuestions.length}</span>
+                            <div className="flex items-center gap-3">
+                              {planStep > 0 && (
+                                <button
+                                  onClick={() => setPlanStep(planStep - 1)}
+                                  className="p-2 -ml-2 hover:bg-white/5 rounded-full transition-colors text-white/50 hover:text-white"
+                                >
+                                  <ChevronRight className="w-5 h-5 rotate-180" />
+                                </button>
+                              )}
+                              <span className="text-sm font-medium text-indigo-400">{t('question', language)} {planStep + 1} {t('of', language)} {planQuestions.length}</span>
+                            </div>
                             <div className="flex gap-1">
                               {planQuestions.map((_, i) => (
                                 <div key={i} className={`h-1.5 w-3 sm:w-4 rounded-full ${i <= planStep ? 'bg-indigo-500' : 'bg-white/10'}`} />
@@ -2004,6 +3308,107 @@ export default function App() {
               )}
             </AnimatePresence>
 
+            {/* LPI Modal */}
+            <AnimatePresence>
+              {isLpiModalOpen && (
+                <motion.div 
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-6 backdrop-blur-sm"
+                  onClick={() => setIsLpiModalOpen(false)}
+                >
+                  <motion.div 
+                    initial={{ scale: 0.9, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    exit={{ scale: 0.9, opacity: 0 }}
+                    className="bg-[#1e2330] rounded-2xl p-6 max-w-sm w-full shadow-2xl relative"
+                    onClick={e => e.stopPropagation()}
+                  >
+                    <button 
+                      onClick={() => setIsLpiModalOpen(false)}
+                      className="absolute top-4 right-4 text-slate-400 hover:text-white transition-colors"
+                    >
+                      <X className="w-5 h-5" />
+                    </button>
+
+                    <div className="flex items-center gap-3 mb-8 mt-2">
+                      <div className="flex items-center justify-center drop-shadow-[0_0_8px_rgba(251,191,36,0.3)]">
+                        <img src="/logo.png" alt="Brainova" className="w-7 h-7 brightness-0" style={{ filter: 'invert(75%) sepia(85%) saturate(718%) hue-rotate(352deg) brightness(101%) contrast(106%)' }} onError={(e) => { e.currentTarget.style.display = 'none'; e.currentTarget.nextElementSibling?.classList.remove('hidden') }} />
+                        <Brain className="w-7 h-7 text-[#fbbf24] hidden" />
+                      </div>
+                      <h2 className="text-2xl font-bold text-white">Current Nova Coin</h2>
+                    </div>
+
+                    <div className="relative pl-6 space-y-7 pb-2">
+                      {/* Vertical Line */}
+                      <div className="absolute left-[1px] top-3 bottom-4 w-[1px] bg-slate-600/60"></div>
+
+                      {/* Overall LPI */}
+                      <div className="relative">
+                        <div className="absolute -left-[25px] top-4 w-6 h-[1px] bg-slate-600/60"></div>
+                        <h3 className="text-sm font-bold text-white mb-2">Overall Nova Coin</h3>
+                        <div className="flex items-center gap-4">
+                          <div className="h-[22px] bg-[#fbbf24] rounded-sm shadow-[0_0_12px_rgba(251,191,36,0.4)]" style={{ width: `${Math.max(4, (currentLpi.overall / 1000) * 100)}%` }}></div>
+                          <span className="text-xl font-bold text-white">{currentLpi.overall}</span>
+                        </div>
+                      </div>
+
+                      {/* Speed */}
+                      <div className="relative">
+                        <div className="absolute -left-[25px] top-4 w-6 h-[1px] bg-slate-600/60"></div>
+                        <h3 className="text-[13px] font-medium text-slate-300 mb-2">Speed</h3>
+                        <div className="flex items-center gap-4">
+                          <div className="h-[18px] bg-[#fbbf24] rounded-sm shadow-[0_0_12px_rgba(251,191,36,0.3)]" style={{ width: `${Math.max(4, (currentLpi.speed / 1000) * 100)}%` }}></div>
+                          <span className="text-white font-bold">{currentLpi.speed}</span>
+                        </div>
+                      </div>
+
+                      {/* Memory */}
+                      <div className="relative">
+                        <div className="absolute -left-[25px] top-4 w-6 h-[1px] bg-slate-600/60"></div>
+                        <h3 className="text-[13px] font-medium text-slate-300 mb-2">Memory</h3>
+                        <div className="flex items-center gap-4">
+                          <div className="h-[18px] bg-[#fbbf24] rounded-sm shadow-[0_0_12px_rgba(251,191,36,0.3)]" style={{ width: `${Math.max(4, (currentLpi.memory / 1000) * 100)}%` }}></div>
+                          <span className="text-white font-bold">{currentLpi.memory}</span>
+                        </div>
+                      </div>
+
+                      {/* Attention */}
+                      <div className="relative">
+                        <div className="absolute -left-[25px] top-4 w-6 h-[1px] bg-slate-600/60"></div>
+                        <h3 className="text-[13px] font-medium text-slate-300 mb-2">Attention</h3>
+                        <div className="flex items-center gap-4">
+                          <div className="h-[18px] bg-[#fbbf24] rounded-sm shadow-[0_0_12px_rgba(251,191,36,0.3)]" style={{ width: `${Math.max(4, (currentLpi.attention / 1000) * 100)}%` }}></div>
+                          <span className="text-white font-bold">{currentLpi.attention}</span>
+                        </div>
+                      </div>
+
+                      {/* Flexibility */}
+                      <div className="relative">
+                        <div className="absolute -left-[25px] top-4 w-6 h-[1px] bg-slate-600/60"></div>
+                        <h3 className="text-[13px] font-medium text-slate-300 mb-2">Flexibility</h3>
+                        <div className="flex items-center gap-4">
+                          <div className="h-[18px] bg-[#fbbf24] rounded-sm shadow-[0_0_12px_rgba(251,191,36,0.3)]" style={{ width: `${Math.max(4, (currentLpi.flexibility / 1000) * 100)}%` }}></div>
+                          <span className="text-white font-bold">{currentLpi.flexibility}</span>
+                        </div>
+                      </div>
+
+                      {/* Math Solving */}
+                      <div className="relative">
+                        <div className="absolute -left-[25px] top-4 w-6 h-[1px] bg-slate-600/60"></div>
+                        <h3 className="text-[13px] font-medium text-slate-300 mb-2">Math Solving</h3>
+                        <div className="flex items-center gap-4">
+                          <div className="h-[18px] bg-[#fbbf24] rounded-sm shadow-[0_0_12px_rgba(251,191,36,0.3)]" style={{ width: `${Math.max(4, (currentLpi.math / 1000) * 100)}%` }}></div>
+                          <span className="text-white font-bold">{currentLpi.math}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </motion.div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
             {/* Pro Modal */}
             <AnimatePresence>
               {isProModalOpen && (
@@ -2036,7 +3441,10 @@ export default function App() {
                     </p>
                     <div className="space-y-3">
                       <button 
-                        onClick={() => setIsProModalOpen(false)}
+                        onClick={() => {
+                          setIsProModalOpen(false);
+                          setIsSubscriptionModalOpen(true);
+                        }}
                         className="w-full py-4 bg-[#ff9900] hover:bg-[#e68a00] text-black font-bold rounded-2xl transition-colors text-lg"
                       >
                         Upgrade Now
@@ -2063,6 +3471,291 @@ export default function App() {
               )}
             </AnimatePresence>
 
+            {/* Subscription Modal */}
+            <AnimatePresence>
+              {isSubscriptionModalOpen && (
+                <motion.div 
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 20 }}
+                  className="fixed inset-0 z-50 bg-[#0f111a] flex flex-col overflow-y-auto"
+                >
+                  <div className="flex items-center justify-between p-6 border-b border-white/10">
+                    <h2 className="text-xl font-bold text-white">Pick The Best Plan</h2>
+                    <button onClick={() => setIsSubscriptionModalOpen(false)} className="text-white/60 hover:text-white">
+                      <X className="w-6 h-6" />
+                    </button>
+                  </div>
+
+                  <div className="p-6 flex-1 flex flex-col items-center justify-center">
+                    <div className="bg-white rounded-3xl p-6 sm:p-8 shadow-2xl max-w-md w-full">
+                      <div className="text-center mb-6">
+                        <h3 className="text-2xl font-bold text-gray-900 mb-2">Choose Your Plan</h3>
+                        <p className="text-sm text-gray-500">Unlock all games and advanced features</p>
+                      </div>
+                      
+                      <div className="space-y-4 mb-8">
+                        {/* 1 Month Plan */}
+                        <div 
+                          onClick={() => setSelectedPlan('1month')}
+                          className={`border-2 rounded-2xl p-4 flex items-center justify-between cursor-pointer transition-colors ${selectedPlan === '1month' ? 'border-[#00c853] bg-[#00c853]/5' : 'border-[#e2e8f0]'}`}
+                        >
+                          <div>
+                            <h4 className="font-bold text-gray-900 text-[17px]">1 Month</h4>
+                            <p className="text-[11px] text-gray-400 uppercase tracking-widest mt-1">Subscription</p>
+                          </div>
+                          <div className="text-right">
+                            <span className="text-xl font-bold text-gray-900">₹199</span>
+                          </div>
+                        </div>
+
+                        {/* 6 Month Plan */}
+                        <div 
+                          onClick={() => setSelectedPlan('6months')}
+                          className={`border-2 rounded-2xl p-4 flex items-center justify-between cursor-pointer relative transition-colors ${selectedPlan === '6months' ? 'border-[#00c853] bg-[#00c853]/5' : 'border-[#ff1744] bg-[#ff1744]/5'}`}
+                        >
+                          
+                          <div>
+                            <h4 className="font-bold text-gray-900 text-[17px]">3 Months</h4>
+                            <p className="text-[11px] text-gray-400 uppercase tracking-widest mt-1">Subscription</p>
+                          </div>
+                          <div className="text-right">
+                            <span className="text-xl font-bold text-gray-900">₹99</span>
+                          </div>
+                        </div>
+
+                        {/* 1 Year Plan */}
+                        <div 
+                          onClick={() => setSelectedPlan('1year')}
+                          className={`border-2 rounded-2xl p-4 flex items-center justify-between cursor-pointer transition-colors ${selectedPlan === '1year' ? 'border-[#00c853] bg-[#00c853]/5' : 'border-[#f59e0b]'}`}
+                        >
+                          <div>
+                            <h4 className="font-bold text-gray-900 text-[17px]">1 Year</h4>
+                            <p className="text-[11px] text-gray-400 uppercase tracking-widest mt-1">Subscription</p>
+                          </div>
+                          <div className="text-right">
+                            <span className="text-xl font-bold text-gray-900">₹1,999</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="space-y-4 mb-8">
+                        <div className="flex items-center gap-3 text-gray-700">
+                          <div className="w-6 h-6 rounded-full bg-[#00c853]/20 flex items-center justify-center shrink-0">
+                            <CheckCircle className="w-4 h-4 text-[#00c853]" />
+                          </div>
+                          <span className="text-sm font-medium">All 100+ Games</span>
+                        </div>
+                        <div className="flex items-center gap-3 text-gray-700">
+                          <div className="w-6 h-6 rounded-full bg-[#00c853]/20 flex items-center justify-center shrink-0">
+                            <CheckCircle className="w-4 h-4 text-[#00c853]" />
+                          </div>
+                          <span className="text-sm font-medium">Advanced Analytics</span>
+                        </div>
+                        <div className="flex items-center gap-3 text-gray-700">
+                          <div className="w-6 h-6 rounded-full bg-[#00c853]/20 flex items-center justify-center shrink-0">
+                            <CheckCircle className="w-4 h-4 text-[#00c853]" />
+                          </div>
+                          <span className="text-sm font-medium">Ad-Free Experience</span>
+                        </div>
+                      </div>
+
+                      <button 
+                        disabled={!selectedPlan}
+                        onClick={() => {
+                          setIsSubscriptionModalOpen(false);
+                          setIsCheckoutModalOpen(true);
+                        }}
+                        className={`w-full py-4 font-bold rounded-xl transition-colors uppercase tracking-wider text-sm shadow-lg ${selectedPlan ? 'bg-[#00c853] hover:bg-[#00e676] text-white shadow-[#00c853]/30' : 'bg-gray-200 text-gray-400 cursor-not-allowed shadow-none'}`}
+                      >
+                        Buy Now
+                      </button>
+                    </div>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            {/* Checkout / Promo Code Modal */}
+            <AnimatePresence>
+              {isCheckoutModalOpen && (
+                <motion.div 
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 20 }}
+                  className="fixed inset-0 z-50 bg-[#0f111a] flex items-center justify-center p-4"
+                >
+                  <div className="bg-white rounded-3xl p-6 sm:p-8 shadow-2xl max-w-md w-full relative">
+                    <button 
+                      onClick={() => setIsCheckoutModalOpen(false)} 
+                      className="absolute top-6 right-6 text-gray-400 hover:text-gray-600 transition-colors"
+                    >
+                      <X className="w-5 h-5" />
+                    </button>
+                    
+                    <h3 className="text-2xl font-bold text-gray-900 mb-6">Checkout</h3>
+                    
+                    <div className="bg-gray-50 rounded-2xl p-5 mb-6 border border-gray-100 text-gray-900 shadow-sm">
+                      <div className="flex justify-between items-center mb-2">
+                        <span className="font-semibold text-gray-700">Selected Plan</span>
+                        <span className="font-bold">
+                          {selectedPlan === '1month' ? '1 Month' : selectedPlan === '6months' ? '3 Months' : '1 Year'}
+                        </span>
+                      </div>
+                      <div className="flex justify-between items-center text-lg">
+                        <span className="font-semibold text-gray-700">Price</span>
+                        <span className={`font-bold ${promoApplied ? 'line-through text-gray-400' : ''}`}>
+                          ₹{selectedPlan === '1month' ? '199' : selectedPlan === '6months' ? '99' : '1,999'}
+                        </span>
+                      </div>
+                      {promoApplied && (
+                        <div className="flex justify-between items-center text-lg mt-1 text-[#00c853]">
+                          <span className="font-semibold">Discounted Price</span>
+                          <span className="font-bold">
+                            ₹{promoApplied === 'INDIA' 
+                                ? (selectedPlan === '1month' ? '99' : selectedPlan === '6months' ? '49' : '999')
+                                : (selectedPlan === '1month' ? '159' : selectedPlan === '6months' ? '79' : '1,599')}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="mb-8">
+                      <h4 className="text-lg font-bold text-gray-900 mb-3">Promo code</h4>
+                      <div className="flex gap-3 mb-2">
+                        <input 
+                          type="text"
+                          value={promoCode}
+                          onChange={(e) => setPromoCode(e.target.value.toUpperCase())}
+                          placeholder="NEW20 or INDIA"
+                          className="flex-1 border border-gray-300 rounded-xl px-4 py-3 text-gray-900 font-medium focus:outline-none focus:border-[#00c853] focus:ring-1 focus:ring-[#00c853] transition-all placeholder:text-gray-400"
+                        />
+                        <button 
+                          onClick={() => {
+                            if (promoCode === 'NEW20' || promoCode === 'INDIA') {
+                              setPromoApplied(promoCode);
+                            } else {
+                              setPromoApplied(false);
+                            }
+                          }}
+                          className="px-6 py-3 border border-gray-300 rounded-xl font-semibold text-gray-700 hover:bg-gray-50 transition-colors"
+                        >
+                          Apply
+                        </button>
+                      </div>
+                      <p className="text-sm text-gray-500 font-medium ml-1">One code per order</p>
+                    </div>
+
+                    <button 
+                      onClick={() => {
+                        setIsCheckoutModalOpen(false);
+                        setIsPaymentModalOpen(true);
+                      }}
+                      className="w-full py-4 bg-[#00c853] hover:bg-[#00e676] text-white font-bold rounded-xl transition-colors uppercase tracking-wider text-sm shadow-lg shadow-[#00c853]/30"
+                    >
+                      Confirm Purchase
+                    </button>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            {/* Payment Modal */}
+            <AnimatePresence>
+              {isPaymentModalOpen && (
+                <motion.div 
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 20 }}
+                  className="fixed inset-0 z-50 bg-[#0f111a] flex items-center justify-center p-4"
+                >
+                  <div className="bg-white rounded-3xl p-6 sm:p-8 shadow-2xl max-w-md w-full relative">
+                    <button 
+                      onClick={() => setIsPaymentModalOpen(false)} 
+                      className="absolute top-6 right-6 text-gray-400 hover:text-gray-600 transition-colors"
+                    >
+                      <X className="w-5 h-5" />
+                    </button>
+                    
+                    <h3 className="text-2xl font-bold text-gray-900 mb-6">Payment Method</h3>
+                    
+                    <div className="space-y-3 mb-8">
+                      {/* UPI */}
+                      <div 
+                        onClick={() => setSelectedPayment('upi')}
+                        className={`border-2 rounded-2xl p-4 flex items-center gap-4 cursor-pointer transition-colors ${selectedPayment === 'upi' ? 'border-[#00c853] bg-[#00c853]/5' : 'border-gray-200 hover:border-[#00c853]/50'}`}
+                      >
+                        <div className={`w-10 h-10 rounded-full flex items-center justify-center ${selectedPayment === 'upi' ? 'bg-[#00c853]/20 text-[#00c853]' : 'bg-gray-100 text-gray-500'}`}>
+                          <Smartphone className="w-5 h-5" />
+                        </div>
+                        <div>
+                          <h4 className="font-bold text-gray-900">UPI</h4>
+                          <p className="text-xs text-gray-500">Google Pay, PhonePe, Paytm</p>
+                        </div>
+                      </div>
+
+                      {/* Card */}
+                      <div 
+                        onClick={() => setSelectedPayment('card')}
+                        className={`border-2 rounded-2xl p-4 flex items-center gap-4 cursor-pointer transition-colors ${selectedPayment === 'card' ? 'border-[#00c853] bg-[#00c853]/5' : 'border-gray-200 hover:border-[#00c853]/50'}`}
+                      >
+                        <div className={`w-10 h-10 rounded-full flex items-center justify-center ${selectedPayment === 'card' ? 'bg-[#00c853]/20 text-[#00c853]' : 'bg-gray-100 text-gray-500'}`}>
+                          <CreditCard className="w-5 h-5" />
+                        </div>
+                        <div>
+                          <h4 className="font-bold text-gray-900">Credit / Debit Card</h4>
+                          <p className="text-xs text-gray-500">Visa, Mastercard, RuPay</p>
+                        </div>
+                      </div>
+
+                      {/* Net Banking */}
+                      <div 
+                        onClick={() => setSelectedPayment('netbanking')}
+                        className={`border-2 rounded-2xl p-4 flex items-center gap-4 cursor-pointer transition-colors ${selectedPayment === 'netbanking' ? 'border-[#00c853] bg-[#00c853]/5' : 'border-gray-200 hover:border-[#00c853]/50'}`}
+                      >
+                        <div className={`w-10 h-10 rounded-full flex items-center justify-center ${selectedPayment === 'netbanking' ? 'bg-[#00c853]/20 text-[#00c853]' : 'bg-gray-100 text-gray-500'}`}>
+                          <Building className="w-5 h-5" />
+                        </div>
+                        <div>
+                          <h4 className="font-bold text-gray-900">Net Banking</h4>
+                          <p className="text-xs text-gray-500">All major banks supported</p>
+                        </div>
+                      </div>
+
+                      {/* Wallet */}
+                      <div 
+                        onClick={() => setSelectedPayment('wallet')}
+                        className={`border-2 rounded-2xl p-4 flex items-center gap-4 cursor-pointer transition-colors ${selectedPayment === 'wallet' ? 'border-[#00c853] bg-[#00c853]/5' : 'border-gray-200 hover:border-[#00c853]/50'}`}
+                      >
+                        <div className={`w-10 h-10 rounded-full flex items-center justify-center ${selectedPayment === 'wallet' ? 'bg-[#00c853]/20 text-[#00c853]' : 'bg-gray-100 text-gray-500'}`}>
+                          <Wallet className="w-5 h-5" />
+                        </div>
+                        <div>
+                          <h4 className="font-bold text-gray-900">Wallets</h4>
+                          <p className="text-xs text-gray-500">Amazon Pay, Mobikwik</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <button 
+                      disabled={!selectedPayment}
+                      onClick={() => {
+                        setIsPaymentModalOpen(false);
+                        setSelectedPlan(null);
+                        setPromoCode('');
+                        setPromoApplied(false);
+                        setSelectedPayment(null);
+                        alert('Payment Successful!');
+                      }}
+                      className={`w-full py-4 font-bold rounded-xl transition-colors uppercase tracking-wider text-sm shadow-lg ${selectedPayment ? 'bg-[#00c853] hover:bg-[#00e676] text-white shadow-[#00c853]/30' : 'bg-gray-200 text-gray-400 cursor-not-allowed shadow-none'}`}
+                    >
+                      Pay Now
+                    </button>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
             {/* Edit Name Modal */}
             <AnimatePresence>
               {isEditNameOpen && (
@@ -2079,20 +3772,35 @@ export default function App() {
                     className="bg-[#1a1a1c] border border-white/10 rounded-3xl p-6 w-full max-w-sm"
                   >
                     <div className="flex justify-between items-center mb-6">
-                      <h3 className="text-xl font-bold">{t('changeName', language) || 'Change Name'}</h3>
+                      <h3 className="text-xl font-bold">Edit Profile</h3>
                       <button onClick={() => setIsEditNameOpen(false)} className="p-2 hover:bg-white/10 rounded-full transition-colors">
                         <X className="w-5 h-5" />
                       </button>
                     </div>
                     
-                    <input
-                      type="text"
-                      value={tempName}
-                      onChange={(e) => setTempName(e.target.value)}
-                      className="w-full bg-[#0a0a0c] border border-white/10 rounded-xl px-4 py-3 text-white mb-6 focus:outline-none focus:border-indigo-500 transition-colors"
-                      placeholder="Enter your name"
-                      autoFocus
-                    />
+                    <div className="space-y-4 mb-6">
+                      <div>
+                        <p className="text-sm text-white/50 mb-1">Name</p>
+                        <input
+                          type="text"
+                          value={tempName}
+                          onChange={(e) => setTempName(e.target.value)}
+                          className="w-full bg-[#0a0a0c] border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-indigo-500 transition-colors"
+                          placeholder="Enter your name"
+                        />
+                      </div>
+                      
+                      <div>
+                        <p className="text-sm text-white/50 mb-1">Email</p>
+                        <input
+                          type="email"
+                          value={tempEmail}
+                          onChange={(e) => setTempEmail(e.target.value)}
+                          className="w-full bg-[#0a0a0c] border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-indigo-500 transition-colors"
+                          placeholder="Enter your email"
+                        />
+                      </div>
+                    </div>
                     
                     <div className="flex gap-3">
                       <button 
@@ -2121,6 +3829,246 @@ export default function App() {
               accept="image/*" 
               className="hidden" 
             />
+
+            <AnimatePresence>
+              {isProfileSettingsOpen && (
+                <motion.div 
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  className="fixed inset-0 bg-[#0f111a] z-[9999] flex flex-col overflow-y-auto scroll-smooth hide-scrollbar"
+                >
+                  <div className="flex items-center justify-between p-6 border-b border-white/10">
+                    <h2 className="text-xl font-bold text-white">Settings</h2>
+                    <button onClick={() => setIsProfileSettingsOpen(false)} className="text-white/60 hover:text-white">
+                      <X className="w-6 h-6" />
+                    </button>
+                  </div>
+                  <div className="p-4 flex flex-col gap-2">
+                    <button 
+                      onClick={() => {
+                        fileInputRef.current?.click();
+                      }}
+                      className="w-full flex items-center gap-4 text-left px-4 py-4 text-base text-white hover:bg-white/5 transition-colors rounded-xl"
+                    >
+                      <div className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center">
+                        <Camera className="w-5 h-5 text-white/70" />
+                      </div>
+                      <span className="font-medium">{t('changeProfilePhoto', language) || 'Change Profile Photo'}</span>
+                    </button>
+                    <button 
+                      onClick={() => {
+                        setTempName(profileName);
+                        setIsEditNameOpen(true);
+                        setIsProfileSettingsOpen(false);
+                      }}
+                      className="w-full flex items-center gap-4 text-left px-4 py-4 text-base text-white hover:bg-white/5 transition-colors rounded-xl"
+                    >
+                      <div className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center">
+                        <Edit2 className="w-5 h-5 text-white/70" />
+                      </div>
+                      <span className="font-medium">{t('changeName', language) || 'Change Name'}</span>
+                    </button>
+                    <button 
+                      onClick={() => {
+                        setIsProfileSettingsOpen(false);
+                        setIsModeModalOpen(true);
+                      }}
+                      className="w-full flex items-center gap-4 text-left px-4 py-4 text-base text-white hover:bg-white/5 transition-colors rounded-xl"
+                    >
+                      <div className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center">
+                        <Moon className="w-5 h-5 text-white/70" />
+                      </div>
+                      <span className="font-medium">{t('changeMode', language) || 'Change Mode'}</span>
+                    </button>
+                    <button 
+                      onClick={() => {
+                        setIsProfileSettingsOpen(false);
+                        setIsLanguageModalOpen(true);
+                      }}
+                      className="w-full flex items-center gap-4 text-left px-4 py-4 text-base text-white hover:bg-white/5 transition-colors rounded-xl"
+                    >
+                      <div className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center">
+                        <Globe className="w-5 h-5 text-white/70" />
+                      </div>
+                      <span className="font-medium">{t('changeLanguage', language) || 'Change Language'}</span>
+                    </button>
+                  </div>
+                  
+                  <div className="px-6 py-2 mt-2">
+                    <h3 className="text-white/80 font-medium text-sm">{t('supportInformation', language)}</h3>
+                  </div>
+                  <div className="p-4 flex flex-col gap-2">
+                    <a 
+                      href="mailto:brainova.in@gmail.com"
+                      className="w-full flex items-center gap-4 text-left px-4 py-4 text-base text-white hover:bg-white/5 transition-colors rounded-xl"
+                    >
+                      <div className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center">
+                        <HelpCircle className="w-5 h-5 text-white/70" />
+                      </div>
+                      <span className="font-medium">{t('help', language)}</span>
+                    </a>
+                    <button 
+                      onClick={() => {
+                        setIsProfileSettingsOpen(false);
+                        setIsFeedbackOpen(true);
+                      }}
+                      className="w-full flex items-center gap-4 text-left px-4 py-4 text-base text-white hover:bg-white/5 transition-colors rounded-xl"
+                    >
+                      <div className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center">
+                        <MessageSquare className="w-5 h-5 text-white/70" />
+                      </div>
+                      <span className="font-medium">{t('yourFeedback', language)}</span>
+                    </button>
+                    <button 
+                      onClick={() => {
+                        setIsProfileSettingsOpen(false);
+                        setIsAdminPanelOpen(true);
+                      }}
+                      className="w-full flex items-center gap-4 text-left px-4 py-4 text-base text-emerald-400 hover:bg-white/5 transition-colors rounded-xl"
+                    >
+                      <div className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center">
+                        <Lock className="w-5 h-5 text-emerald-400" />
+                      </div>
+                      <span className="font-medium text-emerald-400">{t('adminPanel', language)}</span>
+                    </button>
+                  </div>
+                  
+                  <div className="px-6 py-2 mt-2">
+                    <h3 className="text-white/80 font-medium text-sm">Social</h3>
+                  </div>
+                  <div className="p-4 flex flex-col gap-2">
+                    <a 
+                      href="https://instagram.com/brainova.in" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="w-full flex items-center gap-4 text-left px-4 py-4 text-base text-white hover:bg-white/5 transition-colors rounded-xl"
+                    >
+                      <div className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center">
+                        <Instagram className="w-5 h-5 text-[#E1306C]" />
+                      </div>
+                      <span className="font-medium text-white">Instagram</span>
+                    </a>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            <AnimatePresence>
+              {isQuestPageOpen && <KickOffQuest onBack={() => setPlanStep(0)} />}
+            </AnimatePresence>
+
+            {/* Level Up Modal */}
+            <AnimatePresence>
+              {selectedLevel && (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm"
+                  onClick={() => setSelectedLevel(null)}
+                >
+                  <motion.div
+                    initial={{ scale: 0.9, y: 20 }}
+                    animate={{ scale: 1, y: 0 }}
+                    exit={{ scale: 0.9, y: 20 }}
+                    className="w-full max-w-sm bg-[#0a0a14] border border-white/10 rounded-[32px] p-6 flex flex-col items-center relative overflow-hidden"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    {/* Confetti - simple CSS dots / decorative */}
+                    <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-50">
+                       <div className="absolute top-[10%] left-[20%] w-2 h-2 bg-pink-500 rounded-sm rotate-45"></div>
+                       <div className="absolute top-[30%] left-[10%] w-1.5 h-1.5 bg-blue-500 rounded-sm"></div>
+                       <div className="absolute top-[15%] right-[20%] w-2 h-2 bg-yellow-500 rounded-sm rotate-12"></div>
+                       <div className="absolute top-[40%] right-[10%] w-2 h-2 bg-green-500 rounded-sm -rotate-12"></div>
+                       <div className="absolute top-[60%] left-[15%] w-1.5 h-1.5 bg-purple-500 rounded-sm"></div>
+                       <div className="absolute top-[70%] right-[15%] w-2 h-2 bg-red-500 rounded-sm rotate-45"></div>
+                    </div>
+
+                    <h2 className="text-3xl font-bold text-white mb-2 relative z-10">Level Up!</h2>
+                    <p className="text-white/80 mb-1 text-sm relative z-10">You've reached</p>
+                    <h3 className="text-[32px] font-bold relative z-10" style={{ color: selectedLevel.color || '#22c55e' }}>{selectedLevel.title}</h3>
+                    
+                    <div className="relative my-8 flex flex-col items-center justify-center min-h-[140px] w-full">
+                      {/* Sunburst background effect */}
+                      <div className="absolute inset-0 flex items-center justify-center mix-blend-screen opacity-60">
+                        <div className="w-[300px] h-[300px] rounded-full" style={{ background: `radial-gradient(circle, ${selectedLevel.color || '#22c55e'}40 0%, transparent 70%)` }}></div>
+                        <div className="absolute w-[2px] h-[200px] bg-gradient-to-t from-transparent via-blue-500 to-transparent rotate-0 blur-[1px] opacity-70"></div>
+                        <div className="absolute w-[2px] h-[200px] bg-gradient-to-t from-transparent via-purple-500 to-transparent rotate-45 blur-[1px] opacity-70"></div>
+                        <div className="absolute w-[2px] h-[200px] bg-gradient-to-t from-transparent via-pink-500 to-transparent rotate-90 blur-[1px] opacity-70"></div>
+                        <div className="absolute w-[2px] h-[200px] bg-gradient-to-t from-transparent via-blue-500 to-transparent -rotate-45 blur-[1px] opacity-70"></div>
+                      </div>
+
+                      {/* Bot Image Substitute */}
+                      <motion.div 
+                        initial={{ y: 20, opacity: 0 }}
+                        animate={{ y: 0, opacity: 1 }}
+                        transition={{ delay: 0.2, type: "spring" }}
+                        className="relative z-10 mb-8"
+                      >
+                         <div className="w-24 h-24 rounded-[32px] bg-gradient-to-b from-[#6366f1] to-[#4f46e5] flex items-center justify-center shadow-[0_0_40px_rgba(99,102,241,0.6)]">
+                            <Bot className="w-14 h-14 text-white" />
+                         </div>
+                      </motion.div>
+                      
+                      <motion.div 
+                        initial={{ scale: 0, opacity: 0 }}
+                        animate={{ scale: 1, opacity: 1 }}
+                        transition={{ delay: 0.4, type: "spring", bounce: 0.5 }}
+                        className="absolute bottom-[-10px] z-20"
+                      >
+                         <div className="relative">
+                            <Shield className="w-16 h-16" style={{ color: selectedLevel.color || '#22c55e', fill: `${selectedLevel.color || '#22c55e'}20` }} />
+                            <div className="absolute inset-0 flex items-center justify-center mb-1">
+                               <span className="text-2xl font-bold text-white">{selectedLevel.id}</span>
+                            </div>
+                            {/* Decorative laurels */}
+                            <svg className="absolute -left-6 top-1/2 -translate-y-1/2 w-8 h-12" viewBox="0 0 24 36" fill="none" stroke={selectedLevel.color || '#22c55e'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                              <path d="M18 30 C10 24, 10 12, 18 6 M18 30 Q12 30, 8 26 M16 24 Q10 24, 6 20 M14 18 Q8 18, 4 14" />
+                            </svg>
+                            <svg className="absolute -right-6 top-1/2 -translate-y-1/2 w-8 h-12" viewBox="0 0 24 36" fill="none" stroke={selectedLevel.color || '#22c55e'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                              <path d="M6 30 C14 24, 14 12, 6 6 M6 30 Q12 30, 16 26 M8 24 Q14 24, 18 20 M10 18 Q16 18, 20 14" />
+                            </svg>
+                         </div>
+                      </motion.div>
+                    </div>
+
+                    <p className="text-white font-bold text-sm mb-4 relative z-10 mt-4">Rewards Unlocked</p>
+                    
+                    <div className="grid grid-cols-3 gap-3 w-full mb-6 relative z-10">
+                      <div className="bg-[#12121e] border border-[#2a2a3e] rounded-2xl p-4 flex flex-col items-center justify-center">
+                         <div className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center mb-2 shadow-[0_0_15px_rgba(59,130,246,0.5)]">
+                           <span className="text-white font-bold text-[10px]">XP</span>
+                         </div>
+                         <span className="text-white font-bold text-sm">+{selectedLevel.maxXP || selectedLevel.xp}</span>
+                         <span className="text-white/50 text-[11px] font-medium">XP</span>
+                      </div>
+                      <div className="bg-[#12121e] border border-[#2a2a3e] rounded-2xl p-4 flex flex-col items-center justify-center">
+                         <div className="w-8 h-8 mb-2 flex items-center justify-center drop-shadow-[0_0_10px_rgba(168,85,247,0.5)]">
+                           <Gem className="w-6 h-6 text-purple-400 fill-purple-400/20" />
+                         </div>
+                         <span className="text-white font-bold text-sm">+{selectedLevel.id * 5}</span>
+                         <span className="text-white/50 text-[11px] font-medium">Gems</span>
+                      </div>
+                      <div className="bg-[#12121e] border border-[#2a2a3e] rounded-2xl p-4 flex flex-col items-center justify-center">
+                         <div className="w-8 h-8 mb-2 flex items-center justify-center drop-shadow-[0_0_10px_rgba(74,222,128,0.5)]">
+                           <Zap className="w-6 h-6 text-green-400 fill-green-400/20" />
+                         </div>
+                         <span className="text-white font-bold text-sm">+1</span>
+                         <span className="text-white/50 text-[10px] font-medium text-center leading-tight">Streak Slot</span>
+                      </div>
+                    </div>
+
+                    <button 
+                      onClick={() => setSelectedLevel(null)}
+                      className="w-full py-4 rounded-xl bg-gradient-to-r from-[#6366f1] to-[#8b5cf6] hover:from-[#4f46e5] hover:to-[#7c3aed] text-white font-bold text-[15px] transition-all shadow-[0_0_20px_rgba(99,102,241,0.3)] relative z-10"
+                    >
+                      Continue Your Journey
+                    </button>
+                  </motion.div>
+                </motion.div>
+              )}
+            </AnimatePresence>
 
             {/* Language Modal */}
             <AnimatePresence>
@@ -2156,6 +4104,7 @@ export default function App() {
                         { code: 'bn', name: 'বাংলা (Bengali)' },
                         { code: 'mr', name: 'मराठी (Marathi)' },
                         { code: 'te', name: 'తెలుగు (Telugu)' },
+                        { code: 'kn', name: 'ಕನ್ನಡ (Kannada)' },
                         { code: 'ta', name: 'தமிழ் (Tamil)' }
                       ].map((lang) => (
                         <button
@@ -2198,11 +4147,11 @@ export default function App() {
               <span className="text-[10px] font-medium">{t('games', language)}</span>
             </button>
             <button 
-              onClick={() => setIsProModalOpen(true)}
+              onClick={() => setCurrentTab('coach')}
               className={`flex flex-col items-center gap-1 transition-colors ${currentTab === 'coach' ? 'text-white' : 'text-white/40 hover:text-white'}`}
             >
               <Sparkles className="w-6 h-6" />
-              <span className="text-[10px] font-medium">AI</span>
+              <span className="text-[10px] font-medium">AI Coach</span>
             </button>
             <button 
               onClick={() => setCurrentTab('stats')}
@@ -2225,11 +4174,21 @@ export default function App() {
     );
   }
 
+  if (onboardingStep > 0) {
+    return (
+      <OnboardingScreens 
+        onLogin={() => setIsLoggedIn(true)} 
+      />
+    );
+  }
+
   if (isCompleted) {
     return (
       <div className="flex flex-col h-[100dvh] bg-[#0a0a0c] font-sans text-white relative overflow-hidden" style={getModeStyles()}>
+          {/* Dynamic Background Gradient Removed */}
+
           {/* Auth Content Area */}
-          <div className="flex-1 flex flex-col px-8 pt-20 pb-12 overflow-y-auto hide-scrollbar">
+          <div className="flex-1 flex flex-col px-8 pt-20 pb-12 overflow-y-auto hide-scrollbar relative z-10">
             <AnimatePresence mode="wait">
               {authMode === 'select' && (
                 <motion.div
@@ -2264,18 +4223,32 @@ export default function App() {
                     </button>
                   </div>
                   
-                  <div className="w-full space-y-4">
+                  <div className="w-full flex justify-center gap-4">
                     <button 
                       onClick={() => setIsLoggedIn(true)}
-                      className="w-full py-4 rounded-2xl bg-white text-black font-semibold text-lg hover:scale-[0.98] transition-transform flex items-center justify-center"
+                      className="w-12 h-12 rounded-2xl bg-white text-black flex items-center justify-center hover:scale-[0.95] transition-transform shadow-lg"
                     >
-                      <svg className="w-5 h-5 mr-3" viewBox="0 0 24 24">
+                      <svg className="w-5 h-5" viewBox="0 0 24 24">
                         <path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
                         <path fill="currentColor" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
                         <path fill="currentColor" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" />
                         <path fill="currentColor" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
                       </svg>
-                      {t('continueWithGoogle', language)}
+                    </button>
+                    <button 
+                      onClick={() => setIsLoggedIn(true)}
+                      className="w-12 h-12 rounded-2xl text-white flex items-center justify-center hover:scale-[0.95] transition-transform shadow-lg"
+                      style={{ background: 'linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%)' }}
+                    >
+                      <Instagram className="w-6 h-6" />
+                    </button>
+                    <button 
+                      onClick={() => setIsLoggedIn(true)}
+                      className="w-12 h-12 rounded-2xl bg-[#1877F2] text-white flex items-center justify-center hover:scale-[0.95] transition-transform shadow-lg"
+                    >
+                      <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.469h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.469h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                      </svg>
                     </button>
                   </div>
 
@@ -2348,6 +4321,41 @@ export default function App() {
                     {t('logIn', language)}
                   </button>
 
+                  <div className="mt-8 flex items-center gap-4">
+                    <div className="h-px bg-white/10 flex-1"></div>
+                    <span className="text-xs text-white/40 uppercase tracking-wider">{t('orContinueWith', language) || 'Or continue with'}</span>
+                    <div className="h-px bg-white/10 flex-1"></div>
+                  </div>
+
+                  <div className="mt-6 w-full flex justify-center gap-4">
+                    <button 
+                      onClick={() => setIsLoggedIn(true)}
+                      className="w-12 h-12 rounded-2xl bg-white text-black flex items-center justify-center hover:scale-[0.95] transition-transform shadow-lg"
+                    >
+                      <svg className="w-5 h-5" viewBox="0 0 24 24">
+                        <path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
+                        <path fill="currentColor" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
+                        <path fill="currentColor" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" />
+                        <path fill="currentColor" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
+                      </svg>
+                    </button>
+                    <button 
+                      onClick={() => setIsLoggedIn(true)}
+                      className="w-12 h-12 rounded-2xl text-white flex items-center justify-center hover:scale-[0.95] transition-transform shadow-lg"
+                      style={{ background: 'linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%)' }}
+                    >
+                      <Instagram className="w-6 h-6" />
+                    </button>
+                    <button 
+                      onClick={() => setIsLoggedIn(true)}
+                      className="w-12 h-12 rounded-2xl bg-[#1877F2] text-white flex items-center justify-center hover:scale-[0.95] transition-transform shadow-lg"
+                    >
+                      <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.469h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.469h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                      </svg>
+                    </button>
+                  </div>
+
                   <div className="mt-auto pt-8 text-center text-sm text-white/60">
                     {t('dontHaveAccount', language)}{' '}
                     <button onClick={() => setAuthMode('signup')} className="text-indigo-400 font-semibold hover:text-indigo-300">
@@ -2416,6 +4424,41 @@ export default function App() {
                     {t('signUp', language)}
                   </button>
 
+                  <div className="mt-8 flex items-center gap-4">
+                    <div className="h-px bg-white/10 flex-1"></div>
+                    <span className="text-xs text-white/40 uppercase tracking-wider">{t('orContinueWith', language) || 'Or continue with'}</span>
+                    <div className="h-px bg-white/10 flex-1"></div>
+                  </div>
+
+                  <div className="mt-6 w-full flex justify-center gap-4">
+                    <button 
+                      onClick={() => setIsLoggedIn(true)}
+                      className="w-12 h-12 rounded-2xl bg-white text-black flex items-center justify-center hover:scale-[0.95] transition-transform shadow-lg"
+                    >
+                      <svg className="w-5 h-5" viewBox="0 0 24 24">
+                        <path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
+                        <path fill="currentColor" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
+                        <path fill="currentColor" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" />
+                        <path fill="currentColor" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
+                      </svg>
+                    </button>
+                    <button 
+                      onClick={() => setIsLoggedIn(true)}
+                      className="w-12 h-12 rounded-2xl text-white flex items-center justify-center hover:scale-[0.95] transition-transform shadow-lg"
+                      style={{ background: 'linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%)' }}
+                    >
+                      <Instagram className="w-6 h-6" />
+                    </button>
+                    <button 
+                      onClick={() => setIsLoggedIn(true)}
+                      className="w-12 h-12 rounded-2xl bg-[#1877F2] text-white flex items-center justify-center hover:scale-[0.95] transition-transform shadow-lg"
+                    >
+                      <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.469h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.469h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                      </svg>
+                    </button>
+                  </div>
+
                   <div className="mt-auto pt-8 text-center text-sm text-white/60">
                     {t('alreadyHaveAccount', language)}{' '}
                     <button onClick={() => setAuthMode('login')} className="text-indigo-400 font-semibold hover:text-indigo-300">
@@ -2433,211 +4476,259 @@ export default function App() {
   return (
     <div className="flex flex-col h-[100dvh] bg-[#0a0a0c] font-sans text-white relative overflow-hidden" style={getModeStyles()}>
         
-        {/* Dynamic Background Gradient */}
-        <div className={`absolute inset-0 bg-gradient-to-b ${currentStep === 0 ? 'from-indigo-500/20 to-purple-500/20' : currentStep <= planQuestions.length ? 'from-emerald-500/20 to-teal-500/20' : 'from-amber-500/20 to-orange-500/20'} opacity-40 transition-colors duration-700 ease-in-out`} />
-        
-        {/* Top Navigation */}
-        <div className="relative z-30 flex justify-end px-6 pt-14 pb-2">
-          {currentStep > 0 && currentStep <= planQuestions.length && (
-            <button 
-              onClick={() => setCurrentStep(prev => prev - 1)}
-              className="text-sm font-medium text-white/50 hover:text-white transition-colors px-4 py-2 -ml-4 mr-auto"
-            >
-              {t('back', language) || "Back"}
-            </button>
-          )}
-          {currentStep <= planQuestions.length && (
-            <button 
-              onClick={() => setIsCompleted(true)}
-              className="text-sm font-medium text-white/50 hover:text-white transition-colors px-4 py-2 -mr-4"
-            >
-              {t('skip', language)}
-            </button>
-          )}
-        </div>
+        {/* Dynamic Background Gradient Removed */}
 
         {/* Content Area */}
-        {currentStep === 0 && (
-          <div className="relative z-10 flex-1 flex flex-col items-center justify-center px-8 pb-12">
-            <AnimatePresence mode="wait">
-              <motion.div
-                key="language"
-                initial={{ opacity: 0, x: 20, scale: 0.95 }}
-                animate={{ opacity: 1, x: 0, scale: 1 }}
-                exit={{ opacity: 0, x: -20, scale: 0.95 }}
-                transition={{ duration: 0.4, ease: "easeOut" }}
-                className="flex flex-col items-center text-center w-full max-w-md"
-              >
-                <div className="w-24 h-24 rounded-full bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center mb-8">
-                  <Globe className="w-12 h-12 text-indigo-400" />
-                </div>
-                <h2 className="text-3xl font-bold tracking-tight mb-4 leading-tight">
-                  {t('selectLanguage', language) || "Select Language"}
-                </h2>
-                <p className="text-[15px] text-white/60 leading-relaxed font-medium mb-8">
-                  {t('chooseLanguageDesc', language) || "Choose your preferred language to continue."}
-                </p>
-                
-                <div className="w-full space-y-3 max-h-[40vh] overflow-y-auto hide-scrollbar pb-4 px-2 -mx-2">
-                  {[
-                    { code: 'en', name: 'English' },
-                    { code: 'hi', name: 'हिंदी (Hindi)' },
-                    { code: 'bn', name: 'বাংলা (Bengali)' },
-                    { code: 'mr', name: 'मराठी (Marathi)' },
-                    { code: 'te', name: 'తెలుగు (Telugu)' },
-                    { code: 'ta', name: 'தமிழ் (Tamil)' }
-                  ].map((lang) => (
-                    <button
-                      key={lang.code}
-                      onClick={() => {
-                        setLanguage(lang.code as Language);
-                      }}
-                      className={`w-full p-4 rounded-2xl border transition-all text-lg font-medium ${
-                        language === lang.code 
-                          ? 'bg-indigo-500/20 border-indigo-500/50 text-white' 
-                          : 'bg-[#1a1a1c] border-white/5 text-white/70 hover:bg-[#2a2a2c] hover:text-white'
-                      }`}
-                    >
-                      {lang.name}
-                    </button>
-                  ))}
-                </div>
+        <div className="relative z-10 flex-1 flex flex-col items-center justify-center px-8 pb-12">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key="language"
+              initial={{ opacity: 0, x: 20, scale: 0.95 }}
+              animate={{ opacity: 1, x: 0, scale: 1 }}
+              exit={{ opacity: 0, x: -20, scale: 0.95 }}
+              transition={{ duration: 0.4, ease: "easeOut" }}
+              className="flex flex-col items-center text-center w-full max-w-md"
+            >
+              <div className="w-24 h-24 rounded-full bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center mb-8 mt-12">
+                <Globe className="w-12 h-12 text-indigo-400" />
+              </div>
+              <h2 className="text-3xl font-bold tracking-tight mb-4 leading-tight">
+                {t('selectLanguage', language) || "Select Language"}
+              </h2>
+              <p className="text-[15px] text-white/60 leading-relaxed font-medium mb-8">
+                {t('chooseLanguageDesc', language) || "Choose your preferred language to continue."}
+              </p>
+              
+              <div className="w-full space-y-3 max-h-[40vh] overflow-y-auto hide-scrollbar pb-4 px-2 -mx-2">
+                {[
+                  { code: 'en', name: 'English' },
+                  { code: 'hi', name: 'हिंदी (Hindi)' },
+                  { code: 'bn', name: 'বাংলা (Bengali)' },
+                  { code: 'mr', name: 'मराठी (Marathi)' },
+                  { code: 'te', name: 'తెలుగు (Telugu)' },
+                  { code: 'kn', name: 'ಕನ್ನಡ (Kannada)' },
+                  { code: 'ta', name: 'தமிழ் (Tamil)' }
+                ].map((lang) => (
+                  <button
+                    key={lang.code}
+                    onClick={() => {
+                      setLanguage(lang.code as Language);
+                    }}
+                    className={`w-full p-4 rounded-2xl border transition-all text-lg font-medium ${
+                      language === lang.code 
+                        ? 'bg-indigo-500/20 border-indigo-500/50 text-white' 
+                        : 'bg-[#1a1a1c] border-white/5 text-white/70 hover:bg-[#2a2a2c] hover:text-white'
+                    }`}
+                  >
+                    {lang.name}
+                  </button>
+                ))}
+              </div>
 
-                <button
-                  onClick={() => setCurrentStep(1)}
-                  className="w-full mt-4 h-14 rounded-2xl bg-white text-black font-semibold text-lg flex items-center justify-center gap-2 hover:scale-[0.98] active:scale-95 transition-all shadow-[0_0_40px_rgba(255,255,255,0.1)]"
+              <button
+                onClick={() => setOnboardingStep(1)}
+                className="w-full mt-4 h-14 rounded-2xl bg-white text-black font-semibold text-lg flex items-center justify-center gap-2 hover:scale-[0.98] active:scale-95 transition-all shadow-[0_0_40px_rgba(255,255,255,0.1)]"
+              >
+                {t('continue', language) || "Continue"}
+                <ChevronRight className="w-5 h-5" />
+              </button>
+            </motion.div>
+          </AnimatePresence>
+
+          {/* Feedback Modal */}
+          <AnimatePresence>
+            {isFeedbackOpen && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="fixed inset-0 z-[10000] bg-black/80 backdrop-blur-sm flex items-center justify-center p-4"
+                onClick={() => setIsFeedbackOpen(false)}
+              >
+                <motion.div
+                  initial={{ scale: 0.95, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  exit={{ scale: 0.95, opacity: 0 }}
+                  onClick={(e) => e.stopPropagation()}
+                  className="bg-[#1a1a1c] w-full max-w-sm rounded-[2rem] p-6 shadow-2xl relative overflow-hidden"
                 >
-                  {t('continue', language) || "Continue"}
-                  <ChevronRight className="w-5 h-5" />
-                </button>
-              </motion.div>
-            </AnimatePresence>
-          </div>
-        )}
-
-        {currentStep > 0 && currentStep <= planQuestions.length && (
-          <div className="relative z-10 flex-1 flex flex-col items-center justify-center px-8 pb-12">
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={currentStep}
-                initial={{ opacity: 0, x: 20, scale: 0.95 }}
-                animate={{ opacity: 1, x: 0, scale: 1 }}
-                exit={{ opacity: 0, x: -20, scale: 0.95 }}
-                transition={{ duration: 0.4, ease: "easeOut" }}
-                className="flex flex-col w-full max-w-md"
-              >
-                <div className="flex items-center justify-between mb-8">
-                  <span className="text-sm font-medium text-indigo-400">
-                    {t('question', language)} {currentStep} {t('of', language)} {planQuestions.length}
-                  </span>
-                  <div className="flex gap-1">
-                    {planQuestions.map((_, i) => (
-                      <div key={i} className={`h-1.5 w-3 sm:w-4 rounded-full ${i < currentStep ? 'bg-indigo-500' : 'bg-white/10'}`} />
+                  <button
+                    onClick={() => setIsFeedbackOpen(false)}
+                    className="absolute top-4 right-4 p-2 rounded-full bg-white/5 hover:bg-white/10 transition-colors text-white/60 hover:text-white"
+                  >
+                    <X className="w-5 h-5" />
+                  </button>
+                  
+                  <div className="text-center mb-6">
+                    <div className="w-16 h-16 rounded-full bg-indigo-500/20 flex items-center justify-center mx-auto mb-4">
+                      <MessageSquare className="w-8 h-8 text-indigo-400" />
+                    </div>
+                    <h2 className="text-2xl font-bold text-white mb-2">We value your feedback</h2>
+                    <p className="text-white/60 text-sm">Let us know how we can improve Brainova.</p>
+                  </div>
+                  
+                  <div className="flex justify-center gap-2 mb-6">
+                    {[1, 2, 3, 4, 5].map((star) => (
+                      <button
+                        key={star}
+                        onClick={() => setFeedbackRating(star)}
+                        className="p-1 focus:outline-none transition-transform hover:scale-110"
+                      >
+                        <Star 
+                          className={`w-8 h-8 transition-colors ${
+                            star <= feedbackRating 
+                              ? 'text-[#f59e0b] fill-[#f59e0b]' 
+                              : 'text-white/20 hover:text-white/40'
+                          }`} 
+                        />
+                      </button>
                     ))}
                   </div>
+                  
+                  <textarea
+                    value={feedbackText}
+                    onChange={(e) => setFeedbackText(e.target.value)}
+                    placeholder="Tell us more about your experience..."
+                    className="w-full h-32 bg-white/5 border border-white/10 rounded-xl p-4 text-white placeholder-white/40 focus:outline-none focus:border-indigo-500 resize-none transition-colors mb-6"
+                  ></textarea>
+                  
+                  <button
+                    onClick={() => {
+                      // Here you would typically send the feedback to your backend
+                      console.log({ rating: feedbackRating, text: feedbackText });
+                      setIsFeedbackOpen(false);
+                      setFeedbackRating(0);
+                      setFeedbackText('');
+                    }}
+                    disabled={feedbackRating === 0}
+                    className="w-full py-4 rounded-xl font-bold text-white transition-colors relative overflow-hidden group disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    <div className="absolute inset-0 bg-gradient-to-r from-indigo-600 to-purple-600 transition-transform group-hover:scale-[1.02]"></div>
+                    <span className="relative z-10 flex items-center justify-center gap-2">
+                      <Send className="w-5 h-5" />
+                      Submit Feedback
+                    </span>
+                  </button>
+                </motion.div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {/* Notifications Modal */}
+          <AnimatePresence>
+            {isNotificationsOpen && (
+              <motion.div
+                initial={{ opacity: 0, y: '100%' }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: '100%' }}
+                className="fixed inset-0 z-[10000] bg-[#0a0a0c] flex flex-col"
+              >
+                <div className="flex items-center justify-between px-6 py-4 border-b border-white/10 bg-[#0a0a0c]">
+                  {selectedNotification ? (
+                    <div className="flex items-center gap-3">
+                      <button 
+                        onClick={() => setSelectedNotification(null)}
+                        className="p-2 rounded-full hover:bg-white/10 transition-colors -ml-2"
+                      >
+                        <ArrowLeft className="w-5 h-5 text-white" />
+                      </button>
+                      <h2 className="text-xl font-bold text-white">Message</h2>
+                    </div>
+                  ) : (
+                    <h2 className="text-xl font-bold text-white">Notifications</h2>
+                  )}
+                  <button
+                    onClick={() => {
+                      setIsNotificationsOpen(false);
+                      setSelectedNotification(null);
+                    }}
+                    className="p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
+                  >
+                    <X className="w-6 h-6" />
+                  </button>
                 </div>
                 
-                <h4 className="text-2xl font-bold mb-8 leading-tight text-center">
-                  {t(planQuestions[currentStep - 1].question, language)}
-                </h4>
-                
-                <div className="space-y-3">
-                  {planQuestions[currentStep - 1].options.map((option, i) => (
-                    <button
-                      key={i}
-                      onClick={() => {
-                        const newAnswers = { ...planAnswers, [currentStep - 1]: option };
-                        setPlanAnswers(newAnswers);
+                <div className="flex-1 overflow-y-auto px-6 py-4">
+                  <AnimatePresence mode="wait">
+                    {selectedNotification ? (
+                      <motion.div 
+                        key="notification-details"
+                        initial={{ opacity: 0, x: 20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: -20 }}
+                        className="h-full flex flex-col"
+                      >
+                        <div className="mb-6 mt-2">
+                          <h3 className="text-2xl font-bold text-white mb-2 leading-tight">
+                            {selectedNotification.title}
+                          </h3>
+                          <div className="text-sm text-white/40 font-medium">
+                            {selectedNotification.time}
+                          </div>
+                        </div>
                         
-                        if (currentStep < planQuestions.length) {
-                          setCurrentStep(currentStep + 1);
-                        } else {
-                          setCurrentStep(currentStep + 1);
-                          // Generate plan
-                          setIsGeneratingPlan(true);
-                          setTimeout(() => {
-                            setIsGeneratingPlan(false);
-                            setGeneratedPlan({
-                              title: "focusLogicMaster",
-                              description: "focusLogicDesc",
-                              games: [
-                                allGames.find(g => g.id === 'sudoku') || allGames[0],
-                                allGames.find(g => g.id === 'sequence') || allGames[1],
-                                allGames.find(g => g.id === 'reaction') || allGames[2]
-                              ]
-                            });
-                            setCurrentStep(currentStep + 2);
-                          }, 2500);
-                        }
-                      }}
-                      className="w-full p-5 rounded-2xl bg-[#1a1a1c] hover:bg-indigo-500/20 border border-white/5 hover:border-indigo-500/50 transition-all text-left font-medium text-lg"
-                    >
-                      {t(option, language)}
-                    </button>
-                  ))}
+                        <div className="bg-[#1a1a1c] border border-white/5 rounded-3xl p-6 shadow-xl flex-1 flex flex-col items-center justify-center text-center">
+                          <div className="w-16 h-16 rounded-full bg-indigo-500/20 flex items-center justify-center mb-6">
+                            <Brain className="w-8 h-8 text-indigo-400" />
+                          </div>
+                          <p className="text-white/80 text-lg leading-relaxed whitespace-pre-wrap max-w-sm">
+                            {selectedNotification.message}
+                          </p>
+                        </div>
+                      </motion.div>
+                    ) : (
+                      <motion.div
+                        key="notifications-list"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                      >
+                        {notifications.length > 0 ? (
+                          <div className="space-y-4">
+                            {notifications.map((notification) => (
+                              <div 
+                                key={notification.id} 
+                                onClick={() => setSelectedNotification(notification as any)}
+                                className={`p-4 rounded-2xl border cursor-pointer hover:bg-white/5 transition-colors ${notification.isRead ? 'bg-[#1a1a1c] border-white/5' : 'bg-[#1a1a1c] border-indigo-500/30'}`}
+                              >
+                                <div className="flex justify-between items-start mb-2">
+                                  <h3 className={`font-bold ${notification.isRead ? 'text-white/80' : 'text-white'}`}>
+                                    {notification.title}
+                                  </h3>
+                                  <span className="text-xs text-white/40">{notification.time}</span>
+                                </div>
+                                <p className="text-sm text-white/60 leading-relaxed line-clamp-2">
+                                  {notification.message}
+                                </p>
+                              </div>
+                            ))}
+                          </div>
+                        ) : (
+                          <div className="flex flex-col items-center justify-center h-[50vh] text-white/50">
+                            <div className="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center mb-4">
+                              <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                              </svg>
+                            </div>
+                            <p className="text-lg font-medium">No notifications yet</p>
+                            <p className="text-sm text-white/40 mt-1">We'll let you know when something comes up</p>
+                          </div>
+                        )}
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                 </div>
               </motion.div>
-            </AnimatePresence>
-          </div>
-        )}
+            )}
+          </AnimatePresence>
+        </div>
 
-        {currentStep === planQuestions.length + 1 && (
-          <div className="relative z-10 flex-1 flex flex-col items-center justify-center px-8 pb-12">
-            <AnimatePresence mode="wait">
-              <motion.div
-                key="generating"
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.95 }}
-                className="flex flex-col items-center text-center w-full max-w-md"
-              >
-                <div className="w-24 h-24 rounded-full bg-indigo-500/20 flex items-center justify-center mb-8 relative">
-                  <div className="absolute inset-0 rounded-full border-4 border-indigo-500/30 border-t-indigo-500 animate-spin" />
-                  <Bot className="w-12 h-12 text-indigo-400" />
-                </div>
-                <h2 className="text-3xl font-bold tracking-tight mb-4 leading-tight">
-                  {t('analyzingProfile', language) || "Analyzing Profile..."}
-                </h2>
-                <p className="text-[15px] text-white/60 leading-relaxed font-medium">
-                  {t('creatingPlan', language) || "Creating your personalized training plan based on your answers."}
-                </p>
-              </motion.div>
-            </AnimatePresence>
-          </div>
-        )}
-
-        {currentStep === planQuestions.length + 2 && (
-          <div className="relative z-10 flex-1 flex flex-col items-center justify-center px-8 pb-12">
-            <AnimatePresence mode="wait">
-              <motion.div
-                key="ready"
-                initial={{ opacity: 0, y: 20, scale: 0.95 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                className="flex flex-col items-center text-center w-full max-w-md"
-              >
-                <div className="w-24 h-24 rounded-full bg-emerald-500/20 flex items-center justify-center mb-8 relative">
-                  <Sparkles className="w-12 h-12 text-emerald-400" />
-                </div>
-                <h2 className="text-3xl font-bold tracking-tight mb-4 leading-tight">
-                  {t('planReady', language) || "Your Plan is Ready!"}
-                </h2>
-                <p className="text-[15px] text-white/60 leading-relaxed font-medium mb-12">
-                  {t('planReadyDesc', language) || "We've created a personalized training plan to help you achieve your goals."}
-                </p>
-                
-                <button
-                  onClick={() => {
-                    setIsCompleted(true);
-                    setCurrentTab('coach');
-                  }}
-                  className="w-full h-14 rounded-2xl bg-white text-black font-semibold text-lg flex items-center justify-center gap-2 hover:scale-[0.98] active:scale-95 transition-all shadow-[0_0_40px_rgba(255,255,255,0.1)]"
-                >
-                  {t('getStarted', language)}
-                  <ChevronRight className="w-5 h-5" />
-                </button>
-              </motion.div>
-            </AnimatePresence>
-          </div>
+        {celebrationData && (
+          <CelebrationOverlay
+            score={celebrationData.score}
+            coins={celebrationData.coins}
+            onClose={() => setCelebrationData(null)}
+          />
         )}
     </div>
   );

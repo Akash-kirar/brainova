@@ -12,8 +12,10 @@ export interface GameSession {
 
 export interface UserStats {
   dailyStreak: number;
+  longestStreak: number;
   lastPlayedDate: string | null;
   totalGamesPlayed: number;
+  novaCoins: number;
   highScores: {
     memory: number;
     speed: number;
@@ -23,14 +25,18 @@ export interface UserStats {
     language: number;
   };
   weeklyPerformance: { date: string; score: number }[];
+  streakHistory: string[];
 }
 
 const DEFAULT_STATS: UserStats = {
   dailyStreak: 0,
+  longestStreak: 0,
   lastPlayedDate: null,
   totalGamesPlayed: 0,
+  novaCoins: 0,
   highScores: { memory: 0, speed: 0, focus: 0, logic: 0, math: 0, language: 0 },
   weeklyPerformance: [],
+  streakHistory: [],
 };
 
 export function useProgress() {
@@ -39,8 +45,16 @@ export function useProgress() {
 
   // Load data on mount
   useEffect(() => {
-    const savedStats = localStorage.getItem('brainova_stats');
-    const savedSessions = localStorage.getItem('brainova_sessions');
+    const savedStats = localStorage.getItem('brainova_stats_v2');
+    
+    // Clear old sample data if it contains 1250 memory score
+    if (savedStats && savedStats.includes('"memory":1250')) {
+      localStorage.removeItem('brainova_stats_v2');
+      localStorage.removeItem('brainova_sessions_v2');
+      return; // Will use DEFAULT_STATS and empty sessions
+    }
+  
+    const savedSessions = localStorage.getItem('brainova_sessions_v2');
     
     if (savedStats) {
       try {
@@ -61,11 +75,11 @@ export function useProgress() {
 
   // Save data whenever it changes
   useEffect(() => {
-    localStorage.setItem('brainova_stats', JSON.stringify(stats));
+    localStorage.setItem('brainova_stats_v2', JSON.stringify(stats));
   }, [stats]);
 
   useEffect(() => {
-    localStorage.setItem('brainova_sessions', JSON.stringify(sessions));
+    localStorage.setItem('brainova_sessions_v2', JSON.stringify(sessions));
   }, [sessions]);
 
   const recordGame = (session: Omit<GameSession, 'id' | 'timestamp'>) => {
@@ -85,6 +99,7 @@ export function useProgress() {
       
       // Update total games
       newStats.totalGamesPlayed += 1;
+      newStats.novaCoins = (newStats.novaCoins || 0) + Math.max(10, Math.floor(session.score / 5));
 
       // Update high scores
       if (session.score > newStats.highScores[session.gameType]) {
@@ -110,6 +125,16 @@ export function useProgress() {
           }
         }
         newStats.lastPlayedDate = todayStr;
+      }
+      
+      if (!newStats.streakHistory) {
+         newStats.streakHistory = [];
+      }
+      if (!newStats.streakHistory.includes(todayStr)) {
+          newStats.streakHistory.push(todayStr);
+      }
+      if (newStats.dailyStreak > (newStats.longestStreak || 0)) {
+          newStats.longestStreak = newStats.dailyStreak;
       }
 
       // Update weekly performance
