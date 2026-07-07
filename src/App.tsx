@@ -4,7 +4,7 @@
  */
 
 import React, { useState, useEffect, useRef } from 'react';
-import { Brain, Cpu, TrendingUp, ChevronLeft, ChevronRight, ChevronDown, Sparkles, Mail, Lock, User, ArrowLeft, Flame, Zap, Target, Activity, Play, Lightbulb, Calculator, Trophy, Star, Grid, RotateCcw, Box, Puzzle, Search, Clock, Type, Shuffle, BookOpen, ListOrdered, Link, Check, CheckCircle, Copy, Bot, Home, Gamepad2, Sparkle, Settings, FileText, Shield, HelpCircle, Download, Trash2, MessageSquare, Sliders, Globe, X, Mic, Send, CircleDollarSign, Heart, Flag, Moon, Crown, Compass, Camera, Edit2, Instagram, Gift, CreditCard, Building, Wallet, Smartphone, Award, MoreVertical, Bell, Gem, Dumbbell, Calendar, Rocket, Sword, Sun, Hexagon, Octagon, Diamond, Triangle, Infinity, Orbit, Atom } from 'lucide-react';
+import { Brain, Cpu, Paintbrush, TrendingUp, TrendingDown, ChevronLeft, ChevronRight, ChevronDown, Sparkles, Mail, Lock, User, ArrowLeft, Flame, Zap, Target, Activity, Play, Lightbulb, Calculator, Trophy, Star, Grid, RotateCcw, Box, Puzzle, Search, Clock, Type, Shuffle, BookOpen, ListOrdered, Link, Check, CheckCircle, Copy, Bot, Home, Gamepad2, Sparkle, Settings, FileText, Shield, HelpCircle, Download, Trash2, MessageSquare, Sliders, Globe, X, Mic, Send, CircleDollarSign, Heart, Flag, Moon, Crown, Compass, Camera, Edit2, Instagram, Gift, CreditCard, Building, Wallet, Smartphone, Award, MoreVertical, Bell, Gem, Dumbbell, Calendar, Rocket, Sword, Sun, Hexagon, Octagon, Diamond, Triangle, Infinity, Orbit, Atom } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { AreaChart, Area, LineChart, Line, XAxis, YAxis, ResponsiveContainer } from 'recharts';
 
@@ -27,6 +27,7 @@ import OddOneOutGame from '@/src/features/logic/components/OddOneOutGame';
 import { OnboardingScreens } from '@/src/features/onboarding/components/OnboardingScreens';
 import { SplashAnimation } from '@/src/features/onboarding/components/SplashAnimation';
 import FocusTapGame from '@/src/features/reaction/components/FocusTapGame';
+import { AuthScreen } from "@/src/features/auth/components/AuthScreen";
 import ColorMatchFocusGame from '@/src/features/logic/components/ColorMatchFocusGame';
 import SlidingPuzzleGame from '@/src/features/logic/components/SlidingPuzzleGame';
 import PatternLogicGame from '@/src/features/logic/components/PatternLogicGame';
@@ -64,6 +65,7 @@ import QuickActions from './components/QuickActions';
 import AiAnalysisPage from './components/AiAnalysisPage';
 import PremiumSubscriptionPage from './components/PremiumSubscriptionPage';
 import GameDetailsView from './components/GameDetailsView';
+import { GameContext } from './contexts/GameContext';
 import PersonalizedPlanPage from './components/PersonalizedPlanPage';
 import AchievementsPage from './components/AchievementsPage';
 import LeaderboardPage from './components/LeaderboardPage';
@@ -71,6 +73,20 @@ import { ChallengesPage } from './components/ChallengesPage';
 import { useProgress, GameSession } from './hooks/useProgress';
 import { t, Language } from './i18n';
 import CelebrationOverlay from '@/src/components/ui/CelebrationOverlay';
+
+import PatternRecognitionGame from '@/src/features/visual/components/PatternRecognitionGame';
+import MentalRotationGame from '@/src/features/visual/components/MentalRotationGame';
+import SpatialReasoningGame from '@/src/features/visual/components/SpatialReasoningGame';
+
+import SpotTheDifferenceGame from '@/src/features/observation/components/SpotTheDifferenceGame';
+import FindHiddenObjectGame from '@/src/features/observation/components/FindHiddenObjectGame';
+import VisualSearchGame from '@/src/features/observation/components/VisualSearchGame';
+import PlanningGame from '@/src/features/executive/components/PlanningGame';
+import DecisionMakingGame from '@/src/features/executive/components/DecisionMakingGame';
+import TaskSwitchingGame from '@/src/features/executive/components/TaskSwitchingGame';
+import PatternCreationGame from '@/src/features/creativity/components/PatternCreationGame';
+import CreativeThinkingGame from '@/src/features/creativity/components/CreativeThinkingGame';
+import PuzzleDesignGame from '@/src/features/creativity/components/PuzzleDesignGame';
 
 const mapNodesBase = [
   { id: 25, title: 'Infinite', xp: '106000', maxXP: '1000000', x: 240, y: 150, icon: Atom, color: '#f43f5e', labelColor: '#fb7185', labelPos: 'left' },
@@ -135,14 +151,14 @@ const allGames = [
   { id: 'focus-tap', title: 'Focus Tap', category: 'Focus', description: 'Tap target quickly', icon: <Zap className="w-8 h-8 text-rose-400" />, color: 'bg-rose-500/10', border: 'border-rose-500/20' },
   { id: 'moving-target-tap', title: 'Moving Target Tap', category: 'Focus', description: 'Tap moving targets', icon: <Activity className="w-8 h-8 text-blue-400" />, color: 'bg-blue-500/10', border: 'border-blue-500/20' },
   { id: 'color-match-focus', title: 'Color Match Focus', category: 'Focus', description: 'Match word and color', icon: <Brain className="w-8 h-8 text-purple-400" />, color: 'bg-purple-500/10', border: 'border-purple-500/20' },
-  { id: 'find-hidden-object', title: 'Find Hidden Object', category: 'Focus', description: 'Spot hidden items', icon: <Target className="w-8 h-8 text-cyan-400" />, color: 'bg-cyan-500/10', border: 'border-cyan-500/20' },
+  { id: 'find-hidden-object', title: 'Find Hidden Object', category: 'Observation', description: 'Spot hidden items', icon: <Target className="w-8 h-8 text-cyan-400" />, color: 'bg-cyan-500/10', border: 'border-cyan-500/20' },
   { id: 'distraction-filter', title: 'Distraction Filter', category: 'Focus', description: 'Ignore wrong objects', icon: <Sparkles className="w-8 h-8 text-pink-400" />, color: 'bg-pink-500/10', border: 'border-pink-500/20' },
   { id: 'focus-circle', title: 'Focus Circle', category: 'Focus', description: 'Track moving circle', icon: <Activity className="w-8 h-8 text-indigo-400" />, color: 'bg-indigo-500/10', border: 'border-indigo-500/20' },
-  { id: 'visual-search', title: 'Visual Search', category: 'Focus', description: 'Search for specific items', icon: <Lightbulb className="w-8 h-8 text-yellow-400" />, color: 'bg-yellow-500/10', border: 'border-yellow-500/20' },
+  { id: 'visual-search', title: 'Visual Search', category: 'Observation', description: 'Search for specific items', icon: <Lightbulb className="w-8 h-8 text-yellow-400" />, color: 'bg-yellow-500/10', border: 'border-yellow-500/20' },
   { id: 'target-finder', title: 'Target Finder', category: 'Focus', description: 'Find the specific target', icon: <Target className="w-8 h-8 text-emerald-400" />, color: 'bg-emerald-500/10', border: 'border-emerald-500/20' },
   { id: 'focus-lines', title: 'Focus Lines', category: 'Focus', description: 'Follow correct path', icon: <Zap className="w-8 h-8 text-amber-400" />, color: 'bg-amber-500/10', border: 'border-amber-500/20' },
   { id: 'quick-select', title: 'Quick Select', category: 'Focus', description: 'Select items quickly', icon: <Activity className="w-8 h-8 text-rose-400" />, color: 'bg-rose-500/10', border: 'border-rose-500/20' },
-  { id: 'spot-difference', title: 'Spot the Difference', category: 'Focus', description: 'Find differences in images', icon: <Brain className="w-8 h-8 text-blue-400" />, color: 'bg-blue-500/10', border: 'border-blue-500/20' },
+  { id: 'spot-difference', title: 'Spot the Difference', category: 'Observation', description: 'Find differences in images', icon: <Brain className="w-8 h-8 text-blue-400" />, color: 'bg-blue-500/10', border: 'border-blue-500/20' },
   { id: 'multi-object-tracking', title: 'Multi Object Tracking', category: 'Focus', description: 'Track multiple objects', icon: <Target className="w-8 h-8 text-purple-400" />, color: 'bg-purple-500/10', border: 'border-purple-500/20' },
   { id: 'attention-grid', title: 'Attention Grid', category: 'Focus', description: 'Focus on grid patterns', icon: <Sparkles className="w-8 h-8 text-cyan-400" />, color: 'bg-cyan-500/10', border: 'border-cyan-500/20' },
   
@@ -200,21 +216,33 @@ const allGames = [
   { id: 'flash-tap', title: 'Flash Tap', category: 'Reaction Speed', description: 'Tap flashing items', icon: <Lightbulb className="w-8 h-8 text-amber-400" />, color: 'bg-amber-500/10', border: 'border-amber-500/20' },
   { id: 'quick-click', title: 'Quick Click', category: 'Reaction Speed', description: 'Click as fast as you can', icon: <Target className="w-8 h-8 text-cyan-400" />, color: 'bg-cyan-500/10', border: 'border-cyan-500/20' },
   { id: 'lightning-reaction', title: 'Lightning Reaction', category: 'Reaction Speed', description: 'Lightning fast taps', icon: <Zap className="w-8 h-8 text-purple-400" />, color: 'bg-purple-500/10', border: 'border-purple-500/20' },
-  { id: 'word-builder', title: 'Word Builder', category: 'Language & Word', description: 'Build words from letters', icon: <Type className="w-8 h-8 text-indigo-400" />, color: 'bg-indigo-500/10', border: 'border-indigo-500/20' },
-  { id: 'word-scramble', title: 'Word Scramble', category: 'Language & Word', description: 'Unscramble the letters', icon: <Shuffle className="w-8 h-8 text-purple-400" />, color: 'bg-purple-500/10', border: 'border-purple-500/20' },
-  { id: 'vocabulary-match', title: 'Vocabulary Match', category: 'Language & Word', description: 'Match words to meanings', icon: <BookOpen className="w-8 h-8 text-emerald-400" />, color: 'bg-emerald-500/10', border: 'border-emerald-500/20' },
-  { id: 'letter-sequence', title: 'Letter Sequence', category: 'Language & Word', description: 'Find the next letter', icon: <ListOrdered className="w-8 h-8 text-amber-400" />, color: 'bg-amber-500/10', border: 'border-amber-500/20' },
-  { id: 'word-memory', title: 'Word Memory', category: 'Language & Word', description: 'Remember the words', icon: <Brain className="w-8 h-8 text-rose-400" />, color: 'bg-rose-500/10', border: 'border-rose-500/20' },
-  { id: 'find-the-word', title: 'Find the Word', category: 'Language & Word', description: 'Find hidden words', icon: <Search className="w-8 h-8 text-cyan-400" />, color: 'bg-cyan-500/10', border: 'border-cyan-500/20' },
-  { id: 'missing-letter', title: 'Missing Letter', category: 'Language & Word', description: 'Fill in the blank', icon: <Type className="w-8 h-8 text-blue-400" />, color: 'bg-blue-500/10', border: 'border-blue-500/20' },
-  { id: 'word-puzzle', title: 'Word Puzzle', category: 'Language & Word', description: 'Solve word puzzles', icon: <Puzzle className="w-8 h-8 text-pink-400" />, color: 'bg-pink-500/10', border: 'border-pink-500/20' },
-  { id: 'word-association', title: 'Word Association', category: 'Language & Word', description: 'Link related words', icon: <Link className="w-8 h-8 text-yellow-400" />, color: 'bg-yellow-500/10', border: 'border-yellow-500/20' },
-  { id: 'spelling-challenge', title: 'Spelling Challenge', category: 'Language & Word', description: 'Spell correctly', icon: <CheckCircle className="w-8 h-8 text-green-400" />, color: 'bg-green-500/10', border: 'border-green-500/20' },
-  { id: 'word-speed-test', title: 'Word Speed Test', category: 'Language & Word', description: 'Fast word recognition', icon: <Zap className="w-8 h-8 text-orange-400" />, color: 'bg-orange-500/10', border: 'border-orange-500/20' },
-  { id: 'letter-grid-search', title: 'Letter Grid Search', category: 'Language & Word', description: 'Search in grid', icon: <Grid className="w-8 h-8 text-purple-400" />, color: 'bg-purple-500/10', border: 'border-purple-500/20' },
-  { id: 'synonym-match', title: 'Synonym Match', category: 'Language & Word', description: 'Match synonyms', icon: <Copy className="w-8 h-8 text-indigo-400" />, color: 'bg-indigo-500/10', border: 'border-indigo-500/20' },
-  { id: 'word-pattern', title: 'Word Pattern', category: 'Language & Word', description: 'Find word patterns', icon: <Activity className="w-8 h-8 text-rose-400" />, color: 'bg-rose-500/10', border: 'border-rose-500/20' },
-  { id: 'vocabulary-builder', title: 'Vocabulary Builder', category: 'Language & Word', description: 'Learn new words', icon: <BookOpen className="w-8 h-8 text-emerald-400" />, color: 'bg-emerald-500/10', border: 'border-emerald-500/20' },
+  { id: 'word-builder', title: 'Word Builder', category: 'Language & Vocabulary', description: 'Build words from letters', icon: <Type className="w-8 h-8 text-indigo-400" />, color: 'bg-indigo-500/10', border: 'border-indigo-500/20' },
+  { id: 'word-scramble', title: 'Word Scramble', category: 'Language & Vocabulary', description: 'Unscramble the letters', icon: <Shuffle className="w-8 h-8 text-purple-400" />, color: 'bg-purple-500/10', border: 'border-purple-500/20' },
+  { id: 'vocabulary-match', title: 'Vocabulary Match', category: 'Language & Vocabulary', description: 'Match words to meanings', icon: <BookOpen className="w-8 h-8 text-emerald-400" />, color: 'bg-emerald-500/10', border: 'border-emerald-500/20' },
+  { id: 'letter-sequence', title: 'Letter Sequence', category: 'Language & Vocabulary', description: 'Find the next letter', icon: <ListOrdered className="w-8 h-8 text-amber-400" />, color: 'bg-amber-500/10', border: 'border-amber-500/20' },
+  { id: 'word-memory', title: 'Word Memory', category: 'Language & Vocabulary', description: 'Remember the words', icon: <Brain className="w-8 h-8 text-rose-400" />, color: 'bg-rose-500/10', border: 'border-rose-500/20' },
+  { id: 'find-the-word', title: 'Find the Word', category: 'Language & Vocabulary', description: 'Find hidden words', icon: <Search className="w-8 h-8 text-cyan-400" />, color: 'bg-cyan-500/10', border: 'border-cyan-500/20' },
+  { id: 'missing-letter', title: 'Missing Letter', category: 'Language & Vocabulary', description: 'Fill in the blank', icon: <Type className="w-8 h-8 text-blue-400" />, color: 'bg-blue-500/10', border: 'border-blue-500/20' },
+  { id: 'word-puzzle', title: 'Word Puzzle', category: 'Language & Vocabulary', description: 'Solve word puzzles', icon: <Puzzle className="w-8 h-8 text-pink-400" />, color: 'bg-pink-500/10', border: 'border-pink-500/20' },
+  { id: 'word-association', title: 'Word Association', category: 'Language & Vocabulary', description: 'Link related words', icon: <Link className="w-8 h-8 text-yellow-400" />, color: 'bg-yellow-500/10', border: 'border-yellow-500/20' },
+  { id: 'spelling-challenge', title: 'Spelling Challenge', category: 'Language & Vocabulary', description: 'Spell correctly', icon: <CheckCircle className="w-8 h-8 text-green-400" />, color: 'bg-green-500/10', border: 'border-green-500/20' },
+  { id: 'word-speed-test', title: 'Word Speed Test', category: 'Language & Vocabulary', description: 'Fast word recognition', icon: <Zap className="w-8 h-8 text-orange-400" />, color: 'bg-orange-500/10', border: 'border-orange-500/20' },
+  { id: 'letter-grid-search', title: 'Letter Grid Search', category: 'Language & Vocabulary', description: 'Search in grid', icon: <Grid className="w-8 h-8 text-purple-400" />, color: 'bg-purple-500/10', border: 'border-purple-500/20' },
+  { id: 'synonym-match', title: 'Synonym Match', category: 'Language & Vocabulary', description: 'Match synonyms', icon: <Copy className="w-8 h-8 text-indigo-400" />, color: 'bg-indigo-500/10', border: 'border-indigo-500/20' },
+  { id: 'word-pattern', title: 'Word Pattern', category: 'Language & Vocabulary', description: 'Find word patterns', icon: <Activity className="w-8 h-8 text-rose-400" />, color: 'bg-rose-500/10', border: 'border-rose-500/20' },
+  { id: 'vocabulary-builder', title: 'Vocabulary Builder', category: 'Language & Vocabulary', description: 'Learn new words', icon: <BookOpen className="w-8 h-8 text-emerald-400" />, color: 'bg-emerald-500/10', border: 'border-emerald-500/20' },
+  // Visual & Spatial Games
+  { id: 'pattern-recognition', title: 'Pattern Recognition', category: 'Visual & Spatial', description: 'Identify visual patterns', icon: <Grid className="w-8 h-8 text-indigo-400" />, color: 'bg-indigo-500/10', border: 'border-indigo-500/20' },
+  { id: 'mental-rotation', title: 'Mental Rotation', category: 'Visual & Spatial', description: 'Rotate objects mentally', icon: <RotateCcw className="w-8 h-8 text-rose-400" />, color: 'bg-rose-500/10', border: 'border-rose-500/20' },
+  { id: 'spatial-reasoning', title: 'Spatial Reasoning', category: 'Visual & Spatial', description: 'Solve spatial puzzles', icon: <Box className="w-8 h-8 text-cyan-400" />, color: 'bg-cyan-500/10', border: 'border-cyan-500/20' },
+  // Executive Function
+  { id: 'planning', title: 'Planning', category: 'Executive Function', description: 'Plan your route', icon: <Grid className="w-8 h-8 text-indigo-400" />, color: 'bg-indigo-500/10', border: 'border-indigo-500/20' },
+  { id: 'decision-making', title: 'Decision Making', category: 'Executive Function', description: 'Quick optimal choices', icon: <TrendingUp className="w-8 h-8 text-rose-400" />, color: 'bg-rose-500/10', border: 'border-rose-500/20' },
+  { id: 'task-switching', title: 'Task Switching', category: 'Executive Function', description: 'Switch contexts quickly', icon: <Activity className="w-8 h-8 text-violet-400" />, color: 'bg-violet-500/10', border: 'border-violet-500/20' },
+  // Creativity
+  { id: 'pattern-creation', title: 'Pattern Creation', category: 'Creativity', description: 'Design symmetries', icon: <Paintbrush className="w-8 h-8 text-pink-400" />, color: 'bg-pink-500/10', border: 'border-pink-500/20' },
+  { id: 'creative-thinking', title: 'Creative Thinking', category: 'Creativity', description: 'Alternative uses', icon: <Sparkles className="w-8 h-8 text-amber-400" />, color: 'bg-amber-500/10', border: 'border-amber-500/20' },
+  { id: 'puzzle-design', title: 'Puzzle Design', category: 'Creativity', description: 'Design paths', icon: <Box className="w-8 h-8 text-cyan-400" />, color: 'bg-cyan-500/10', border: 'border-cyan-500/20' },
 ];
 
 const gameCategories = [
@@ -223,7 +251,11 @@ const gameCategories = [
   { id: 'focus', title: 'Focus', description: 'Improve attention span', icon: <Target className="w-8 h-8 text-emerald-400" />, color: 'bg-emerald-500/10', border: 'border-emerald-500/20' },
   { id: 'math', title: 'Math', description: 'Improve calculation speed', icon: <Calculator className="w-8 h-8 text-blue-400" />, color: 'bg-blue-500/10', border: 'border-blue-500/20' },
   { id: 'speed', title: 'Reaction Speed', description: 'Lightning fast reflexes', icon: <Zap className="w-8 h-8 text-rose-400" />, color: 'bg-rose-500/10', border: 'border-rose-500/20' },
-  { id: 'language', title: 'Language & Word', description: 'Expand vocabulary', icon: <Type className="w-8 h-8 text-cyan-400" />, color: 'bg-cyan-500/10', border: 'border-cyan-500/20' },
+  { id: 'language', title: 'Language & Vocabulary', description: 'Expand vocabulary', icon: <Type className="w-8 h-8 text-cyan-400" />, color: 'bg-cyan-500/10', border: 'border-cyan-500/20' },
+  { id: 'visual', title: 'Visual & Spatial', description: 'Enhance spatial logic', icon: <Box className="w-8 h-8 text-indigo-400" />, color: 'bg-indigo-500/10', border: 'border-indigo-500/20' },
+  { id: 'observation', title: 'Observation', description: 'Sharpen your perception', icon: <Search className="w-8 h-8 text-pink-400" />, color: 'bg-pink-500/10', border: 'border-pink-500/20' },
+  { id: 'executive', title: 'Executive Function', description: 'Plan & decide', icon: <Compass className="w-8 h-8 text-violet-400" />, color: 'bg-violet-500/10', border: 'border-violet-500/20' },
+  { id: 'creativity', title: 'Creativity', description: 'Express yourself', icon: <Paintbrush className="w-8 h-8 text-pink-400" />, color: 'bg-pink-500/10', border: 'border-pink-500/20' },
 ];
 
 const planQuestions = [
@@ -268,7 +300,7 @@ export default function App() {
   };
 
   const [currentStep, setCurrentStep] = useState(0);
-  const [isCompleted, setIsCompleted] = useState(false);
+  const [isCompleted, setIsCompleted] = useState(true);
   const [onboardingStep, setOnboardingStep] = useState(0);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [authMode, setAuthMode] = useState<'select' | 'login' | 'signup'>('select');
@@ -280,7 +312,10 @@ export default function App() {
   const [gameSource, setGameSource] = useState<string | null>(null);
 
   const handleGameCompleteWrapper = (session: Omit<GameSession, 'id' | 'timestamp'>) => {
-    recordGame(session);
+    recordGame({
+      ...session,
+      gameId: activeGame || undefined
+    });
     if (session.score >= 30) { // Set threshold for high score
       setCelebrationData({
         score: session.score,
@@ -362,7 +397,7 @@ export default function App() {
   const [promoCode, setPromoCode] = useState('');
   const [promoApplied, setPromoApplied] = useState<string | false>(false);
 
-  const [profileName, setProfileName] = useState('Akash');
+  const [profileName, setProfileName] = useState('');
   const [profileEmail, setProfileEmail] = useState('akashkirar539@gmail.com');
   const [signupName, setSignupName] = useState('');
   const [profilePhoto, setProfilePhoto] = useState<string | null>(null);
@@ -404,6 +439,167 @@ export default function App() {
   };
   
   const { stats, sessions, recordGame } = useProgress();
+
+  const getCategoryRank = (score: number) => {
+    if (score === 0) return { level: 1, rank: 'BEGINNER', filled: 0, partial: false };
+    if (score < 100) return { level: 1, rank: 'BEGINNER', filled: 0, partial: true };
+    if (score < 300) return { level: 2, rank: 'BEGINNER', filled: 1, partial: true };
+    if (score < 600) return { level: 3, rank: 'INTERMEDIATE', filled: 2, partial: true };
+    if (score < 1000) return { level: 4, rank: 'ADVANCED', filled: 3, partial: true };
+    if (score < 1500) return { level: 5, rank: 'EXPERT', filled: 4, partial: true };
+    return { level: 6, rank: 'MASTER', filled: 5, partial: false };
+  };
+
+  const CategoryScoreCard = ({ title, score, icon: Icon, iconColor, iconBgColor, barColor }: any) => {
+    const { level, rank, filled, partial } = getCategoryRank(score);
+    
+    return (
+      <div className="bg-[#1c1c1e] rounded-[20px] p-5 shadow-lg relative overflow-hidden border border-white/5 border-t-white/10">
+        <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center gap-4">
+            <div className={`w-12 h-12 rounded-[14px] ${iconBgColor} flex items-center justify-center`}>
+              <Icon className={`w-6 h-6 ${iconColor}`} />
+            </div>
+            <span className="font-bold text-[17px] text-white">{title}</span>
+          </div>
+          <span className="font-bold text-[20px] text-white">{score || 0}</span>
+        </div>
+        <div className="flex justify-between items-end mb-2.5 px-0.5">
+          <span className={`text-[11px] font-bold tracking-[0.1em] uppercase ${iconColor}`}>{t('level', language)} {level}</span>
+          <span className="text-[11px] font-bold tracking-[0.1em] text-[#8a8a93] uppercase">{rank}</span>
+        </div>
+        <div className="h-1.5 bg-[#2a2a2c] flex rounded-md overflow-hidden">
+          {Array.from({ length: 5 }).map((_, i) => (
+            <div 
+              key={i} 
+              className={`h-full flex-1 border-r-2 border-[#1c1c1e] last:border-r-0 ${i < filled ? barColor : (i === filled && partial ? `${barColor}/30` : 'bg-transparent')}`} 
+            />
+          ))}
+        </div>
+      </div>
+    );
+  };
+
+  const now = new Date();
+  const oneWeekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+  const twoWeeksAgo = new Date(now.getTime() - 14 * 24 * 60 * 60 * 1000);
+
+  const thisWeekSessions = sessions.filter(s => s.timestamp >= oneWeekAgo.getTime());
+  const lastWeekSessions = sessions.filter(s => s.timestamp >= twoWeeksAgo.getTime() && s.timestamp < oneWeekAgo.getTime());
+
+  const gamesPlayedThisWeek = thisWeekSessions.length;
+  const gamesPlayedLastWeek = lastWeekSessions.length;
+  const gamesPlayedDiff = gamesPlayedThisWeek - gamesPlayedLastWeek;
+
+  const totalTimeThisWeekMs = thisWeekSessions.length * 90000; // 1.5 mins per game
+  const totalTimeLastWeekMs = lastWeekSessions.length * 90000;
+  const totalTimeDiffMs = totalTimeThisWeekMs - totalTimeLastWeekMs;
+
+  const formatTime = (ms: number) => {
+    if (ms === 0) return '0m';
+    const hours = Math.floor(ms / (1000 * 60 * 60));
+    const minutes = Math.floor((ms % (1000 * 60 * 60)) / (1000 * 60));
+    if (hours > 0) return `${hours}h ${minutes}m`;
+    return `${minutes}m`;
+  };
+
+  const formatTimeDiff = (ms: number) => {
+    if (ms === 0) return '+ 0m';
+    const prefix = ms > 0 ? '+ ' : '- ';
+    const absMs = Math.abs(ms);
+    const hours = Math.floor(absMs / (1000 * 60 * 60));
+    const minutes = Math.floor((absMs % (1000 * 60 * 60)) / (1000 * 60));
+    if (hours > 0) return `${prefix}${hours}h ${minutes}m`;
+    return `${prefix}${minutes}m`;
+  };
+
+  const calculateAvgAccuracy = (sessionsList: any[]) => {
+    const accuracyValues = sessionsList.filter(s => s.accuracy !== undefined).map(s => s.accuracy as number);
+    if (accuracyValues.length === 0) return 0;
+    return Math.round(accuracyValues.reduce((a, b) => a + b, 0) / accuracyValues.length);
+  };
+
+  const accuracyThisWeek = calculateAvgAccuracy(thisWeekSessions);
+  const accuracyLastWeek = calculateAvgAccuracy(lastWeekSessions);
+  const accuracyDiff = accuracyThisWeek - accuracyLastWeek;
+
+  const scoreThisWeek = thisWeekSessions.length > 0 ? Math.round(thisWeekSessions.reduce((sum, s) => sum + s.score, 0) / thisWeekSessions.length) : 0;
+  const scoreLastWeek = lastWeekSessions.length > 0 ? Math.round(lastWeekSessions.reduce((sum, s) => sum + s.score, 0) / lastWeekSessions.length) : 0;
+  
+  const scoreDiff = scoreThisWeek - scoreLastWeek;
+  const scoreDiffPercent = scoreLastWeek > 0 ? Math.round((scoreDiff / scoreLastWeek) * 100) : (scoreThisWeek > 0 ? 100 : 0);
+
+  const getActivityData = (duration: 'daily' | 'monthly' | 'yearly') => {
+    const dNow = new Date();
+    
+    if (duration === 'daily') {
+      const days = [];
+      for (let i = 6; i >= 0; i--) {
+        const d = new Date(dNow.getTime() - i * 24 * 60 * 60 * 1000);
+        days.push({
+          label: d.toLocaleDateString('en-US', { weekday: 'short' }),
+          dateString: d.toISOString().split('T')[0],
+          xp: 0
+        });
+      }
+      
+      sessions.forEach(s => {
+        const sDate = new Date(s.timestamp).toISOString().split('T')[0];
+        const dayMatch = days.find(d => d.dateString === sDate);
+        if (dayMatch) {
+          dayMatch.xp += s.score;
+        }
+      });
+      return days.map(d => ({ label: d.label, xp: d.xp }));
+    } 
+    
+    if (duration === 'monthly') {
+      const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'].map((label, i) => ({
+        label,
+        month: i,
+        xp: 0
+      }));
+      
+      const currentYear = dNow.getFullYear();
+      sessions.forEach(s => {
+        const d = new Date(s.timestamp);
+        if (d.getFullYear() === currentYear) {
+          months[d.getMonth()].xp += s.score;
+        }
+      });
+      return months.map(m => ({ label: m.label, xp: m.xp }));
+    }
+    
+    const currentYear = dNow.getFullYear();
+    const years = [];
+    for (let i = currentYear - 4; i <= currentYear; i++) {
+      years.push({ label: String(i), year: i, xp: 0 });
+    }
+    
+    sessions.forEach(s => {
+      const d = new Date(s.timestamp);
+      const yearMatch = years.find(y => y.year === d.getFullYear());
+      if (yearMatch) {
+        yearMatch.xp += s.score;
+      }
+    });
+    return years.map(y => ({ label: y.label, xp: y.xp }));
+  };
+
+  const getGameStats = (gameId: string) => {
+    const gameSessions = sessions.filter(s => s.gameId === gameId);
+    if (gameSessions.length === 0) {
+      return { bestScore: 0, avgScore: 0, accuracy: '0%' };
+    }
+    const bestScore = Math.max(...gameSessions.map(s => s.score));
+    const avgScore = Math.round(gameSessions.reduce((sum, s) => sum + s.score, 0) / gameSessions.length);
+    const accuracyValues = gameSessions.filter(s => s.accuracy !== undefined).map(s => s.accuracy!);
+    const avgAccuracy = accuracyValues.length > 0
+      ? Math.round(accuracyValues.reduce((sum, val) => sum + val, 0) / accuracyValues.length) + '%'
+      : '0%';
+    return { bestScore, avgScore, accuracy: avgAccuracy };
+  };
+
   const currentLpi = {
     overall: Math.round(((stats.highScores.speed || 0) + (stats.highScores.memory || 0) + (stats.highScores.focus || 0) + (stats.highScores.logic || 0) + (stats.highScores.math || 0)) / 5) || 0,
     speed: stats.highScores.speed || 0,
@@ -556,20 +752,20 @@ export default function App() {
   };
 
   // Format weekly performance for the chart
-  const chartData = stats.weeklyPerformance.length > 0 
-    ? stats.weeklyPerformance.map(d => ({
-        day: new Date(d.date).toLocaleDateString('en-US', { weekday: 'short' }),
-        score: d.score
-      }))
-    : [
-        { day: 'Mon', score: 0 },
-        { day: 'Tue', score: 0 },
-        { day: 'Wed', score: 0 },
-        { day: 'Thu', score: 0 },
-        { day: 'Fri', score: 0 },
-        { day: 'Sat', score: 0 },
-        { day: 'Sun', score: 0 },
-      ];
+  const chartData = (() => {
+    const days = [];
+    const dNow = new Date();
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date(dNow.getTime() - i * 24 * 60 * 60 * 1000);
+      const dateStr = d.toISOString().split('T')[0];
+      const perf = stats.weeklyPerformance.find(p => p.date === dateStr);
+      days.push({
+        day: d.toLocaleDateString('en-US', { weekday: 'short' }),
+        score: perf ? perf.score : 0
+      });
+    }
+    return days;
+  })();
 
 
 
@@ -637,7 +833,7 @@ export default function App() {
   if (isLeaderboardOpen) {
     return (
       <div className="flex flex-col h-[100dvh] bg-[#0a0a0c] font-sans text-white relative overflow-hidden" style={getModeStyles()}>
-        <LeaderboardPage onBack={() => setIsLeaderboardOpen(false)} />
+        <LeaderboardPage onBack={() => setIsLeaderboardOpen(false)} profileName={profileName} />
       </div>
     );
   }
@@ -649,6 +845,7 @@ export default function App() {
         <div className="flex flex-col h-[100dvh] bg-[#0a0a0c] font-sans text-white relative overflow-hidden" style={getModeStyles()}>
           <GameDetailsView 
             game={gameInfo} 
+            stats={getGameStats(gameInfo.id)}
             onClose={() => setActiveGameDetails(null)} 
             onPlay={(difficulty) => {
               setGameDifficulty(difficulty as 'easy' | 'medium' | 'hard');
@@ -669,7 +866,8 @@ export default function App() {
 
   if (isLoggedIn) {
     return (
-      <div className="flex flex-col h-[100dvh] bg-[#0a0a0c] font-sans text-white relative overflow-hidden" style={getModeStyles()}>
+      <GameContext.Provider value={{ gameId: activeGame, stats: activeGame ? getGameStats(activeGame) : { bestScore: 0, avgScore: 0, accuracy: '0%' } }}>
+        <div className="flex flex-col h-[100dvh] bg-[#0a0a0c] font-sans text-white relative overflow-hidden" style={getModeStyles()}>
           
           {activeGame === 'todays-mission' ? (
             <TodaysMission 
@@ -997,6 +1195,66 @@ export default function App() {
               onBack={handleBackFromGame} 
               onGameComplete={(score, maxLevel) => handleGameCompleteWrapper({ gameType: 'language', score, difficulty: 'normal', maxLevel })}
             />
+          ) : activeGame === 'pattern-recognition' ? (
+            <PatternRecognitionGame difficulty={gameDifficulty}
+              onBack={handleBackFromGame}
+              onGameComplete={(score, maxLevel) => handleGameCompleteWrapper({ gameType: 'visual', score, difficulty: 'normal', maxLevel })}
+            />
+          ) : activeGame === 'mental-rotation' ? (
+            <MentalRotationGame difficulty={gameDifficulty}
+              onBack={handleBackFromGame}
+              onGameComplete={(score, maxLevel) => handleGameCompleteWrapper({ gameType: 'visual', score, difficulty: 'normal', maxLevel })}
+            />
+          ) : activeGame === 'spatial-reasoning' ? (
+            <SpatialReasoningGame difficulty={gameDifficulty}
+              onBack={handleBackFromGame}
+              onGameComplete={(score, maxLevel) => handleGameCompleteWrapper({ gameType: 'visual', score, difficulty: 'normal', maxLevel })}
+            />
+          ) : activeGame === 'planning' ? (
+            <PlanningGame difficulty={gameDifficulty}
+              onBack={handleBackFromGame}
+              onGameComplete={(score, maxLevel) => handleGameCompleteWrapper({ gameType: 'executive', score, difficulty: 'normal', maxLevel })}
+            />
+          ) : activeGame === 'decision-making' ? (
+            <DecisionMakingGame difficulty={gameDifficulty}
+              onBack={handleBackFromGame}
+              onGameComplete={(score, maxLevel) => handleGameCompleteWrapper({ gameType: 'executive', score, difficulty: 'normal', maxLevel })}
+            />
+          ) : activeGame === 'pattern-creation' ? (
+            <PatternCreationGame difficulty={gameDifficulty}
+              onBack={handleBackFromGame}
+              onGameComplete={(score, maxLevel) => handleGameCompleteWrapper({ gameType: 'creativity', score, difficulty: 'normal', maxLevel })}
+            />
+          ) : activeGame === 'creative-thinking' ? (
+            <CreativeThinkingGame difficulty={gameDifficulty}
+              onBack={handleBackFromGame}
+              onGameComplete={(score, maxLevel) => handleGameCompleteWrapper({ gameType: 'creativity', score, difficulty: 'normal', maxLevel })}
+            />
+          ) : activeGame === 'puzzle-design' ? (
+            <PuzzleDesignGame difficulty={gameDifficulty}
+              onBack={handleBackFromGame}
+              onGameComplete={(score, maxLevel) => handleGameCompleteWrapper({ gameType: 'creativity', score, difficulty: 'normal', maxLevel })}
+            />
+          ) : activeGame === 'task-switching' ? (
+            <TaskSwitchingGame difficulty={gameDifficulty}
+              onBack={handleBackFromGame}
+              onGameComplete={(score, maxLevel) => handleGameCompleteWrapper({ gameType: 'executive', score, difficulty: 'normal', maxLevel })}
+            />
+          ) : activeGame === 'spot-difference' ? (
+            <SpotTheDifferenceGame difficulty={gameDifficulty}
+              onBack={handleBackFromGame}
+              onGameComplete={(score, maxLevel) => handleGameCompleteWrapper({ gameType: 'observation', score, difficulty: 'normal', maxLevel })}
+            />
+          ) : activeGame === 'find-hidden-object' ? (
+            <FindHiddenObjectGame difficulty={gameDifficulty}
+              onBack={handleBackFromGame}
+              onGameComplete={(score, maxLevel) => handleGameCompleteWrapper({ gameType: 'observation', score, difficulty: 'normal', maxLevel })}
+            />
+          ) : activeGame === 'visual-search' ? (
+            <VisualSearchGame difficulty={gameDifficulty}
+              onBack={handleBackFromGame}
+              onGameComplete={(score, maxLevel) => handleGameCompleteWrapper({ gameType: 'observation', score, difficulty: 'normal', maxLevel })}
+            />
           ) : activeGame === 'speed' ? (
             <ReactionSpeedGame difficulty={gameDifficulty}  
               onBack={handleBackFromGame} 
@@ -1072,7 +1330,7 @@ export default function App() {
                         else if (hour >= 12 && hour < 17) greeting = t('goodAfternoon', language) === 'goodAfternoon' ? 'Good afternoon' : t('goodAfternoon', language);
                         else if (hour >= 17 && hour < 21) greeting = t('goodEvening', language) === 'goodEvening' ? 'Good evening' : t('goodEvening', language);
                         else greeting = t('goodNight', language) === 'goodNight' ? 'Good night' : t('goodNight', language);
-                        return `${greeting}, ${profileName} 👋`;
+                        return `${greeting}, ${profileName.split(" ")[0]} 👋`;
                       })()}
                     </span>
                   </div>
@@ -1165,7 +1423,7 @@ export default function App() {
                   <p className="text-white/60 text-sm mb-6">{t('selectGame', language)}</p>
                   
                   <div className="flex overflow-x-auto hide-scrollbar gap-4 pb-6 pt-2 -mx-6 px-6 items-center">
-                    {['All', 'Recent', 'Logic', 'Memory', 'Focus', 'Math', 'Reaction Speed', 'Language & Word'].map(category => (
+                    {['All', 'Recent', 'Logic', 'Memory', 'Focus', 'Math', 'Reaction Speed', 'Language & Vocabulary', 'Visual & Spatial', 'Observation', 'Executive Function', 'Creativity'].map(category => (
                       <button
                         key={category}
                         onClick={() => setActiveCategoryFilter(category)}
@@ -1259,7 +1517,8 @@ export default function App() {
             )}
 
             {currentTab === 'coach' && (
-              <AiCoachView 
+              <AiCoachView
+                onPlayGame={handlePlayGame} 
                 profileName={profileName || 'Player'} 
                 onSend={() => setIsPremiumSubscriptionOpen(true)}
               />
@@ -1393,11 +1652,7 @@ export default function App() {
                   <div className="bg-[#121213] rounded-[24px] p-6 h-64 flex relative z-10 w-full pl-14 pt-8">
                     {/* Y-axis grid lines */}
                     {(() => {
-                      const chartData = activityDuration === 'daily'
-                        ? [ {label: 'Mon', xp: 120}, {label: 'Tue', xp: 350}, {label: 'Wed', xp: 80}, {label: 'Thu', xp: 420}, {label: 'Fri', xp: 210}, {label: 'Sat', xp: 580}, {label: 'Sun', xp: 300} ]
-                        : activityDuration === 'monthly'
-                        ? [ {label: 'Jan', xp: 1200}, {label: 'Feb', xp: 2100}, {label: 'Mar', xp: 800}, {label: 'Apr', xp: 3200}, {label: 'May', xp: 2500}, {label: 'Jun', xp: 4100}, {label: 'Jul', xp: 3800}, {label: 'Aug', xp: 1500}, {label: 'Sep', xp: 2900}, {label: 'Oct', xp: 3600}, {label: 'Nov', xp: 4500}, {label: 'Dec', xp: 3200} ]
-                        : [ {label: '2023', xp: 12500}, {label: '2024', xp: 24000}, {label: '2025', xp: 38500}, {label: '2026', xp: 15200}, {label: '2027', xp: 0} ];
+                      const chartData = getActivityData(activityDuration);
 
                       const maxXP = Math.max(...chartData.map(d => d.xp), 100);
 
@@ -1488,24 +1743,63 @@ export default function App() {
                             strokeWidth="6" 
                             strokeLinecap="round"
                             strokeDasharray="263.89" 
-                            strokeDashoffset={263.89 - (263.89 * 0.842)}
+                            strokeDashoffset={263.89 - (263.89 * Math.min(1, currentLpi.overall / 1500))}
                             filter="url(#glow)"
                           />
                         </svg>
                         <div className="absolute inset-0 flex flex-col items-center justify-center">
-                          <span className="text-[34px] font-bold text-white leading-none tracking-tight">842</span>
-                          <span className="text-[14px] font-medium text-[#a855f7] mt-1">Great</span>
+                          <span className="text-[34px] font-bold text-white leading-none tracking-tight">{currentLpi.overall}</span>
+                          <span className="text-[14px] font-medium text-[#a855f7] mt-1">
+                            {currentLpi.overall > 1000 ? 'Expert' : currentLpi.overall > 500 ? 'Great' : currentLpi.overall > 200 ? 'Good' : 'Beginner'}
+                          </span>
                         </div>
                       </div>
-                      <div className="flex items-center gap-1.5 text-[#22c55e] font-medium text-[13px]">
-                        <TrendingUp className="w-3.5 h-3.5" />
-                        <span>+62 this week</span>
-                        <TrendingUp className="w-3.5 h-3.5" />
-                      </div>
+                      {scoreDiff > 0 ? (
+                        <div className="flex items-center gap-1.5 text-[#22c55e] font-medium text-[13px]">
+                          <TrendingUp className="w-3.5 h-3.5" />
+                          <span>+{scoreDiff} this week</span>
+                          <TrendingUp className="w-3.5 h-3.5" />
+                        </div>
+                      ) : scoreDiff < 0 ? (
+                        <div className="flex items-center gap-1.5 text-rose-500 font-medium text-[13px]">
+                          <TrendingDown className="w-3.5 h-3.5" />
+                          <span>{scoreDiff} this week</span>
+                          <TrendingDown className="w-3.5 h-3.5" />
+                        </div>
+                      ) : (
+                        <div className="flex items-center gap-1.5 text-white/40 font-medium text-[13px]">
+                          <span>No change this week</span>
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>
 
+                {/* Weekly Suggestion */}
+                <div className="px-6 mb-8">
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-[16px] text-white font-medium tracking-wide">Weekly Suggestion</h3>
+                    <div className="bg-[#a855f7]/20 text-[#c084fc] text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">AI Generated</div>
+                  </div>
+                  <div className="bg-gradient-to-br from-[#1a1a1c] to-[#121213] rounded-3xl p-5 border border-white/5 relative overflow-hidden">
+                    <div className="flex gap-4">
+                      <div className="w-12 h-12 bg-[#a855f7]/10 rounded-2xl flex items-center justify-center shrink-0">
+                        <Sparkles className="w-6 h-6 text-[#c084fc]" />
+                      </div>
+                      <div>
+                        <h4 className="text-white font-bold mb-1">Nova's Advice</h4>
+                        <p className="text-sm text-white/60 leading-relaxed mb-4">Your visual scores are great, but logic is lagging slightly. I suggest focusing on problem-solving this week to balance your profile.</p>
+                        <button 
+                          onClick={() => setCurrentTab('coach')}
+                          className="text-sm font-bold text-white bg-[#6d28d9] hover:bg-[#5b21b6] px-5 py-2.5 rounded-full transition-colors inline-flex items-center gap-2 shadow-[0_0_15px_rgba(109,40,217,0.3)]"
+                        >
+                          <Brain className="w-4 h-4" /> Get a Training Plan
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
                 {/* Brain Score Trend */}
                 <div className="px-6 mb-8">
                   <h3 className="text-[16px] text-white font-medium tracking-wide mb-4">Score Trend</h3>
@@ -1513,7 +1807,13 @@ export default function App() {
                     <div className="absolute top-0 right-0 w-full h-full bg-gradient-to-br from-indigo-500/5 to-transparent pointer-events-none" />
                     <div className="flex items-baseline gap-2 mb-6 relative z-10">
                       <span className="text-[44px] font-bold text-white leading-none tracking-tight">{currentLpi.overall}</span>
-                      <span className="text-emerald-400 font-bold text-[16px]">+8%</span>
+                      {scoreDiffPercent > 0 ? (
+                        <span className="text-emerald-400 font-bold text-[16px]">+{scoreDiffPercent}%</span>
+                      ) : scoreDiffPercent < 0 ? (
+                        <span className="text-rose-400 font-bold text-[16px]">{scoreDiffPercent}%</span>
+                      ) : (
+                        <span className="text-white/40 font-bold text-[16px]">0%</span>
+                      )}
                     </div>
                     <div className="h-[120px] -mx-4 relative z-10">
                       <ResponsiveContainer width="100%" height="100%">
@@ -1567,8 +1867,10 @@ export default function App() {
                         </div>
                         <span className="text-[10px] text-white/50 font-medium">Games Played</span>
                       </div>
-                      <span className="text-[26px] font-bold text-white mt-1 mb-1 leading-none tracking-tight relative z-10">12</span>
-                      <span className="text-emerald-400 text-[13px] font-bold relative z-10">+ 3</span>
+                      <span className="text-[26px] font-bold text-white mt-1 mb-1 leading-none tracking-tight relative z-10">{gamesPlayedThisWeek}</span>
+                      <span className={`${gamesPlayedDiff >= 0 ? 'text-emerald-400' : 'text-rose-400'} text-[13px] font-bold relative z-10`}>
+                        {gamesPlayedDiff > 0 ? '+' : ''}{gamesPlayedDiff}
+                      </span>
                     </div>
                     
                     {/* Total Time */}
@@ -1580,8 +1882,10 @@ export default function App() {
                         </div>
                         <span className="text-[11px] text-white/50 font-medium">Total Time</span>
                       </div>
-                      <span className="text-[26px] font-bold text-white mt-1 mb-1 leading-none tracking-tight relative z-10">1h 35m</span>
-                      <span className="text-emerald-400 text-[13px] font-bold relative z-10">+ 20m</span>
+                      <span className="text-[26px] font-bold text-white mt-1 mb-1 leading-none tracking-tight relative z-10">{formatTime(totalTimeThisWeekMs)}</span>
+                      <span className={`${totalTimeDiffMs >= 0 ? 'text-emerald-400' : 'text-rose-400'} text-[13px] font-bold relative z-10`}>
+                        {formatTimeDiff(totalTimeDiffMs)}
+                      </span>
                     </div>
 
                     {/* Accuracy */}
@@ -1593,8 +1897,10 @@ export default function App() {
                         </div>
                         <span className="text-[11px] text-white/50 font-medium whitespace-nowrap">Accuracy</span>
                       </div>
-                      <span className="text-[26px] font-bold text-white mt-1 mb-1 leading-none tracking-tight relative z-10">88%</span>
-                      <span className="text-emerald-400 text-[13px] font-bold relative z-10">+ 5%</span>
+                      <span className="text-[26px] font-bold text-white mt-1 mb-1 leading-none tracking-tight relative z-10">{accuracyThisWeek}%</span>
+                      <span className={`${accuracyDiff >= 0 ? 'text-emerald-400' : 'text-rose-400'} text-[13px] font-bold relative z-10`}>
+                        {accuracyDiff > 0 ? '+' : ''}{accuracyDiff}%
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -1620,150 +1926,16 @@ export default function App() {
                         exit={{ opacity: 0, height: 0 }}
                         className="overflow-hidden space-y-4"
                       >
-                        {/* Memory Games */}
-                        <div className="bg-[#1c1c1e] rounded-[20px] p-5 shadow-lg relative overflow-hidden border border-white/5 border-t-white/10">
-                          <div className="flex items-center justify-between mb-6">
-                            <div className="flex items-center gap-4">
-                              <div className="w-12 h-12 rounded-[14px] bg-[#6366f1]/10 flex items-center justify-center">
-                                <Brain className="w-6 h-6 text-[#818cf8]" />
-                              </div>
-                              <span className="font-bold text-[17px] text-white">{t('memoryGames', language)}</span>
-                            </div>
-                            <span className="font-bold text-[20px] text-white">{stats.highScores.memory || 0}</span>
-                          </div>
-                          <div className="flex justify-between items-end mb-2.5 px-0.5">
-                            <span className="text-[11px] font-bold tracking-[0.1em] text-[#818cf8] uppercase">{t('level', language)} 4</span>
-                            <span className="text-[11px] font-bold tracking-[0.1em] text-[#8a8a93] uppercase">INTERMEDIATE</span>
-                          </div>
-                          <div className="h-1.5 bg-[#2a2a2c] flex rounded-md overflow-hidden">
-                            <div className="h-full bg-[#6366f1] flex-1 border-r-2 border-[#1c1c1e]"></div>
-                            <div className="h-full bg-[#6366f1] flex-1 border-r-2 border-[#1c1c1e]"></div>
-                            <div className="h-full bg-[#6366f1] flex-1 border-r-2 border-[#1c1c1e]"></div>
-                            <div className="h-full bg-[#6366f1]/30 flex-1 border-r-2 border-[#1c1c1e]"></div>
-                            <div className="h-full bg-transparent flex-1"></div>
-                          </div>
-                        </div>
-
-                        {/* Focus Games */}
-                        <div className="bg-[#1c1c1e] rounded-[20px] p-5 shadow-lg relative overflow-hidden border border-white/5 border-t-white/10">
-                          <div className="flex items-center justify-between mb-6">
-                            <div className="flex items-center gap-4">
-                              <div className="w-12 h-12 rounded-[14px] bg-[#10b981]/10 flex items-center justify-center">
-                                <Target className="w-6 h-6 text-[#34d399]" />
-                              </div>
-                              <span className="font-bold text-[17px] text-white">{t('focusGames', language)}</span>
-                            </div>
-                            <span className="font-bold text-[20px] text-white">{stats.highScores.focus || 0}</span>
-                          </div>
-                          <div className="flex justify-between items-end mb-2.5 px-0.5">
-                            <span className="text-[11px] font-bold tracking-[0.1em] text-[#34d399] uppercase">{t('level', language)} 5</span>
-                            <span className="text-[11px] font-bold tracking-[0.1em] text-[#8a8a93] uppercase">ADVANCED</span>
-                          </div>
-                          <div className="h-1.5 bg-[#2a2a2c] flex rounded-md overflow-hidden">
-                            <div className="h-full bg-[#10b981] flex-1 border-r-2 border-[#1c1c1e]"></div>
-                            <div className="h-full bg-[#10b981] flex-1 border-r-2 border-[#1c1c1e]"></div>
-                            <div className="h-full bg-[#10b981] flex-1 border-r-2 border-[#1c1c1e]"></div>
-                            <div className="h-full bg-[#10b981] flex-1 border-r-2 border-[#1c1c1e]"></div>
-                            <div className="h-full bg-[#10b981]/30 flex-1"></div>
-                          </div>
-                        </div>
-
-                        {/* Logic Games */}
-                        <div className="bg-[#1c1c1e] rounded-[20px] p-5 shadow-lg relative overflow-hidden border border-white/5 border-t-white/10">
-                          <div className="flex items-center justify-between mb-6">
-                            <div className="flex items-center gap-4">
-                              <div className="w-12 h-12 rounded-[14px] bg-[#f59e0b]/10 flex items-center justify-center">
-                                <Lightbulb className="w-6 h-6 text-[#fbbf24]" />
-                              </div>
-                              <span className="font-bold text-[17px] text-white">{t('logicGames', language)}</span>
-                            </div>
-                            <span className="font-bold text-[20px] text-white">{stats.highScores.logic || 0}</span>
-                          </div>
-                          <div className="flex justify-between items-end mb-2.5 px-0.5">
-                            <span className="text-[11px] font-bold tracking-[0.1em] text-[#fbbf24] uppercase">{t('level', language)} 3</span>
-                            <span className="text-[11px] font-bold tracking-[0.1em] text-[#8a8a93] uppercase">BEGINNER</span>
-                          </div>
-                          <div className="h-1.5 bg-[#2a2a2c] flex rounded-md overflow-hidden">
-                            <div className="h-full bg-[#f59e0b] flex-1 border-r-2 border-[#1c1c1e]"></div>
-                            <div className="h-full bg-[#f59e0b] flex-1 border-r-2 border-[#1c1c1e]"></div>
-                            <div className="h-full bg-[#f59e0b]/30 flex-1 border-r-2 border-[#1c1c1e]"></div>
-                            <div className="h-full bg-transparent flex-1 border-r-2 border-[#1c1c1e]"></div>
-                            <div className="h-full bg-transparent flex-1"></div>
-                          </div>
-                        </div>
-
-                        {/* Math Games */}
-                        <div className="bg-[#1c1c1e] rounded-[20px] p-5 shadow-lg relative overflow-hidden border border-white/5 border-t-white/10">
-                          <div className="flex items-center justify-between mb-6">
-                            <div className="flex items-center gap-4">
-                              <div className="w-12 h-12 rounded-[14px] bg-[#3b82f6]/10 flex items-center justify-center">
-                                <Calculator className="w-6 h-6 text-[#60a5fa]" />
-                              </div>
-                              <span className="font-bold text-[17px] text-white">{t('mathGames', language)}</span>
-                            </div>
-                            <span className="font-bold text-[20px] text-white">{stats.highScores.math || 0}</span>
-                          </div>
-                          <div className="flex justify-between items-end mb-2.5 px-0.5">
-                            <span className="text-[11px] font-bold tracking-[0.1em] text-[#60a5fa] uppercase">{t('level', language)} 4</span>
-                            <span className="text-[11px] font-bold tracking-[0.1em] text-[#8a8a93] uppercase">INTERMEDIATE</span>
-                          </div>
-                          <div className="h-1.5 bg-[#2a2a2c] flex rounded-md overflow-hidden">
-                            <div className="h-full bg-[#3b82f6] flex-1 border-r-2 border-[#1c1c1e]"></div>
-                            <div className="h-full bg-[#3b82f6] flex-1 border-r-2 border-[#1c1c1e]"></div>
-                            <div className="h-full bg-[#3b82f6] flex-1 border-r-2 border-[#1c1c1e]"></div>
-                            <div className="h-full bg-[#3b82f6]/30 flex-1 border-r-2 border-[#1c1c1e]"></div>
-                            <div className="h-full bg-transparent flex-1"></div>
-                          </div>
-                        </div>
-
-                        {/* Reaction Speed */}
-                        <div className="bg-[#1c1c1e] rounded-[20px] p-5 shadow-lg relative overflow-hidden border border-white/5 border-t-white/10">
-                          <div className="flex items-center justify-between mb-6">
-                            <div className="flex items-center gap-4">
-                              <div className="w-12 h-12 rounded-[14px] bg-[#f43f5e]/10 flex items-center justify-center">
-                                <Zap className="w-6 h-6 text-[#fb7185]" />
-                              </div>
-                              <span className="font-bold text-[17px] text-white">{t('reactionSpeed', language)}</span>
-                            </div>
-                            <span className="font-bold text-[20px] text-white">{stats.highScores.speed || 0}</span>
-                          </div>
-                          <div className="flex justify-between items-end mb-2.5 px-0.5">
-                            <span className="text-[11px] font-bold tracking-[0.1em] text-[#fb7185] uppercase">{t('level', language)} 5</span>
-                            <span className="text-[11px] font-bold tracking-[0.1em] text-[#8a8a93] uppercase">ADVANCED</span>
-                          </div>
-                          <div className="h-1.5 bg-[#2a2a2c] flex rounded-md overflow-hidden">
-                            <div className="h-full bg-[#f43f5e] flex-1 border-r-2 border-[#1c1c1e]"></div>
-                            <div className="h-full bg-[#f43f5e] flex-1 border-r-2 border-[#1c1c1e]"></div>
-                            <div className="h-full bg-[#f43f5e] flex-1 border-r-2 border-[#1c1c1e]"></div>
-                            <div className="h-full bg-[#f43f5e] flex-1 border-r-2 border-[#1c1c1e]"></div>
-                            <div className="h-full bg-[#f43f5e]/30 flex-1"></div>
-                          </div>
-                        </div>
-
-                        {/* Language & Word */}
-                        <div className="bg-[#1c1c1e] rounded-[20px] p-5 shadow-lg relative overflow-hidden border border-white/5 border-t-white/10">
-                          <div className="flex items-center justify-between mb-6">
-                            <div className="flex items-center gap-4">
-                              <div className="w-12 h-12 rounded-[14px] bg-[#06b6d4]/10 flex items-center justify-center">
-                                <Type className="w-6 h-6 text-[#22d3ee]" />
-                              </div>
-                              <span className="font-bold text-[17px] text-white">{t('languageWord', language)}</span>
-                            </div>
-                            <span className="font-bold text-[20px] text-white">{stats.highScores.language || 0}</span>
-                          </div>
-                          <div className="flex justify-between items-end mb-2.5 px-0.5">
-                            <span className="text-[11px] font-bold tracking-[0.1em] text-[#22d3ee] uppercase">{t('level', language)} 6</span>
-                            <span className="text-[11px] font-bold tracking-[0.1em] text-[#8a8a93] uppercase">EXPERT</span>
-                          </div>
-                          <div className="h-1.5 bg-[#2a2a2c] flex rounded-md overflow-hidden">
-                            <div className="h-full bg-[#06b6d4] flex-1 border-r-2 border-[#1c1c1e]"></div>
-                            <div className="h-full bg-[#06b6d4] flex-1 border-r-2 border-[#1c1c1e]"></div>
-                            <div className="h-full bg-[#06b6d4] flex-1 border-r-2 border-[#1c1c1e]"></div>
-                            <div className="h-full bg-[#06b6d4] flex-1 border-r-2 border-[#1c1c1e]"></div>
-                            <div className="h-full bg-[#06b6d4] flex-1"></div>
-                          </div>
-                        </div>
-
+                        <CategoryScoreCard title={t('memoryGames', language)} score={stats.highScores.memory} icon={Brain} iconColor="text-[#818cf8]" iconBgColor="bg-[#6366f1]/10" barColor="bg-[#6366f1]" />
+                        <CategoryScoreCard title={t('focusGames', language)} score={stats.highScores.focus} icon={Target} iconColor="text-[#34d399]" iconBgColor="bg-[#10b981]/10" barColor="bg-[#10b981]" />
+                        <CategoryScoreCard title={t('logicGames', language)} score={stats.highScores.logic} icon={Lightbulb} iconColor="text-[#fbbf24]" iconBgColor="bg-[#f59e0b]/10" barColor="bg-[#f59e0b]" />
+                        <CategoryScoreCard title={t('mathGames', language)} score={stats.highScores.math} icon={Calculator} iconColor="text-[#60a5fa]" iconBgColor="bg-[#3b82f6]/10" barColor="bg-[#3b82f6]" />
+                        <CategoryScoreCard title={t('reactionSpeed', language)} score={stats.highScores.speed} icon={Zap} iconColor="text-[#fb7185]" iconBgColor="bg-[#f43f5e]/10" barColor="bg-[#f43f5e]" />
+                        <CategoryScoreCard title={t('languageWord', language)} score={stats.highScores.language} icon={Type} iconColor="text-[#22d3ee]" iconBgColor="bg-[#06b6d4]/10" barColor="bg-[#06b6d4]" />
+                        <CategoryScoreCard title="Visual & Spatial" score={stats.highScores.visual} icon={Box} iconColor="text-[#818cf8]" iconBgColor="bg-[#6366f1]/10" barColor="bg-[#6366f1]" />
+                        <CategoryScoreCard title="Observation" score={stats.highScores.observation} icon={Search} iconColor="text-[#f472b6]" iconBgColor="bg-[#ec4899]/10" barColor="bg-[#ec4899]" />
+                        <CategoryScoreCard title="Executive Function" score={stats.highScores.executive} icon={Compass} iconColor="text-[#a78bfa]" iconBgColor="bg-[#8b5cf6]/10" barColor="bg-[#8b5cf6]" />
+                        <CategoryScoreCard title={t('creativity', language)} score={stats.highScores.creativity} icon={Paintbrush} iconColor="text-[#f472b6]" iconBgColor="bg-[#ec4899]/10" barColor="bg-[#ec4899]" />
                       </motion.div>
                     )}
                   </AnimatePresence>
@@ -1806,7 +1978,7 @@ export default function App() {
                                   <img src={profilePhoto} alt="Profile" className="w-full h-full object-cover" style={{ filter: displayMode === 'light' ? 'invert(1) hue-rotate(180deg)' : 'none' }} />
                                 ) : (
                                   <div className="w-full h-full flex items-center justify-center pt-[2px]">
-                                    <span className="text-[32px] font-medium text-white">{profileName.charAt(0).toUpperCase()}</span>
+                                    <span className="text-[32px] font-medium text-white">{(profileName || "U").charAt(0).toUpperCase()}</span>
                                   </div>
                                 )}
                               </div>
@@ -3920,18 +4092,7 @@ export default function App() {
                       </div>
                       <span className="font-medium">{t('yourFeedback', language)}</span>
                     </button>
-                    <button 
-                      onClick={() => {
-                        setIsProfileSettingsOpen(false);
-                        setIsAdminPanelOpen(true);
-                      }}
-                      className="w-full flex items-center gap-4 text-left px-4 py-4 text-base text-emerald-400 hover:bg-white/5 transition-colors rounded-xl"
-                    >
-                      <div className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center">
-                        <Lock className="w-5 h-5 text-emerald-400" />
-                      </div>
-                      <span className="font-medium text-emerald-400">{t('adminPanel', language)}</span>
-                    </button>
+                    
                   </div>
                   
                   <div className="px-6 py-2 mt-2">
@@ -4170,7 +4331,8 @@ export default function App() {
           </div>
           </>
           )}
-      </div>
+        </div>
+      </GameContext.Provider>
     );
   }
 
@@ -4184,292 +4346,11 @@ export default function App() {
 
   if (isCompleted) {
     return (
-      <div className="flex flex-col h-[100dvh] bg-[#0a0a0c] font-sans text-white relative overflow-hidden" style={getModeStyles()}>
-          {/* Dynamic Background Gradient Removed */}
-
-          {/* Auth Content Area */}
-          <div className="flex-1 flex flex-col px-8 pt-20 pb-12 overflow-y-auto hide-scrollbar relative z-10">
-            <AnimatePresence mode="wait">
-              {authMode === 'select' && (
-                <motion.div
-                  key="select"
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -20 }}
-                  className="flex flex-col items-center text-center h-full justify-center"
-                >
-                  <div className="w-20 h-20 rounded-full bg-indigo-500/20 flex items-center justify-center mb-6">
-                    <Brain className="w-10 h-10 text-indigo-400" />
-                  </div>
-                  <h2 className="text-3xl font-bold mb-4">{t('welcomeToBrainova', language)}</h2>
-                  <p className="text-white/60 mb-8">{t('signupLoginText', language)}</p>
-                  
-                  <div className="w-full space-y-4 mb-8">
-                    <input 
-                      type="email" 
-                      placeholder={t('enterEmail', language)} 
-                      className="w-full px-4 py-3 bg-[#1a1a1c] border border-white/10 rounded-xl text-white placeholder-white/40 focus:outline-none focus:border-indigo-500 transition-colors"
-                    />
-                    <input 
-                      type="password" 
-                      placeholder={t('password', language)} 
-                      className="w-full px-4 py-3 bg-[#1a1a1c] border border-white/10 rounded-xl text-white placeholder-white/40 focus:outline-none focus:border-indigo-500 transition-colors"
-                    />
-                    <button 
-                      onClick={() => setIsLoggedIn(true)}
-                      className="w-full py-3 rounded-xl bg-indigo-500 text-white font-semibold hover:bg-indigo-600 transition-colors"
-                    >
-                      {t('logIn', language)}
-                    </button>
-                  </div>
-                  
-                  <div className="w-full flex justify-center gap-4">
-                    <button 
-                      onClick={() => setIsLoggedIn(true)}
-                      className="w-12 h-12 rounded-2xl bg-white text-black flex items-center justify-center hover:scale-[0.95] transition-transform shadow-lg"
-                    >
-                      <svg className="w-5 h-5" viewBox="0 0 24 24">
-                        <path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
-                        <path fill="currentColor" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
-                        <path fill="currentColor" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" />
-                        <path fill="currentColor" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
-                      </svg>
-                    </button>
-                    <button 
-                      onClick={() => setIsLoggedIn(true)}
-                      className="w-12 h-12 rounded-2xl text-white flex items-center justify-center hover:scale-[0.95] transition-transform shadow-lg"
-                      style={{ background: 'linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%)' }}
-                    >
-                      <Instagram className="w-6 h-6" />
-                    </button>
-                    <button 
-                      onClick={() => setIsLoggedIn(true)}
-                      className="w-12 h-12 rounded-2xl bg-[#1877F2] text-white flex items-center justify-center hover:scale-[0.95] transition-transform shadow-lg"
-                    >
-                      <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.469h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.469h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
-                      </svg>
-                    </button>
-                  </div>
-
-                  <div className="mt-8 text-sm text-white/60">
-                    {t('dontHaveAccount', language)}{' '}
-                    <button onClick={() => setAuthMode('signup')} className="text-indigo-400 font-semibold hover:text-indigo-300">
-                      {t('signUp', language)}
-                    </button>
-                  </div>
-
-                  <button 
-                    onClick={() => { setIsCompleted(false); setCurrentStep(0); }}
-                    className="mt-auto pt-8 text-xs text-white/30 hover:text-white transition-colors"
-                  >
-                    {t('restartOnboarding', language)}
-                  </button>
-                </motion.div>
-              )}
-
-              {authMode === 'login' && (
-                <motion.div
-                  key="login"
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: 20 }}
-                  className="flex flex-col h-full"
-                >
-                  <button 
-                    onClick={() => setAuthMode('select')}
-                    className="w-10 h-10 rounded-full bg-[#1a1a1c] flex items-center justify-center mb-8 hover:bg-[#2a2a2c] transition-colors"
-                  >
-                    <ArrowLeft className="w-5 h-5" />
-                  </button>
-                  
-                  <h2 className="text-3xl font-bold mb-2">{t('welcomeBack', language)}</h2>
-                  <p className="text-white/60 mb-8">{t('loginToContinue', language)}</p>
-                  
-                  <div className="space-y-4 mb-6">
-                    <div className="relative">
-                      <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/40" />
-                      <input 
-                        type="email" 
-                        placeholder={t('emailAddress', language)} 
-                        className="w-full bg-[#1a1a1c] border border-white/5 rounded-2xl py-4 pl-12 pr-4 text-white placeholder:text-white/30 focus:outline-none focus:border-indigo-500/50 focus:ring-1 focus:ring-indigo-500/50 transition-all"
-                      />
-                    </div>
-                    <div className="relative">
-                      <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/40" />
-                      <input 
-                        type="password" 
-                        placeholder={t('password', language)} 
-                        className="w-full bg-[#1a1a1c] border border-white/5 rounded-2xl py-4 pl-12 pr-4 text-white placeholder:text-white/30 focus:outline-none focus:border-indigo-500/50 focus:ring-1 focus:ring-indigo-500/50 transition-all"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="flex justify-between items-center mb-8">
-                    <button className="text-sm text-emerald-400 hover:text-emerald-300 font-medium flex items-center gap-1">
-                      <Lock className="w-3 h-3" /> {t('adminPanel', language)}
-                    </button>
-                    <button className="text-sm text-indigo-400 hover:text-indigo-300 font-medium">
-                      {t('forgotPassword', language)}
-                    </button>
-                  </div>
-
-                  <button 
-                    onClick={() => setIsLoggedIn(true)}
-                    className="w-full py-4 rounded-2xl bg-white text-black font-semibold text-lg hover:scale-[0.98] transition-transform shadow-[0_0_20px_rgba(255,255,255,0.1)]"
-                  >
-                    {t('logIn', language)}
-                  </button>
-
-                  <div className="mt-8 flex items-center gap-4">
-                    <div className="h-px bg-white/10 flex-1"></div>
-                    <span className="text-xs text-white/40 uppercase tracking-wider">{t('orContinueWith', language) || 'Or continue with'}</span>
-                    <div className="h-px bg-white/10 flex-1"></div>
-                  </div>
-
-                  <div className="mt-6 w-full flex justify-center gap-4">
-                    <button 
-                      onClick={() => setIsLoggedIn(true)}
-                      className="w-12 h-12 rounded-2xl bg-white text-black flex items-center justify-center hover:scale-[0.95] transition-transform shadow-lg"
-                    >
-                      <svg className="w-5 h-5" viewBox="0 0 24 24">
-                        <path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
-                        <path fill="currentColor" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
-                        <path fill="currentColor" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" />
-                        <path fill="currentColor" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
-                      </svg>
-                    </button>
-                    <button 
-                      onClick={() => setIsLoggedIn(true)}
-                      className="w-12 h-12 rounded-2xl text-white flex items-center justify-center hover:scale-[0.95] transition-transform shadow-lg"
-                      style={{ background: 'linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%)' }}
-                    >
-                      <Instagram className="w-6 h-6" />
-                    </button>
-                    <button 
-                      onClick={() => setIsLoggedIn(true)}
-                      className="w-12 h-12 rounded-2xl bg-[#1877F2] text-white flex items-center justify-center hover:scale-[0.95] transition-transform shadow-lg"
-                    >
-                      <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.469h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.469h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
-                      </svg>
-                    </button>
-                  </div>
-
-                  <div className="mt-auto pt-8 text-center text-sm text-white/60">
-                    {t('dontHaveAccount', language)}{' '}
-                    <button onClick={() => setAuthMode('signup')} className="text-indigo-400 font-semibold hover:text-indigo-300">
-                      {t('signUp', language)}
-                    </button>
-                  </div>
-                </motion.div>
-              )}
-
-              {authMode === 'signup' && (
-                <motion.div
-                  key="signup"
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: 20 }}
-                  className="flex flex-col h-full"
-                >
-                  <button 
-                    onClick={() => setAuthMode('select')}
-                    className="w-10 h-10 rounded-full bg-[#1a1a1c] flex items-center justify-center mb-8 hover:bg-[#2a2a2c] transition-colors"
-                  >
-                    <ArrowLeft className="w-5 h-5" />
-                  </button>
-                  
-                  <h2 className="text-3xl font-bold mb-2">{t('createAccount', language)}</h2>
-                  <p className="text-white/60 mb-8">{t('startJourney', language)}</p>
-                  
-                  <div className="space-y-4 mb-8">
-                    <div className="relative">
-                      <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/40" />
-                      <input 
-                        type="text" 
-                        value={signupName}
-                        onChange={(e) => setSignupName(e.target.value)}
-                        placeholder={t('fullName', language)} 
-                        className="w-full bg-[#1a1a1c] border border-white/5 rounded-2xl py-4 pl-12 pr-4 text-white placeholder:text-white/30 focus:outline-none focus:border-indigo-500/50 focus:ring-1 focus:ring-indigo-500/50 transition-all"
-                      />
-                    </div>
-                    <div className="relative">
-                      <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/40" />
-                      <input 
-                        type="email" 
-                        placeholder={t('emailAddress', language)} 
-                        className="w-full bg-[#1a1a1c] border border-white/5 rounded-2xl py-4 pl-12 pr-4 text-white placeholder:text-white/30 focus:outline-none focus:border-indigo-500/50 focus:ring-1 focus:ring-indigo-500/50 transition-all"
-                      />
-                    </div>
-                    <div className="relative">
-                      <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/40" />
-                      <input 
-                        type="password" 
-                        placeholder={t('password', language)} 
-                        className="w-full bg-[#1a1a1c] border border-white/5 rounded-2xl py-4 pl-12 pr-4 text-white placeholder:text-white/30 focus:outline-none focus:border-indigo-500/50 focus:ring-1 focus:ring-indigo-500/50 transition-all"
-                      />
-                    </div>
-                  </div>
-
-                  <button 
-                    onClick={() => {
-                      if (signupName.trim()) {
-                        setProfileName(signupName.trim());
-                      }
-                      setIsLoggedIn(true);
-                    }}
-                    className="w-full py-4 rounded-2xl bg-indigo-500 text-white font-semibold text-lg hover:bg-indigo-600 hover:scale-[0.98] transition-all shadow-[0_0_20px_rgba(99,102,241,0.3)]"
-                  >
-                    {t('signUp', language)}
-                  </button>
-
-                  <div className="mt-8 flex items-center gap-4">
-                    <div className="h-px bg-white/10 flex-1"></div>
-                    <span className="text-xs text-white/40 uppercase tracking-wider">{t('orContinueWith', language) || 'Or continue with'}</span>
-                    <div className="h-px bg-white/10 flex-1"></div>
-                  </div>
-
-                  <div className="mt-6 w-full flex justify-center gap-4">
-                    <button 
-                      onClick={() => setIsLoggedIn(true)}
-                      className="w-12 h-12 rounded-2xl bg-white text-black flex items-center justify-center hover:scale-[0.95] transition-transform shadow-lg"
-                    >
-                      <svg className="w-5 h-5" viewBox="0 0 24 24">
-                        <path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
-                        <path fill="currentColor" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
-                        <path fill="currentColor" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" />
-                        <path fill="currentColor" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
-                      </svg>
-                    </button>
-                    <button 
-                      onClick={() => setIsLoggedIn(true)}
-                      className="w-12 h-12 rounded-2xl text-white flex items-center justify-center hover:scale-[0.95] transition-transform shadow-lg"
-                      style={{ background: 'linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%)' }}
-                    >
-                      <Instagram className="w-6 h-6" />
-                    </button>
-                    <button 
-                      onClick={() => setIsLoggedIn(true)}
-                      className="w-12 h-12 rounded-2xl bg-[#1877F2] text-white flex items-center justify-center hover:scale-[0.95] transition-transform shadow-lg"
-                    >
-                      <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.469h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.469h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
-                      </svg>
-                    </button>
-                  </div>
-
-                  <div className="mt-auto pt-8 text-center text-sm text-white/60">
-                    {t('alreadyHaveAccount', language)}{' '}
-                    <button onClick={() => setAuthMode('login')} className="text-indigo-400 font-semibold hover:text-indigo-300">
-                      {t('logIn', language)}
-                    </button>
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
-      </div>
+      <AuthScreen 
+        language={language} 
+        onLogin={(name) => { if(name) setProfileName(name); setOnboardingStep(1); }} 
+        onBack={() => setIsCompleted(false)} 
+      />
     );
   }
 
@@ -4526,7 +4407,7 @@ export default function App() {
               </div>
 
               <button
-                onClick={() => setOnboardingStep(1)}
+                onClick={() => setIsCompleted(true)}
                 className="w-full mt-4 h-14 rounded-2xl bg-white text-black font-semibold text-lg flex items-center justify-center gap-2 hover:scale-[0.98] active:scale-95 transition-all shadow-[0_0_40px_rgba(255,255,255,0.1)]"
               >
                 {t('continue', language) || "Continue"}

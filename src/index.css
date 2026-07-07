@@ -84,3 +84,13 @@
   background-size: 200% auto;
   animation: color-sweep 3s linear infinite;
 }
+
+@layer utilities {
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}

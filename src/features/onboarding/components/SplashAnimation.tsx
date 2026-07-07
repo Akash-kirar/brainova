@@ -8,17 +8,17 @@ export const SplashAnimation = ({ onComplete }: { onComplete: () => void }) => {
   useEffect(() => {
     let currentProgress = 0;
     const interval = setInterval(() => {
-      // Fast loading (instantly)
-      currentProgress += 100;
+      // Slower loading (~1.6s)
+      currentProgress += 3;
       
       if (currentProgress >= 100) {
         setProgress(100);
         clearInterval(interval);
-        setTimeout(onComplete, 50); // Wait a tiny bit after reaching 100%
+        setTimeout(onComplete, 300); // Wait a bit after reaching 100% before transitioning
       } else {
         setProgress(currentProgress);
       }
-    }, 10);
+    }, 50);
 
     return () => clearInterval(interval);
   }, [onComplete]);

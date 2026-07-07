@@ -1,6 +1,11 @@
 const fs = require('fs');
-let code = fs.readFileSync('src/App.tsx', 'utf8');
 
-code = code.replace(/icon: CheckCircle/g, 'icon: Flag');
+function patchFile(file) {
+  let content = fs.readFileSync(file, 'utf8');
+  content = content.replace(/currentSlide < 3/g, "currentSlide < 2");
+  content = content.replace(/currentSlide === 3/g, "currentSlide === 2");
+  fs.writeFileSync(file, content);
+}
 
-fs.writeFileSync('src/App.tsx', code);
+patchFile('src/features/onboarding/components/OnboardingScreens.tsx');
+patchFile('src/components/OnboardingScreens.tsx');

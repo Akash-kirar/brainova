@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { motion } from 'motion/react';
 import { ChevronRight } from 'lucide-react';
 
@@ -8,7 +8,6 @@ interface BrainScoreCardProps {
 }
 
 export default function BrainScoreCard({ onClick, stats }: BrainScoreCardProps) {
-  
   // Calculate average of high scores
   const score = stats && stats.highScores 
     ? Math.round((
@@ -20,10 +19,84 @@ export default function BrainScoreCard({ onClick, stats }: BrainScoreCardProps) 
         (stats.highScores.language || 0)
       ) / 6)
     : 0;
-
+    
   const radius = 45;
   const circumference = 2 * Math.PI * radius;
-  const strokeDashoffset = circumference - (score / 100) * circumference;
+  // Normalize score to maximum of 1500 for stroke dash offset, similar to AiAnalysisPage
+  const strokeDashoffset = circumference - (Math.min(100, Math.round(score / 15)) / 100) * circumference;
+
+  // Calculate stats for today vs yesterday
+  const { diffPercent, trendMessage, chartData } = useMemo(() => {
+    const todayStr = new Date().toISOString().split('T')[0];
+    const yesterdayDate = new Date();
+    yesterdayDate.setDate(yesterdayDate.getDate() - 1);
+    const yesterdayStr = yesterdayDate.toISOString().split('T')[0];
+
+    const todayScore = stats?.weeklyPerformance?.find((p: any) => p.date === todayStr)?.score || 0;
+    const yesterdayScore = stats?.weeklyPerformance?.find((p: any) => p.date === yesterdayStr)?.score || 0;
+    
+    let percent = 0;
+    if (yesterdayScore > 0) {
+      percent = Math.round(((todayScore - yesterdayScore) / yesterdayScore) * 100);
+    } else if (todayScore > 0) {
+      percent = 100;
+    }
+
+    let message = "Let's play!";
+    const totalScoreAllTime = stats?.highScores ? (Object.values(stats.highScores) as number[]).reduce((a, b) => a + b, 0) : 0;
+    
+    if (totalScoreAllTime === 0) {
+      message = "Start training!";
+    } else if (percent > 0) {
+      message = "Good job!";
+    } else if (percent < 0) {
+      message = "Keep trying!";
+    } else if (todayScore > 0) {
+      message = "Consistent!";
+    }
+
+    // Prepare chart data for the last 7 days
+    const last7Days = Array.from({ length: 7 }).map((_, i) => {
+      const d = new Date();
+      d.setDate(d.getDate() - (6 - i));
+      return d.toISOString().split('T')[0];
+    });
+
+    const points = last7Days.map((dateStr, i) => {
+      const perf = stats?.weeklyPerformance?.find((p: any) => p.date === dateStr);
+      return { 
+        x: -10 + (420 * i) / 6, 
+        score: perf ? perf.score : 0,
+        date: dateStr
+      };
+    });
+
+    const maxScore = Math.max(...points.map(p => p.score), 100);
+    const height = 100;
+    const paddingY = 20;
+
+    const mappedPoints = points.map(p => ({
+      ...p,
+      y: height - paddingY - ((p.score / maxScore) * (height - 2 * paddingY))
+    }));
+
+    let pathD = '';
+    if (mappedPoints.length > 0) {
+      pathD = `M ${mappedPoints[0].x},${mappedPoints[0].y}`;
+      for (let i = 0; i < mappedPoints.length - 1; i++) {
+        const curr = mappedPoints[i];
+        const next = mappedPoints[i + 1];
+        const controlX = (curr.x + next.x) / 2;
+        pathD += ` C ${controlX},${curr.y} ${controlX},${next.y} ${next.x},${next.y}`;
+      }
+    }
+
+    return { 
+      diffPercent: percent, 
+      trendMessage: message, 
+      chartData: { points: mappedPoints, pathD } 
+    };
+  }, [stats]);
 
   return (
     <motion.div 
@@ -77,8 +150,14 @@ export default function BrainScoreCard({ onClick, stats }: BrainScoreCardProps) 
 
           <div className="flex flex-col">
             <h3 className="text-[22px] font-bold text-white mb-2 leading-none">Brain Score</h3>
-            <p className="text-[#B9A3D6] text-[15px] font-medium mb-1">Good job!</p>
-            <p className="text-[#4ADE80] text-[15px] font-semibold">+8% from yesterday</p>
+            <p className="text-[#B9A3D6] text-[15px] font-medium mb-1">{trendMessage}</p>
+            {stats?.highScores && (Object.values(stats.highScores) as number[]).reduce((a, b) => a + b, 0) > 0 ? (
+              <p className={`text-[15px] font-semibold ${diffPercent > 0 ? 'text-[#4ADE80]' : diffPercent < 0 ? 'text-rose-400' : 'text-white/40'}`}>
+                {diffPercent > 0 ? `+${diffPercent}%` : diffPercent < 0 ? `${diffPercent}%` : '0%'} from yesterday
+              </p>
+            ) : (
+              <p className="text-white/40 text-[15px] font-semibold">Ready to start</p>
+            )}
           </div>
         </div>
 
@@ -91,19 +170,16 @@ export default function BrainScoreCard({ onClick, stats }: BrainScoreCardProps) 
       <div className="absolute bottom-0 left-0 right-0 h-24 pointer-events-none opacity-80">
         <svg width="100%" height="100%" viewBox="0 0 400 100" preserveAspectRatio="none">
           <path
-            d="M -10,80 C 40,75 80,95 120,95 C 160,95 180,60 220,70 C 260,80 280,30 320,40 C 350,47 380,20 410,10"
+            d={chartData.pathD}
             fill="none"
             stroke="#6366F1"
             strokeWidth="3"
             strokeLinecap="round"
           />
           {/* Scatter dots */}
-          <circle cx="20" cy="81" r="3" fill="#8B5CF6" />
-          <circle cx="80" cy="90" r="3" fill="#8B5CF6" />
-          <circle cx="150" cy="84" r="3" fill="#8B5CF6" />
-          <circle cx="230" cy="74" r="4" fill="#3B82F6" />
-          <circle cx="310" cy="38" r="4" fill="#3B82F6" />
-          <circle cx="370" cy="22" r="5" fill="#3B82F6" />
+          {chartData.points.map((p, i) => (
+            p.score > 0 && <circle key={i} cx={p.x} cy={p.y} r={i === chartData.points.length - 1 ? 5 : 3} fill={i === chartData.points.length - 1 ? "#3B82F6" : "#8B5CF6"} />
+          ))}
         </svg>
       </div>
     </motion.div>

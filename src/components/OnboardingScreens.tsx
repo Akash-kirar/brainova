@@ -10,7 +10,7 @@ export const OnboardingScreens: React.FC<OnboardingScreensProps> = ({ onLogin })
   const [currentSlide, setCurrentSlide] = useState(0);
 
   const handleNext = () => {
-    if (currentSlide < 3) {
+    if (currentSlide < 1) {
       setCurrentSlide(prev => prev + 1);
     }
   };
@@ -23,7 +23,7 @@ export const OnboardingScreens: React.FC<OnboardingScreensProps> = ({ onLogin })
 
   // Auto-advance every 3 seconds, but stop at the last slide
   useEffect(() => {
-    if (currentSlide === 3) return; // Don't auto-advance on the last slide
+    if (currentSlide === 1) return; // Don't auto-advance on the last slide
 
     const timer = setInterval(() => {
       handleNext();
@@ -162,70 +162,6 @@ export const OnboardingScreens: React.FC<OnboardingScreensProps> = ({ onLogin })
       )
     },
     {
-      title: "WIN TO RISE",
-      subtitle: "EARN RATING. CLIMB THE LEADERBOARD.",
-      illustration: (
-        <div className="relative w-full h-80 flex items-end justify-center pb-12">
-          {/* Background glow */}
-          <div className="absolute top-1/4 w-64 h-64 bg-cyan-500/20 rounded-full blur-[80px]"></div>
-          
-          {/* Podium */}
-          <div className="flex items-end gap-0 h-48 relative z-10">
-            <div className="w-20 h-28 bg-[#6366f1] relative flex justify-center border-t border-white/20 shadow-lg">
-              <span className="absolute top-4 text-white font-bold text-lg">405</span>
-              <div className="absolute -top-10 w-14 h-14 rounded-full bg-gradient-to-br from-[#f472b6] to-[#c084fc] shadow-[0_0_20px_rgba(192,132,252,0.4)] flex items-center justify-center">
-                <svg className="w-8 h-8 text-[#0f172a] transform rotate-12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M5 11 Q 7 14 9 11" />
-                  <path d="M13 11 Q 15 14 17 11" />
-                  <path d="M11 7 L 11 16 L 8 16" />
-                </svg>
-                <Crown className="w-5 h-5 text-orange-500 absolute -top-4 -left-2 transform -rotate-12" />
-              </div>
-            </div>
-            <div className="w-24 h-48 bg-[#818cf8] relative flex justify-center border-t border-white/20 shadow-2xl z-10">
-              <span className="absolute top-4 text-white font-bold text-xl">605</span>
-              <div className="absolute -top-16 w-20 h-20 rounded-full bg-gradient-to-br from-[#60a5fa] to-[#3b82f6] shadow-[0_0_30px_rgba(59,130,246,0.4)] flex items-center justify-center">
-                <svg className="w-10 h-10 text-[#0f172a] transform -rotate-12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M7 11 Q 9 14 11 11" />
-                  <path d="M15 11 Q 17 14 19 11" />
-                  <path d="M13 7 L 13 16 L 16 16" />
-                </svg>
-                <Crown className="w-8 h-8 text-yellow-400 absolute -top-6 transform rotate-12" />
-              </div>
-            </div>
-            <div className="w-20 h-36 bg-[#4f46e5] relative flex justify-center border-t border-white/20 shadow-lg">
-              <span className="absolute top-4 text-white font-bold text-lg">505</span>
-              <div className="absolute -top-10 w-14 h-14 rounded-full bg-gradient-to-br from-[#f472b6] to-[#c084fc] shadow-[0_0_20px_rgba(192,132,252,0.4)] flex items-center justify-center">
-                <svg className="w-8 h-8 text-[#0f172a] transform rotate-12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M5 11 Q 7 14 9 11" />
-                  <path d="M13 11 Q 15 14 17 11" />
-                  <path d="M11 7 L 11 16 L 8 16" />
-                </svg>
-                <Crown className="w-5 h-5 text-gray-400 absolute -top-4 -right-2 transform rotate-12" />
-              </div>
-            </div>
-          </div>
-        </div>
-      )
-    },
-    {
-      title: "LEAGUES AND RANKS",
-      subtitle: "RISE UP BASED ON PLAYTIME AND SKILL LEVEL",
-      illustration: (
-        <div className="relative w-full h-80 flex items-center justify-center">
-          <div className="w-48 h-48 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-[2rem] transform rotate-45 flex items-center justify-center shadow-[0_0_60px_rgba(234,179,8,0.4)] border-[6px] border-yellow-200/30 relative">
-            <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent rounded-[1.5rem]"></div>
-            <div className="transform -rotate-45 relative z-10">
-              <svg className="w-20 h-20 text-yellow-900/80" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M8 8v8M16 8v8M4 12h16M12 4v16" />
-                <circle cx="12" cy="12" r="10" />
-              </svg>
-            </div>
-          </div>
-        </div>
-      )
-    },
-    {
       title: "RIP DOOMSCROLLING",
       subtitle: "CHOOSE BRAIN-STIMULATING PLAY.",
       illustration: (
@@ -252,7 +188,7 @@ export const OnboardingScreens: React.FC<OnboardingScreensProps> = ({ onLogin })
     <div className="flex flex-col h-[100dvh] bg-[#1a1a1c] font-sans text-white relative overflow-hidden">
       {/* Top Progress Bar */}
       <div className="absolute top-0 left-0 right-0 flex gap-1 p-2 z-50">
-        {[0, 1, 2, 3].map((i) => (
+        {[0, 1].map((i) => (
           <div key={i} className="flex-1 h-1 rounded-full bg-white/20 overflow-hidden">
             <motion.div 
               className="h-full bg-[#7b85f5]"

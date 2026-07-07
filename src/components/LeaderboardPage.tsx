@@ -3,16 +3,17 @@ import { ChevronLeft, Crown, ChevronRight } from 'lucide-react';
 
 interface LeaderboardPageProps {
   onBack: () => void;
+  profileName?: string;
 }
 
-export default function LeaderboardPage({ onBack }: LeaderboardPageProps) {
+export default function LeaderboardPage({ onBack, profileName }: LeaderboardPageProps) {
   const [activeTab, setActiveTab] = useState<'Global' | 'Friends' | 'Country'>('Global');
 
   const [showMore, setShowMore] = useState(false);
 
   const initialUsers: Array<{rank: number, name: string, xp: string, image: string, isCurrentUser?: boolean}> = [
     { rank: 4, name: 'Priya', xp: '9,860 XP', image: 'https://i.pravatar.cc/150?u=4' },
-    { rank: 5, name: 'Akash (You)', xp: '9,250 XP', isCurrentUser: true, image: 'https://i.pravatar.cc/150?u=5' },
+    { rank: 5, name: profileName ? `${profileName} (You)` : "You", xp: '9,250 XP', isCurrentUser: true, image: 'https://i.pravatar.cc/150?u=5' },
     { rank: 6, name: 'Karan', xp: '8,730 XP', image: 'https://i.pravatar.cc/150?u=6' },
     { rank: 7, name: 'Sneha', xp: '7,890 XP', image: 'https://i.pravatar.cc/150?u=7' },
   ];

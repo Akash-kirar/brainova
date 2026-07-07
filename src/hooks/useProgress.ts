@@ -2,8 +2,10 @@ import { useState, useEffect } from 'react';
 
 export interface GameSession {
   id: string;
-  gameType: 'memory' | 'speed' | 'focus' | 'logic' | 'math' | 'language';
+  gameId?: string;
+  gameType: 'memory' | 'speed' | 'focus' | 'logic' | 'math' | 'language' | 'visual' | 'observation' | 'executive' | 'creativity';
   score: number;
+  accuracy?: number;
   difficulty: string;
   timestamp: number;
   reactionTime?: number; // Average reaction time in ms
@@ -23,6 +25,10 @@ export interface UserStats {
     logic: number;
     math: number;
     language: number;
+    visual: number;
+    executive: number;
+    creativity: number;
+    observation: number;
   };
   weeklyPerformance: { date: string; score: number }[];
   streakHistory: string[];
@@ -34,7 +40,7 @@ const DEFAULT_STATS: UserStats = {
   lastPlayedDate: null,
   totalGamesPlayed: 0,
   novaCoins: 0,
-  highScores: { memory: 0, speed: 0, focus: 0, logic: 0, math: 0, language: 0 },
+  highScores: { memory: 0, speed: 0, focus: 0, logic: 0, math: 0, language: 0, visual: 0, observation: 0, executive: 0, creativity: 0 },
   weeklyPerformance: [],
   streakHistory: [],
 };

@@ -256,6 +256,10 @@ export const translations: Record<Language, any> = {
     "xp": "XP",
     "reaction speed": "Reaction Speed",
     "language & word": "Language & Word",
+    "visual & spatial": "Visual & Spatial",
+    "observation": "Observation",
+    "executive function": "Executive Function",
+    "creativity": "Creativity",
     "indiaFirstApp": "India's first app with multiple languages",
     "indiaApnaApp": "India ka apna app",
     "nova": "Nova",
@@ -274,6 +278,8 @@ export const translations: Record<Language, any> = {
     "profile": "प्रोफ़ाइल",
     "welcomeBack": "वापसी पर स्वागत है",
     "createAccount": "खाता बनाएं",
+    "selectLanguage": "भाषा चुनें",
+    "chooseLanguageDesc": "जारी रखने के लिए अपनी पसंदीदा भाषा चुनें।",
     "welcomeToBrainova": "Brainova में आपका स्वागत है",
     "readyToTrain": "क्या आप आज अपने दिमाग को प्रशिक्षित करने के लिए तैयार हैं?",
     "dailyWorkout": "दैनिक व्यायाम",
@@ -794,6 +800,8 @@ export const translations: Record<Language, any> = {
     "profile": "प्रोफाइल",
     "welcomeBack": "परत स्वागत आहे",
     "createAccount": "खाते तयार करा",
+    "selectLanguage": "भाषा निवडा",
+    "chooseLanguageDesc": "सुरू ठेवण्यासाठी तुमची पसंतीची भाषा निवडा.",
     "welcomeToBrainova": "Brainova मध्ये आपले स्वागत आहे",
     "readyToTrain": "आज तुमच्या मेंदूला प्रशिक्षित करण्यास तयार आहात?",
     "dailyWorkout": "रोजची कसरत",
@@ -1565,12 +1573,17 @@ export const translations: Record<Language, any> = {
     "indiaApnaApp": "இந்தியா கா அப்னா ஆப்",
     "nova": "பிரைனோவா",
     "cognitiveTraining": "அறிவாற்றல் பயிற்சி"
-  }
+  },
+  "kn": {
+    "selectLanguage": "ಭಾಷೆಯನ್ನು ಆಯ್ಕೆಮಾಡಿ",
+    "chooseLanguageDesc": "ಮುಂದುವರೆಯಲು ನಿಮ್ಮ ಆದ್ಯತೆಯ ಭಾಷೆಯನ್ನು ಆಯ್ಕೆಮಾಡಿ.",
+    "continue": "ಮುಂದುವರಿಸಿ"
+  },
 };
 
 
 
-export type Language = 'en' | 'hi' | 'bn' | 'mr' | 'te' | 'ta';
+export type Language = 'en' | 'hi' | 'bn' | 'mr' | 'te' | 'ta' | 'kn';
 
 export function t(key: string, lang: Language): string {
   const keys = key.split('.');

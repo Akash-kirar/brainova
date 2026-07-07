@@ -14,27 +14,38 @@ export default function AiAnalysisPage({ onBack }: { onBack: () => void }) {
   const { stats } = useProgress();
 
   const data = useMemo(() => {
-    const calculateScore = (score: number, base: number) => {
-      if (score === 0) return base;
-      return Math.min(100, base + Math.round(score / 15));
+    const calculateScore = (score: number) => {
+      // Scale from 0 to max 100 based on score
+      // Suppose a good score is around 1500, so 1500 / 15 = 100
+      if (!score) return 0;
+      return Math.min(100, Math.round(score / 15));
     };
 
     return [
-      { subject: 'Memory', A: calculateScore(stats.highScores.memory, 40), color: '#c084fc', fullMark: 100 },
-      { subject: 'Focus', A: calculateScore(stats.highScores.focus, 45), color: '#f472b6', fullMark: 100 },
-      { subject: 'Speed', A: calculateScore(stats.highScores.speed, 50), color: '#c084fc', fullMark: 100 },
-      { subject: 'Recall', A: calculateScore(stats.highScores.language, 42), color: '#60a5fa', fullMark: 100 },
-      { subject: 'Logic', A: calculateScore(stats.highScores.logic, 38), color: '#c084fc', fullMark: 100 },
-      { subject: 'Math Solving', A: calculateScore(stats.highScores.math, 35), color: '#f472b6', fullMark: 100 },
+      { subject: 'Memory', A: calculateScore(stats.highScores.memory), color: '#c084fc', fullMark: 100 },
+      { subject: 'Focus', A: calculateScore(stats.highScores.focus), color: '#f472b6', fullMark: 100 },
+      { subject: 'Speed', A: calculateScore(stats.highScores.speed), color: '#c084fc', fullMark: 100 },
+      { subject: 'Recall', A: calculateScore(stats.highScores.language), color: '#60a5fa', fullMark: 100 },
+      { subject: 'Logic', A: calculateScore(stats.highScores.logic), color: '#c084fc', fullMark: 100 },
+      { subject: 'Math Solving', A: calculateScore(stats.highScores.math), color: '#f472b6', fullMark: 100 },
     ];
   }, [stats]);
 
   // Determine strengths and weaknesses
   const { strengths, weaknesses } = useMemo(() => {
     const sorted = [...data].sort((a, b) => b.A - a.A);
+    const nonZeroData = sorted.filter(d => d.A > 0);
+
+    if (nonZeroData.length === 0) {
+      return {
+        strengths: 'Play games to discover your strengths!',
+        weaknesses: 'Play games to identify areas for improvement!'
+      };
+    }
+
     return {
-      strengths: sorted.slice(0, 2).map(d => d.subject).join(', '),
-      weaknesses: sorted.slice(-2).map(d => d.subject).join(', ')
+      strengths: nonZeroData.slice(0, 2).map(d => d.subject).join(', '),
+      weaknesses: sorted.slice(-2).filter(d => d.A < nonZeroData[0].A).map(d => d.subject).join(', ') || 'None yet!'
     };
   }, [data]);
 

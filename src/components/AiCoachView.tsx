@@ -1,10 +1,12 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { ChevronLeft, Bot, ChevronRight, Brain, Sparkles, Send, Mic, RefreshCw, Clock, BarChart2, Calendar, Target, Zap, MessageSquare, Menu, Crown, Flame } from 'lucide-react';
+import { ChevronLeft, Bot, ChevronRight, Brain, Sparkles, Send, RefreshCw, Clock, BarChart2, Calendar, Target, Zap, MessageSquare, Menu, Crown, Flame , Gamepad2, Play, ChevronDown, Globe } from 'lucide-react';
 import { GoogleGenAI, GenerateContentResponse } from "@google/genai";
 import { useProgress } from '../hooks/useProgress';
+import { useChatLimit } from '../hooks/useChatLimit';
 
 interface AiCoachViewProps {
+  onPlayGame: (gameId: string) => void;
   profileName: string;
   onSend: () => void;
 }
@@ -28,7 +30,7 @@ const initAi = () => {
 
 const ai = initAi();
 
-export default function AiCoachView({ profileName, onSend }: AiCoachViewProps) {
+export default function AiCoachView({ profileName, onSend, onPlayGame }: AiCoachViewProps) {
   const { stats, sessions } = useProgress();
   const [query, setQuery] = useState('');
   const [mode, setMode] = useState<'suggestions' | 'chat'>('suggestions');
@@ -36,7 +38,62 @@ export default function AiCoachView({ profileName, onSend }: AiCoachViewProps) {
     { id: 'initial', role: 'model', text: 'Hi! How can I help you improve today?', timestamp: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) }
   ]);
   const [isTyping, setIsTyping] = useState(false);
-  const [chatTokens, setChatTokens] = useState(5);
+  const { tokensRemaining, limit, useToken, hasTokens, isPro } = useChatLimit();
+  const [isRecording, setIsRecording] = useState(false);
+  const [speechLang, setSpeechLang] = useState('en-US');
+  const [isLangDropdownOpen, setIsLangDropdownOpen] = useState(false);
+  const [placeholderIndex, setPlaceholderIndex] = useState(0);
+  const recognitionRef = useRef<any>(null);
+
+  useEffect(() => {
+    const placeholders = [
+      "Ask me anything...",
+      "What is my today score?",
+      "What is my week section?",
+      "What should I do today?",
+      "How to improve my focus?"
+    ];
+    const interval = setInterval(() => {
+      setPlaceholderIndex((prev) => (prev + 1) % placeholders.length);
+    }, 3000);
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+      const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+      recognitionRef.current = new SpeechRecognition();
+      recognitionRef.current.continuous = false;
+      recognitionRef.current.interimResults = true;
+
+      recognitionRef.current.onresult = (event: any) => {
+        let finalTranscript = '';
+        for (let i = event.resultIndex; i < event.results.length; ++i) {
+          if (event.results[i].isFinal) {
+            finalTranscript += event.results[i][0].transcript;
+          }
+        }
+        if (finalTranscript) {
+          setQuery((prev) => prev + (prev ? ' ' : '') + finalTranscript);
+        }
+      };
+
+      recognitionRef.current.onerror = () => setIsRecording(false);
+      recognitionRef.current.onend = () => setIsRecording(false);
+    }
+  }, []);
+
+  const toggleRecording = () => {
+    if (!recognitionRef.current) return alert('Speech recognition not supported.');
+    if (isRecording) {
+      recognitionRef.current.stop();
+      setIsRecording(false);
+    } else {
+      recognitionRef.current.lang = speechLang;
+      recognitionRef.current.start();
+      setIsRecording(true);
+    }
+  };
   const [showAllQuickActions, setShowAllQuickActions] = useState(false);
   
   const chatRef = useRef<any>(null);
@@ -49,7 +106,7 @@ export default function AiCoachView({ profileName, onSend }: AiCoachViewProps) {
       chatRef.current = ai.chats.create({
         model: "gemini-3-flash-preview",
         config: {
-          systemInstruction: `You are Nova AI, a friendly, intelligent brain training coach. Keep answers short and encouraging (under 3 sentences). If the user asks for a calculation plan (like "I want to improve calculation speed"), always say 'Great choice! Improving calculation speed helps in exams and daily problem solving. Here's a quick plan for you:' and append exactly the string '[CALC_PLAN]' at the end of your response.If the user asks for a training plan or schedule, always say 'Sure! I've created a plan for you.' and append exactly the string '[VIEW_PLAN]' at the end of your response.Recommend games like Math Sprint, Number Recall, Color Reaction.`,
+          systemInstruction: `You are Nova AI, a friendly, intelligent brain training coach. Keep answers short and encouraging (under 3 sentences). If the user asks for a calculation plan, say 'Great choice!' and append '[CALC_PLAN]'. If they ask for a training plan, append '[VIEW_PLAN]'. If they want to play a game or improve a skill, suggest a game by appending '[GAME:game-id]'. Available game IDs: memory, math, logic, focus, speed, language, visual, observation, executive, creativity. Example: 'Try this math game! [GAME:math]'`,
         }
       });
     }
@@ -66,8 +123,8 @@ export default function AiCoachView({ profileName, onSend }: AiCoachViewProps) {
   const handleSend = async (textToSend: string = query) => {
     if (!textToSend.trim()) return;
     
-    if (chatTokens <= 0) {
-      onSend(); // Trigger premium modal
+    if (!hasTokens) {
+      if (!isPro) onSend();
       return;
     }
 
@@ -77,7 +134,7 @@ export default function AiCoachView({ profileName, onSend }: AiCoachViewProps) {
     const userMsg: Message = { id: Date.now().toString(), role: 'user', text: textToSend, timestamp: currentTime };
     setMessages(prev => [...prev, userMsg]);
     setQuery('');
-    setChatTokens(prev => prev - 1);
+    useToken();
     setIsTyping(true);
 
     const modelMsgId = (Date.now() + 1).toString();
@@ -85,7 +142,8 @@ export default function AiCoachView({ profileName, onSend }: AiCoachViewProps) {
 
     if (chatRef.current) {
       try {
-        let streamResponse = await chatRef.current.sendMessageStream({ message: textToSend });
+        const languageInstruction = `\n\n[System Instruction: The user's preferred language code is '${speechLang}'. Please respond to this message in that language.]`;
+        let streamResponse = await chatRef.current.sendMessageStream({ message: textToSend + languageInstruction });
         let fullText = '';
         
         for await (const chunk of streamResponse) {
@@ -144,9 +202,60 @@ export default function AiCoachView({ profileName, onSend }: AiCoachViewProps) {
                 I'm Nova, here to help you think better and learn faster. 🚀
               </span>
             </div>
-            <div className="flex items-center gap-1.5 bg-black/40 px-2 py-1 rounded-full border border-white/10 shrink-0">
-              <div className="w-2 h-2 rounded-full bg-[#10b981] shadow-[0_0_8px_#10b981]"></div>
-              <span className="text-[11px] text-white/90 font-medium tracking-wide">Online</span>
+            <div className="relative">
+              <button 
+                onClick={() => setIsLangDropdownOpen(!isLangDropdownOpen)}
+                className="flex items-center gap-1.5 bg-[#161619] px-3 py-1.5 rounded-full border border-white/10 shrink-0 hover:bg-[#1e1e24] transition-colors"
+              >
+                <Globe className="w-3.5 h-3.5 text-indigo-400" />
+                <span className="text-[12px] text-white/90 font-medium tracking-wide">
+                  {[
+                        { code: 'en-US', name: 'English' },
+                        { code: 'hi-IN', name: 'हिंदी (Hindi)' },
+                        { code: 'bn-IN', name: 'বাংলা (Bengali)' },
+                        { code: 'mr-IN', name: 'मराठी (Marathi)' },
+                        { code: 'te-IN', name: 'తెలుగు (Telugu)' },
+                        { code: 'kn-IN', name: 'ಕನ್ನಡ (Kannada)' },
+                        { code: 'ta-IN', name: 'தமிழ் (Tamil)' }
+                  ].find(l => l.code === speechLang)?.name || 'Language'}
+                </span>
+                <ChevronDown className={`w-3.5 h-3.5 text-white/50 transition-transform duration-200 ${isLangDropdownOpen ? 'rotate-180' : ''}`} />
+              </button>
+
+              <AnimatePresence>
+                {isLangDropdownOpen && (
+                  <>
+                    <div className="fixed inset-0 z-40" onClick={() => setIsLangDropdownOpen(false)} />
+                    <motion.div 
+                      initial={{ opacity: 0, y: 5, scale: 0.95 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: 5, scale: 0.95 }}
+                      className="absolute right-0 top-full mt-2 w-44 bg-[#1a1a1c] border border-white/10 rounded-xl shadow-2xl z-50 overflow-hidden"
+                    >
+                      {[
+                        { code: 'en-US', name: 'English' },
+                        { code: 'hi-IN', name: 'हिंदी (Hindi)' },
+                        { code: 'bn-IN', name: 'বাংলা (Bengali)' },
+                        { code: 'mr-IN', name: 'मराठी (Marathi)' },
+                        { code: 'te-IN', name: 'తెలుగు (Telugu)' },
+                        { code: 'kn-IN', name: 'ಕನ್ನಡ (Kannada)' },
+                        { code: 'ta-IN', name: 'தமிழ் (Tamil)' }
+                      ].map(lang => (
+                        <button
+                          key={lang.code}
+                          onClick={() => {
+                            setSpeechLang(lang.code);
+                            setIsLangDropdownOpen(false);
+                          }}
+                          className={`w-full text-left px-4 py-2.5 text-sm transition-colors ${speechLang === lang.code ? 'bg-indigo-500/20 text-indigo-300 font-medium' : 'text-white/70 hover:bg-white/5 hover:text-white'}`}
+                        >
+                          {lang.name}
+                        </button>
+                      ))}
+                    </motion.div>
+                  </>
+                )}
+              </AnimatePresence>
             </div>
           </div>
 
@@ -238,6 +347,7 @@ export default function AiCoachView({ profileName, onSend }: AiCoachViewProps) {
                 </div>
               </div>
             </div>
+            
           </div>
           
           {/* Chat Messages */}
@@ -246,7 +356,13 @@ export default function AiCoachView({ profileName, onSend }: AiCoachViewProps) {
               const isUser = message.role === 'user';
               const hasCalcPlan = message.text.includes('[CALC_PLAN]');
               const hasPlan = message.text.includes('[VIEW_PLAN]');
-              const displayText = message.text.replace('[CALC_PLAN]', '').replace('[VIEW_PLAN]', '');
+              const gameRegex = /\[GAME:([^\]]+)\]/g;
+              const gameIds = [];
+              let match;
+              while ((match = gameRegex.exec(message.text)) !== null) {
+                gameIds.push(match[1]);
+              }
+              const displayText = message.text.replace(gameRegex, '').replace('[CALC_PLAN]', '').replace('[VIEW_PLAN]', '').trim();
 
               return (
                 <motion.div 
@@ -279,6 +395,27 @@ export default function AiCoachView({ profileName, onSend }: AiCoachViewProps) {
                             </div>
                           )}
                         </>
+                    )}
+                    
+                    {gameIds.length > 0 && !isUser && (
+                      <div className="mt-3 flex flex-col gap-2">
+                        {gameIds.map(gameId => (
+                          <button 
+                            key={gameId}
+                            onClick={() => onPlayGame(gameId)}
+                            className="flex items-center gap-3 bg-[#1e1e24] hover:bg-[#2a2a32] transition-colors border border-white/10 rounded-2xl p-3 text-left w-full max-w-[280px]"
+                          >
+                            <div className="w-10 h-10 rounded-xl bg-[#a855f7]/20 flex items-center justify-center shrink-0">
+                              <Gamepad2 className="w-5 h-5 text-[#c084fc]" />
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <h4 className="text-white text-sm font-bold truncate">Play {gameId.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}</h4>
+                              <p className="text-white/50 text-[11px] truncate">Tap to start</p>
+                            </div>
+                            <Play className="w-4 h-4 text-white/40" />
+                          </button>
+                        ))}
+                      </div>
                     )}
                     
                     {hasCalcPlan && !isUser && (
@@ -338,7 +475,7 @@ export default function AiCoachView({ profileName, onSend }: AiCoachViewProps) {
 
       {/* Input Area */}
       <div className="absolute bottom-0 left-0 right-0 p-5 bg-gradient-to-t from-[#0a0a0c] via-[#0a0a0c]/90 to-transparent pt-12 z-30 pointer-events-none">
-        <div className="bg-[#161619] border border-white/10 rounded-[28px] p-1.5 flex items-center gap-2 shadow-[0_10px_30px_rgba(0,0,0,0.5)] pointer-events-auto w-full max-w-3xl mx-auto backdrop-blur-md">
+        <div className="bg-[#161619] border border-white/10 rounded-full py-1.5 pl-5 pr-1.5 flex items-center gap-2 shadow-[0_10px_30px_rgba(0,0,0,0.5)] pointer-events-auto w-full max-w-3xl mx-auto backdrop-blur-md">
           <button className="w-10 h-10 rounded-full bg-[#2e1065] text-[#d8b4fe] flex items-center justify-center shrink-0 hover:bg-[#3b0764] transition-colors shadow-inner">
              <Sparkles className="w-5 h-5" />
           </button>
@@ -350,13 +487,12 @@ export default function AiCoachView({ profileName, onSend }: AiCoachViewProps) {
             onKeyDown={(e) => {
               if (e.key === 'Enter') handleSend();
             }}
-            placeholder="Ask me anything..." 
-            className="flex-1 bg-transparent border-none text-[15px] text-white placeholder-white/40 focus:outline-none px-2"
+            placeholder={["Ask me anything...", "What is my today score?", "What is my week section?", "What should I do today?", "How to improve my focus?"][placeholderIndex]} 
+            className="flex-1 min-w-0 bg-transparent border-none text-[15px] text-white placeholder-white/40 focus:outline-none px-2"
           />
           
-          <button className="w-10 h-10 rounded-full flex items-center justify-center shrink-0 text-white/40 hover:text-white transition-colors">
-            <Mic className="w-5 h-5" />
-          </button>
+                    
+          
           
           <button 
             onClick={() => handleSend()}
@@ -367,11 +503,11 @@ export default function AiCoachView({ profileName, onSend }: AiCoachViewProps) {
           </button>
         </div>
         
-        {chatTokens <= 2 && mode === 'chat' && (
+        {mode === 'chat' && (
           <div className="text-center mt-3 pointer-events-auto">
              <span className="text-[12px] text-white/50 font-medium">
-               {chatTokens} free messages remaining. 
-                <button onClick={onSend} className="text-[#a855f7] hover:text-[#c084fc] ml-1 font-bold">Upgrade</button>
+               Used {limit - tokensRemaining} of {limit} {isPro ? "Pro" : "Free"} messages this month. 
+                {!isPro ? (<button onClick={onSend} className="text-[#a855f7] hover:text-[#c084fc] ml-1 font-bold">Upgrade</button>) : (!hasTokens && <span className="text-white/40 ml-1">Wait for next month.</span>)}
              </span>
           </div>
         )}

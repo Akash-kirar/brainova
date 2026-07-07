@@ -117,7 +117,7 @@ export default function PremiumSubscriptionPage({ onBack, onSkip }: { onBack: ()
 
       {/* Bottom Sticky action */}
       <div className="absolute bottom-0 left-0 right-0 p-6 pt-10 bg-gradient-to-t from-[#0c0914] via-[#0c0914] to-transparent z-20 flex flex-col items-center">
-        <button onClick={onBack} className="w-full bg-gradient-to-r from-violet-600 via-fuchsia-600 to-pink-500 hover:from-violet-500 hover:via-fuchsia-500 hover:to-pink-400 shadow-[0_0_25px_rgba(217,70,239,0.4)] hover:shadow-[0_0_35px_rgba(217,70,239,0.6)] text-white font-bold py-4 rounded-full text-[18px] hover:-translate-y-1 transition-all mb-4">
+        <button onClick={() => { localStorage.setItem("brainova_is_pro", "true"); onBack(); window.location.reload(); }} className="w-full bg-gradient-to-r from-violet-600 via-fuchsia-600 to-pink-500 hover:from-violet-500 hover:via-fuchsia-500 hover:to-pink-400 shadow-[0_0_25px_rgba(217,70,239,0.4)] hover:shadow-[0_0_35px_rgba(217,70,239,0.6)] text-white font-bold py-4 rounded-full text-[18px] hover:-translate-y-1 transition-all mb-4">
           Start 7-Day Free Trial
         </button>
         <p className="text-white/40 text-[14px]">Cancel anytime</p>

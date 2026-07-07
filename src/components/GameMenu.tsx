@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { motion } from 'motion/react';
 import { ChevronLeft, Star, Globe, Play } from 'lucide-react';
+import { useGameContext } from '../contexts/GameContext';
 
 interface GameMenuProps {
   title: string;
@@ -11,6 +12,11 @@ interface GameMenuProps {
   onStart: (difficulty: 'easy' | 'medium' | 'hard') => void;
   showDifficulty?: boolean;
   onBack?: () => void;
+  stats?: {
+    bestScore: number | string;
+    avgScore: number | string;
+    accuracy: number | string;
+  };
 }
 
 export default function GameMenu({
@@ -22,7 +28,11 @@ export default function GameMenu({
   onStart,
   showDifficulty = true,
   onBack,
+  stats: propStats,
 }: GameMenuProps) {
+  const context = useGameContext();
+  const stats = propStats || context.stats;
+  
   const [difficulty, setDifficulty] = useState<'easy' | 'medium' | 'hard'>('easy');
   const [isStarred, setIsStarred] = useState(false);
 
@@ -85,15 +95,15 @@ export default function GameMenu({
         <div className="w-full bg-[#18181b] border border-white/5 rounded-2xl p-5 flex justify-between divide-x divide-white/5 mb-8">
           <div className="flex flex-col items-center flex-1">
             <span className="text-[#a1a1aa] text-[13px] mb-1 font-medium">Best Score</span>
-            <span className="text-white font-bold text-[22px]">1250</span>
+            <span className="text-white font-bold text-[22px]">{stats.bestScore}</span>
           </div>
           <div className="flex flex-col items-center flex-1">
             <span className="text-[#a1a1aa] text-[13px] mb-1 font-medium">Avg. Score</span>
-            <span className="text-white font-bold text-[22px]">980</span>
+            <span className="text-white font-bold text-[22px]">{stats.avgScore}</span>
           </div>
           <div className="flex flex-col items-center flex-1">
             <span className="text-[#a1a1aa] text-[13px] mb-1 font-medium">Accuracy</span>
-            <span className="text-white font-bold text-[22px]">92%</span>
+            <span className="text-white font-bold text-[22px]">{stats.accuracy}</span>
           </div>
         </div>
 

@@ -15,6 +15,11 @@ interface GameDetailsViewProps {
   onPlay: (difficulty: string) => void;
   isFavorite?: boolean;
   onToggleFavorite?: () => void;
+  stats?: {
+    bestScore: number | string;
+    avgScore: number | string;
+    accuracy: number | string;
+  };
 }
 
 export default function GameDetailsView({ 
@@ -22,16 +27,10 @@ export default function GameDetailsView({
   onClose, 
   onPlay,
   isFavorite = false,
-  onToggleFavorite
+  onToggleFavorite,
+  stats = { bestScore: 0, avgScore: 0, accuracy: '0%' }
 }: GameDetailsViewProps) {
   const [difficulty, setDifficulty] = useState<'easy' | 'medium' | 'hard'>('easy');
-
-  // Placeholder stats
-  const stats = {
-    bestScore: '1250',
-    avgScore: '980',
-    accuracy: '92%'
-  };
 
   const difficultyLevel = {
     easy: 'Level 4 • Easy',
