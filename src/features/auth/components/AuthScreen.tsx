@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { ArrowLeft, Mail, Lock, User, Brain, Github } from 'lucide-react';
+import { ArrowLeft, Mail, Lock, User, Brain } from 'lucide-react';
+import type { Provider } from '@supabase/supabase-js';
 import { Language, t } from '@/src/i18n';
-import { supabase } from '@/src/lib/supabase';
+import { supabase, supabaseConfigError } from '@/src/lib/supabase';
 
 interface AuthScreenProps {
   language: Language;
@@ -17,60 +18,125 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ language, onLogin, onBac
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
+  const [infoMsg, setInfoMsg] = useState('');
+
+  const trimmedEmail = email.trim().toLowerCase();
+  const displayName = signupName.trim() || trimmedEmail.split('@')[0];
+
+  const requireSupabase = () => {
+    if (!supabase) {
+      setInfoMsg('');
+      setErrorMsg(supabaseConfigError);
+      return false;
+    }
+    return true;
+  };
+
+  const validateEmailPassword = () => {
+    if (!trimmedEmail || !password) {
+      setErrorMsg('Enter your email and password.');
+      return false;
+    }
+    if (password.length < 6) {
+      setErrorMsg('Password must be at least 6 characters.');
+      return false;
+    }
+    return true;
+  };
+
+  const loadProfileName = async (userId: string) => {
+    if (!supabase) return displayName;
+
+    const { data, error } = await supabase
+      .from('profiles')
+      .select('name')
+      .eq('id', userId)
+      .maybeSingle();
+
+    if (error) {
+      console.warn('Unable to load profile after login:', error.message);
+    }
+
+    return data?.name || displayName;
+  };
 
   const handleEmailLogin = async () => {
-    if (!supabase) {
-       onLogin(email.split('@')[0]);
-       return;
-    }
+    if (!requireSupabase() || !validateEmailPassword()) return;
+
     setLoading(true);
     setErrorMsg('');
+    setInfoMsg('');
     try {
       const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password
+        email: trimmedEmail,
+        password,
       });
       if (error) throw error;
-      
-      const { data: profile } = await supabase.from('profiles').select('name').eq('id', data.user.id).single();
-      onLogin(profile?.name || email.split('@')[0]);
+      if (!data.user) throw new Error('Login did not return a user session.');
+
+      onLogin(await loadProfileName(data.user.id));
     } catch (e: any) {
-      setErrorMsg(e.message);
+      setErrorMsg(e.message || 'Unable to log in.');
     } finally {
       setLoading(false);
     }
   };
 
   const handleEmailSignup = async () => {
-    if (!supabase) {
-       onLogin(signupName || email.split('@')[0]);
-       return;
-    }
+    if (!requireSupabase() || !validateEmailPassword()) return;
+
     setLoading(true);
     setErrorMsg('');
+    setInfoMsg('');
     try {
       const { data, error } = await supabase.auth.signUp({
-        email,
+        email: trimmedEmail,
         password,
         options: {
           data: {
-            name: signupName
-          }
-        }
+            name: displayName,
+          },
+        },
       });
       if (error) throw error;
-      
-      if (data.user) {
-        await supabase.from('profiles').upsert({ id: data.user.id, name: signupName });
+
+      if (data.session && data.user) {
+        await supabase.from('profiles').upsert({
+          id: data.user.id,
+          name: displayName,
+          email: data.user.email,
+        });
+        onLogin(displayName);
+        return;
       }
-      onLogin(signupName || email.split('@')[0]);
+
+      setInfoMsg('Check your email to confirm your account, then log in.');
     } catch (e: any) {
-      setErrorMsg(e.message);
+      setErrorMsg(e.message || 'Unable to create your account.');
     } finally {
       setLoading(false);
     }
   };
 
+  const handleOAuthLogin = async (provider: Provider) => {
+    if (!requireSupabase()) return;
+
+    setLoading(true);
+    setErrorMsg('');
+    setInfoMsg('');
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider,
+        options: {
+          redirectTo: window.location.origin,
+        },
+      });
+      if (error) throw error;
+    } catch (e: any) {
+      setErrorMsg(e.message || `Unable to continue with ${provider}.`);
+      setLoading(false);
+    }
+  };
 
   const GoogleIcon = () => (
     <svg className="w-5 h-5" viewBox="0 0 24 24">
@@ -91,13 +157,12 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ language, onLogin, onBac
 
   const FacebookIcon = () => (
     <svg className="w-6 h-6 text-white" viewBox="0 0 24 24" fill="currentColor">
-      <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.469h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.469h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+      <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.469h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.469h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
     </svg>
   );
 
   return (
     <div className="flex flex-col h-[100dvh] bg-[#0a0a0c] font-sans text-white relative overflow-hidden">
-      {/* Decorative blobs */}
       <div className="absolute top-[-10%] left-[-10%] w-96 h-96 bg-indigo-500/20 rounded-full blur-[100px] pointer-events-none" />
       <div className="absolute bottom-[-10%] right-[-10%] w-96 h-96 bg-purple-500/20 rounded-full blur-[100px] pointer-events-none" />
 
@@ -115,24 +180,23 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ language, onLogin, onBac
               <div className="w-24 h-24 rounded-full bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center mb-8 shadow-[0_0_30px_rgba(99,102,241,0.2)]">
                 <Brain className="w-12 h-12 text-indigo-400" />
               </div>
-              
-              <h2 className="text-4xl font-bold tracking-tight mb-4">{t('welcomeToBrainova', language) || "Welcome to Brainova"}</h2>
+              <h2 className="text-4xl font-bold tracking-tight mb-4">{t('welcomeToBrainova', language) || 'Welcome to Brainova'}</h2>
               <p className="text-[15px] text-white/60 mb-10 leading-relaxed max-w-[280px]">
                 Create an account to save your progress and get personalized cognitive training.
               </p>
 
-              <button 
+              <button
                 onClick={() => setAuthMode('signup')}
                 className="w-full h-14 rounded-2xl bg-indigo-500 text-white font-bold text-lg hover:bg-indigo-600 hover:scale-[0.98] active:scale-95 transition-all shadow-[0_0_20px_rgba(99,102,241,0.3)] mb-4"
               >
-                {t('createAccount', language) || "Create Account"}
+                {t('createAccount', language) || 'Create Account'}
               </button>
 
-              <button 
+              <button
                 onClick={() => setAuthMode('login')}
                 className="w-full h-14 rounded-2xl bg-[#1a1a1c] border border-white/10 text-white font-bold text-lg hover:bg-[#2a2a2c] hover:scale-[0.98] active:scale-95 transition-all mb-8"
               >
-                {t('logIn', language) || "Log In"}
+                {t('logIn', language) || 'Log In'}
               </button>
 
               <div className="w-full flex items-center gap-4 mb-8">
@@ -141,23 +205,37 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ language, onLogin, onBac
                 <div className="flex-1 h-px bg-white/10"></div>
               </div>
 
+              {(errorMsg || infoMsg) && (
+                <div className={`w-full text-sm mb-5 ${errorMsg ? 'text-red-400' : 'text-emerald-400'}`}>
+                  {errorMsg || infoMsg}
+                </div>
+              )}
+
               <div className="w-full flex justify-center gap-4">
-                <button 
-                  onClick={() => { const name = prompt("Enter your name to simulate fetching profile:") || ''; onLogin(name); }}
-                  className="w-14 h-14 rounded-2xl bg-white text-black flex items-center justify-center hover:scale-[0.95] active:scale-90 transition-transform shadow-[0_0_20px_rgba(255,255,255,0.1)]"
+                <button
+                  onClick={() => handleOAuthLogin('google')}
+                  disabled={loading}
+                  className="w-14 h-14 rounded-2xl bg-white text-black flex items-center justify-center hover:scale-[0.95] active:scale-90 transition-transform shadow-[0_0_20px_rgba(255,255,255,0.1)] disabled:opacity-50"
+                  aria-label="Continue with Google"
                 >
                   <GoogleIcon />
                 </button>
-                <button 
-                  onClick={() => { const name = prompt("Enter your name to simulate fetching profile:") || ''; onLogin(name); }}
+                <button
+                  onClick={() => {
+                    setInfoMsg('');
+                    setErrorMsg('Instagram login is not configured. Use email, Google, or Facebook.');
+                  }}
                   className="w-14 h-14 rounded-2xl text-white flex items-center justify-center hover:scale-[0.95] active:scale-90 transition-transform shadow-lg"
                   style={{ background: 'linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%)' }}
+                  aria-label="Instagram login unavailable"
                 >
                   <InstagramIcon />
                 </button>
-                <button 
-                  onClick={() => { const name = prompt("Enter your name to simulate fetching profile:") || ''; onLogin(name); }}
-                  className="w-14 h-14 rounded-2xl bg-[#1877F2] text-white flex items-center justify-center hover:scale-[0.95] active:scale-90 transition-transform shadow-lg"
+                <button
+                  onClick={() => handleOAuthLogin('facebook')}
+                  disabled={loading}
+                  className="w-14 h-14 rounded-2xl bg-[#1877F2] text-white flex items-center justify-center hover:scale-[0.95] active:scale-90 transition-transform shadow-lg disabled:opacity-50"
+                  aria-label="Continue with Facebook"
                 >
                   <FacebookIcon />
                 </button>
@@ -174,34 +252,34 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ language, onLogin, onBac
               transition={{ duration: 0.3 }}
               className="flex flex-col h-full justify-center"
             >
-              <button 
+              <button
                 onClick={() => setAuthMode('select')}
                 className="w-10 h-10 rounded-full bg-[#1a1a1c] border border-white/5 flex items-center justify-center mb-10 hover:bg-[#2a2a2c] transition-colors shadow-sm"
               >
                 <ArrowLeft className="w-5 h-5" />
               </button>
-              
-              <h2 className="text-4xl font-bold mb-3 tracking-tight">{t('welcomeBack', language) || "Welcome Back"}</h2>
+
+              <h2 className="text-4xl font-bold mb-3 tracking-tight">{t('welcomeBack', language) || 'Welcome Back'}</h2>
               <p className="text-white/60 mb-10 text-[15px]">Log in to continue your training.</p>
-              
+
               <div className="space-y-4 mb-8 w-full">
                 <div className="relative group">
                   <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/40 group-focus-within:text-indigo-400 transition-colors" />
-                  <input 
-                    type="email" 
+                  <input
+                    type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    placeholder={t('emailAddress', language) || "Email address"} 
+                    placeholder={t('emailAddress', language) || 'Email address'}
                     className="w-full bg-[#1a1a1c] border border-white/5 rounded-2xl py-4 pl-12 pr-4 text-white placeholder:text-white/30 focus:outline-none focus:border-indigo-500/50 focus:ring-1 focus:ring-indigo-500/50 transition-all text-[15px]"
                   />
                 </div>
                 <div className="relative group">
                   <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/40 group-focus-within:text-indigo-400 transition-colors" />
-                  <input 
-                    type="password" 
+                  <input
+                    type="password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    placeholder={t('password', language) || "Password"} 
+                    placeholder={t('password', language) || 'Password'}
                     className="w-full bg-[#1a1a1c] border border-white/5 rounded-2xl py-4 pl-12 pr-4 text-white placeholder:text-white/30 focus:outline-none focus:border-indigo-500/50 focus:ring-1 focus:ring-indigo-500/50 transition-all text-[15px]"
                   />
                 </div>
@@ -209,17 +287,21 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ language, onLogin, onBac
 
               <div className="flex justify-end mb-8 w-full">
                 <button className="text-sm font-medium text-indigo-400 hover:text-indigo-300">
-                  {t('forgotPassword', language) || "Forgot password?"}
+                  {t('forgotPassword', language) || 'Forgot password?'}
                 </button>
               </div>
 
-              {errorMsg && <div className="text-red-400 text-sm mb-4">{errorMsg}</div>}
-              <button 
+              {(errorMsg || infoMsg) && (
+                <div className={`text-sm mb-4 ${errorMsg ? 'text-red-400' : 'text-emerald-400'}`}>
+                  {errorMsg || infoMsg}
+                </div>
+              )}
+              <button
                 onClick={handleEmailLogin}
                 disabled={loading}
                 className="w-full h-14 rounded-2xl bg-indigo-500 text-white font-bold text-lg hover:bg-indigo-600 hover:scale-[0.98] active:scale-95 transition-all shadow-[0_0_20px_rgba(99,102,241,0.3)] disabled:opacity-50"
               >
-                {loading ? 'Loading...' : (t('logIn', language) || "Log In")}
+                {loading ? 'Loading...' : (t('logIn', language) || 'Log In')}
               </button>
             </motion.div>
           )}
@@ -233,21 +315,21 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ language, onLogin, onBac
               transition={{ duration: 0.3 }}
               className="flex flex-col h-full justify-center"
             >
-              <button 
+              <button
                 onClick={() => setAuthMode('select')}
                 className="w-10 h-10 rounded-full bg-[#1a1a1c] border border-white/5 flex items-center justify-center mb-10 hover:bg-[#2a2a2c] transition-colors shadow-sm"
               >
                 <ArrowLeft className="w-5 h-5" />
               </button>
-              
-              <h2 className="text-4xl font-bold mb-3 tracking-tight">{t('createAccount', language) || "Create Account"}</h2>
+
+              <h2 className="text-4xl font-bold mb-3 tracking-tight">{t('createAccount', language) || 'Create Account'}</h2>
               <p className="text-white/60 mb-10 text-[15px]">Start your cognitive training journey today.</p>
-              
+
               <div className="space-y-4 mb-10 w-full">
                 <div className="relative group">
                   <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/40 group-focus-within:text-indigo-400 transition-colors" />
-                  <input 
-                    type="text" 
+                  <input
+                    type="text"
                     value={signupName}
                     onChange={(e) => setSignupName(e.target.value)}
                     placeholder="Full Name"
@@ -256,33 +338,37 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ language, onLogin, onBac
                 </div>
                 <div className="relative group">
                   <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/40 group-focus-within:text-indigo-400 transition-colors" />
-                  <input 
-                    type="email" 
+                  <input
+                    type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    placeholder={t('emailAddress', language) || "Email address"} 
+                    placeholder={t('emailAddress', language) || 'Email address'}
                     className="w-full bg-[#1a1a1c] border border-white/5 rounded-2xl py-4 pl-12 pr-4 text-white placeholder:text-white/30 focus:outline-none focus:border-indigo-500/50 focus:ring-1 focus:ring-indigo-500/50 transition-all text-[15px]"
                   />
                 </div>
                 <div className="relative group">
                   <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/40 group-focus-within:text-indigo-400 transition-colors" />
-                  <input 
-                    type="password" 
+                  <input
+                    type="password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    placeholder={t('password', language) || "Password"} 
+                    placeholder={t('password', language) || 'Password'}
                     className="w-full bg-[#1a1a1c] border border-white/5 rounded-2xl py-4 pl-12 pr-4 text-white placeholder:text-white/30 focus:outline-none focus:border-indigo-500/50 focus:ring-1 focus:ring-indigo-500/50 transition-all text-[15px]"
                   />
                 </div>
               </div>
 
-              {errorMsg && <div className="text-red-400 text-sm mb-4">{errorMsg}</div>}
-              <button 
+              {(errorMsg || infoMsg) && (
+                <div className={`text-sm mb-4 ${errorMsg ? 'text-red-400' : 'text-emerald-400'}`}>
+                  {errorMsg || infoMsg}
+                </div>
+              )}
+              <button
                 onClick={handleEmailSignup}
                 disabled={loading}
                 className="w-full h-14 rounded-2xl bg-indigo-500 text-white font-bold text-lg hover:bg-indigo-600 hover:scale-[0.98] active:scale-95 transition-all shadow-[0_0_20px_rgba(99,102,241,0.3)] disabled:opacity-50"
               >
-                {loading ? 'Loading...' : (t('signUp', language) || "Sign up")}
+                {loading ? 'Loading...' : (t('signUp', language) || 'Sign up')}
               </button>
             </motion.div>
           )}

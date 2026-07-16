@@ -1,7 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { User, ChevronLeft, Bot, ChevronRight, Brain, Sparkles, Send, RefreshCw, Clock, BarChart2, Calendar, Target, Zap, MessageSquare, Menu, Crown, Flame , Gamepad2, Play, ChevronDown, Globe } from 'lucide-react';
-import { GoogleGenAI, GenerateContentResponse } from "@google/genai";
 import { useProgress } from '../hooks/useProgress';
 import { useChatLimit } from '../hooks/useChatLimit';
 
@@ -19,17 +18,6 @@ type Message = {
   isStreaming?: boolean;
   timestamp?: string;
 };
-
-const initAi = () => {
-  try {
-    return new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || 'dummy' });
-  } catch (e) {
-    console.warn("Failed to init AI", e);
-    return null;
-  }
-};
-
-const ai = initAi();
 
 export default function AiCoachView({ profileName, onSend, onPlayGame, onOpenProfile }: AiCoachViewProps) {
   const { stats, sessions } = useProgress();
@@ -97,21 +85,9 @@ export default function AiCoachView({ profileName, onSend, onPlayGame, onOpenPro
   };
   const [showAllQuickActions, setShowAllQuickActions] = useState(false);
   
-  const chatRef = useRef<any>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const totalXP = sessions.reduce((acc, curr) => acc + curr.score, 0);
-
-  useEffect(() => {
-    if (ai && !chatRef.current) {
-      chatRef.current = ai.chats.create({
-        model: "gemini-3-flash-preview",
-        config: {
-          systemInstruction: `You are Nova AI, a smart, powerful, and friendly personal brain training coach. Your main work is to understand the user profile, progress, today's score, and needs, and give accurate answers. Give text-based suggestions for games to improve focus, memory, etc. You can create customized 1 to 7 days training plans based on the user's profile score and activity if requested. Give responses ONLY in text. By default, keep your answers very short and concise (1-2 sentences). Adapt your response length (short, medium, or long) if the user explicitly asks for it. If the user's score is zero, acknowledge it correctly and smartly but briefly. Do NOT send game links or widgets. If the user asks for a calculation plan, say 'Great choice!' and append '[CALC_PLAN]'. If they ask for a training plan widget, append '[VIEW_PLAN]'.`,
-        }
-      });
-    }
-  }, []);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -141,52 +117,43 @@ export default function AiCoachView({ profileName, onSend, onPlayGame, onOpenPro
     const modelMsgId = (Date.now() + 1).toString();
     setMessages(prev => [...prev, { id: modelMsgId, role: 'model', text: '', isStreaming: true, timestamp: currentTime }]);
 
-    if (chatRef.current) {
-      try {
-                const todayStr = new Date().toISOString().split('T')[0];
-        const todayScore = sessions.filter(s => new Date(s.timestamp).toISOString().split('T')[0] === todayStr).reduce((acc, curr) => acc + curr.score, 0);
-        
-        const languageInstruction = `\n\n[System Context: 
+    try {
+      const todayStr = new Date().toISOString().split('T')[0];
+      const todayScore = sessions.filter(s => new Date(s.timestamp).toISOString().split('T')[0] === todayStr).reduce((acc, curr) => acc + curr.score, 0);
+      const languageInstruction = `\n\n[System Context:
 - User Profile Score / Total XP: ${totalXP}
 - Today's Score: ${todayScore}
 - Daily Streak: ${stats.dailyStreak || 0} days
 - High Scores: ${JSON.stringify(stats.highScores)}
 The user's preferred language code is '${speechLang}'. Please respond in that language. You are a smart personal AI. Give responses ONLY in text. If the score is 0, explicitly acknowledge it. If the user asks for a 7-day plan, create one based on their current profile score and activity.]`;
-        let streamResponse = await chatRef.current.sendMessageStream({ message: textToSend + languageInstruction });
-        let fullText = '';
-        
-        for await (const chunk of streamResponse) {
-          const c = chunk as GenerateContentResponse;
-          fullText += (c.text || '');
-          
-          setMessages(prev => prev.map(msg => 
-            msg.id === modelMsgId 
-              ? { ...msg, text: fullText } 
-              : msg
-          ));
-        }
-        
-        setMessages(prev => prev.map(msg => 
-          msg.id === modelMsgId 
-            ? { ...msg, isStreaming: false } 
-            : msg
-        ));
-      } catch (e) {
-        console.error(e);
-        setMessages(prev => prev.map(msg => 
-          msg.id === modelMsgId 
-            ? { ...msg, text: "I'm having trouble connecting right now. Let's try again later!", isStreaming: false } 
-            : msg
-        ));
+
+      const response = await fetch('/api/ai/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          message: textToSend,
+          context: languageInstruction,
+          history: messages.map(({ role, text }) => ({ role, text })),
+        }),
+      });
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Unable to reach Nova AI.');
       }
-    } else {
-        setTimeout(() => {
-           setMessages(prev => prev.map(msg => 
-             msg.id === modelMsgId 
-               ? { ...msg, text: "I'm offline right now (API Key missing).", isStreaming: false } 
-               : msg
-          ));
-        }, 1000);
+
+      setMessages(prev => prev.map(msg =>
+        msg.id === modelMsgId
+          ? { ...msg, text: data.text || 'I could not generate a response right now.', isStreaming: false }
+          : msg
+      ));
+    } catch (e) {
+      console.error(e);
+      setMessages(prev => prev.map(msg => 
+        msg.id === modelMsgId 
+          ? { ...msg, text: "I'm having trouble connecting right now. Let's try again later!", isStreaming: false } 
+          : msg
+      ));
     }
     
     setIsTyping(false);

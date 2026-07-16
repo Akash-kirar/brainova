@@ -1,15 +1,27 @@
-import { createClient } from '@supabase/supabase-js';
+import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+const supabasePublishableKey =
+  import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || import.meta.env.VITE_SUPABASE_ANON_KEY;
 
-// Only create the client if the URL and key are provided and the URL is valid
-let client = null;
-if (supabaseUrl && supabaseUrl.startsWith('http') && supabaseAnonKey) {
+export const isSupabaseConfigured =
+  Boolean(supabaseUrl) && supabaseUrl.startsWith('http') && Boolean(supabasePublishableKey);
+
+export const supabaseConfigError =
+  'Supabase is not configured. Set VITE_SUPABASE_URL and VITE_SUPABASE_PUBLISHABLE_KEY in your environment.';
+
+let client: SupabaseClient | null = null;
+if (isSupabaseConfigured) {
   try {
-    client = createClient(supabaseUrl, supabaseAnonKey);
+    client = createClient(supabaseUrl, supabasePublishableKey, {
+      auth: {
+        autoRefreshToken: true,
+        persistSession: true,
+        detectSessionInUrl: true,
+      },
+    });
   } catch (e) {
-    console.warn("Invalid supabaseUrl provided:", e);
+    console.warn('Invalid supabaseUrl provided:', e);
   }
 }
 

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { ChevronLeft, MessageSquare, Star, Send, Check } from 'lucide-react';
 import { Language, t } from '@/src/i18n';
+import { supabase, supabaseConfigError } from '@/src/lib/supabase';
 
 interface FeedbackPageProps {
   onBack: () => void;
@@ -12,22 +13,58 @@ export default function FeedbackPage({ onBack, language }: FeedbackPageProps) {
   const [feedbackRating, setFeedbackRating] = useState(0);
   const [feedbackText, setFeedbackText] = useState('');
   const [isFeedbackSubmitted, setIsFeedbackSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState('');
+
+  const handleSubmitFeedback = async () => {
+    if (feedbackRating === 0 || isSubmitting) return;
+
+    if (!supabase) {
+      setSubmitError(supabaseConfigError);
+      return;
+    }
+
+    setIsSubmitting(true);
+    setSubmitError('');
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      const { error } = await supabase.from('user_feedback').insert({
+        user_id: session?.user?.id || null,
+        rating: feedbackRating,
+        message: feedbackText.trim() || null,
+        language,
+        page: 'feedback',
+        user_agent: navigator.userAgent,
+      });
+
+      if (error) throw error;
+
+      setIsFeedbackSubmitted(true);
+      window.setTimeout(() => {
+        onBack();
+      }, 2500);
+    } catch (e: any) {
+      setSubmitError(e.message || 'Unable to submit feedback.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   return (
-    <motion.div 
+    <motion.div
       initial={{ opacity: 0, x: 20 }}
       animate={{ opacity: 1, x: 0 }}
       exit={{ opacity: 0, x: -20 }}
       className="fixed inset-0 z-50 bg-[#0a0a0c] overflow-y-auto"
     >
       <div className="sticky top-0 z-10 bg-[#0a0a0c]/80 backdrop-blur-xl border-b border-white/10 px-4 py-4 flex items-center justify-between">
-        <button 
+        <button
           onClick={onBack}
           className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-white/10 transition-colors"
         >
           <ChevronLeft className="w-6 h-6 text-white" />
         </button>
-        <h2 className="text-xl font-bold text-white">{t('yourFeedback', language) || "Your Feedback"}</h2>
+        <h2 className="text-xl font-bold text-white">{t('yourFeedback', language) || 'Your Feedback'}</h2>
         <div className="w-10" />
       </div>
 
@@ -47,9 +84,8 @@ export default function FeedbackPage({ onBack, language }: FeedbackPageProps) {
                     <MessageSquare className="w-10 h-10 text-indigo-400" />
                   </div>
                   <h2 className="text-2xl font-bold text-white mb-2">We value your feedback</h2>
-                  
                 </div>
-                
+
                 <div className="flex justify-center gap-2 mb-8">
                   {[1, 2, 3, 4, 5].map((star) => (
                     <button
@@ -57,44 +93,40 @@ export default function FeedbackPage({ onBack, language }: FeedbackPageProps) {
                       onClick={() => setFeedbackRating(star)}
                       className="p-1.5 focus:outline-none transition-transform hover:scale-110 active:scale-95"
                     >
-                      <Star 
+                      <Star
                         className={`w-10 h-10 transition-colors ${
-                          star <= feedbackRating 
-                            ? 'text-[#f59e0b] fill-[#f59e0b]' 
+                          star <= feedbackRating
+                            ? 'text-[#f59e0b] fill-[#f59e0b]'
                             : 'text-white/10 hover:text-white/30'
-                        }`} 
+                        }`}
                       />
                     </button>
                   ))}
                 </div>
-                
+
                 <textarea
                   value={feedbackText}
                   onChange={(e) => setFeedbackText(e.target.value)}
                   placeholder="Tell us more about your experience..."
-                  className="w-full h-40 bg-white/5 border border-white/10 rounded-2xl p-5 text-white placeholder-white/40 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 resize-none transition-all mb-8 text-base"
+                  className="w-full h-40 bg-white/5 border border-white/10 rounded-2xl p-5 text-white placeholder-white/40 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 resize-none transition-all mb-6 text-base"
                 ></textarea>
-                
+
+                {submitError && <div className="text-sm text-red-400 mb-5">{submitError}</div>}
+
                 <button
-                  onClick={() => {
-                    console.log({ rating: feedbackRating, text: feedbackText });
-                    setIsFeedbackSubmitted(true);
-                    setTimeout(() => {
-                      onBack();
-                    }, 2500);
-                  }}
-                  disabled={feedbackRating === 0}
+                  onClick={handleSubmitFeedback}
+                  disabled={feedbackRating === 0 || isSubmitting}
                   className="w-full py-4 rounded-xl font-bold text-white transition-all relative overflow-hidden group disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <div className="absolute inset-0 bg-gradient-to-r from-indigo-600 to-purple-600 transition-transform group-hover:scale-[1.02]"></div>
                   <span className="relative z-10 flex items-center justify-center gap-2 text-lg">
                     <Send className="w-5 h-5" />
-                    Submit Feedback
+                    {isSubmitting ? 'Submitting...' : 'Submit Feedback'}
                   </span>
                 </button>
               </motion.div>
             ) : (
-              <motion.div 
+              <motion.div
                 key="success"
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}

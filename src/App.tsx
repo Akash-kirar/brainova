@@ -340,6 +340,28 @@ export default function App() {
   const [isCompleted, setIsCompleted] = useState(true);
   const [onboardingStep, setOnboardingStep] = useState(0);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [authReady, setAuthReady] = useState(!supabase);
+
+  const loadSessionProfile = async (session: any) => {
+    if (!supabase || !session?.user) return;
+
+    setProfileEmail(session.user.email || '');
+
+    const { data, error } = await supabase
+      .from('profiles')
+      .select('name, email, language')
+      .eq('id', session.user.id)
+      .maybeSingle();
+
+    if (error) {
+      console.warn('Unable to load profile:', error.message);
+      return;
+    }
+
+    if (data?.name) setProfileName(data.name);
+    if (data?.email) setProfileEmail(data.email);
+    if (data?.language) setLanguage(data.language as Language);
+  };
 
   const handleLogout = async () => {
     if (supabase) {
@@ -348,34 +370,47 @@ export default function App() {
     setIsLoggedIn(false);
     setOnboardingStep(0);
     setProfileName('');
+    setProfileEmail('');
   };
 
-
   useEffect(() => {
-    if (!supabase) return;
-    
-    // Check initial session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session) {
+    if (!supabase) {
+      setAuthReady(true);
+      return;
+    }
+
+    let ignore = false;
+
+    const applySession = async (session: any) => {
+      if (ignore) return;
+
+      if (session?.user) {
         setIsLoggedIn(true);
-        // fetch profile name
-        supabase.from('profiles').select('name').eq('id', session.user.id).single().then(({ data }) => {
-          if (data && data.name) setProfileName(data.name);
-        });
+        setOnboardingStep(0);
+        await loadSessionProfile(session);
+        return;
       }
-    });
+
+      setIsLoggedIn(false);
+      setProfileName('');
+      setProfileEmail('');
+    };
+
+    supabase.auth.getSession()
+      .then(({ data: { session } }) => applySession(session))
+      .finally(() => {
+        if (!ignore) setAuthReady(true);
+      });
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      if (session) {
-        setIsLoggedIn(true);
-      } else {
-        setIsLoggedIn(false);
-      }
+      void applySession(session);
     });
 
-    return () => subscription.unsubscribe();
+    return () => {
+      ignore = true;
+      subscription.unsubscribe();
+    };
   }, []);
-
   const [authMode, setAuthMode] = useState<'select' | 'login' | 'signup'>('select');
   const [currentTab, setCurrentTab] = useState<'home' | 'games' | 'coach' | 'stats' | 'profile' | 'challenges'>('home');
   const [activeCategoryFilter, setActiveCategoryFilter] = useState<string>('All');
@@ -477,7 +512,7 @@ export default function App() {
   const [promoApplied, setPromoApplied] = useState<string | false>(false);
 
   const [profileName, setProfileName] = useState('');
-  const [profileEmail, setProfileEmail] = useState('akashkirar539@gmail.com');
+  const [profileEmail, setProfileEmail] = useState('');
   const [signupName, setSignupName] = useState('');
   const [profilePhoto, setProfilePhoto] = useState<string | null>(null);
   const [isProfileSettingsOpen, setIsProfileSettingsOpen] = useState(false);
@@ -512,18 +547,24 @@ export default function App() {
   };
 
   const handleNameSave = async () => {
-    if (tempName.trim()) {
-      const newName = tempName.trim();
-      setProfileName(newName);
-      
-      if (supabase) {
-         const { data: { session } } = await supabase.auth.getSession();
-         if (session) {
-           await supabase.from('profiles').upsert({ id: session.user.id, name: newName });
-         }
+    const newName = tempName.trim();
+    const newEmail = tempEmail.trim();
+
+    if (newName) setProfileName(newName);
+    if (newEmail) setProfileEmail(newEmail);
+
+    if (supabase) {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        const { error } = await supabase.from('profiles').upsert({
+          id: session.user.id,
+          name: newName || profileName,
+          email: newEmail || session.user.email,
+        });
+        if (error) console.error('Unable to save profile:', error);
       }
     }
-    setProfileEmail(tempEmail.trim());
+
     setIsEditNameOpen(false);
   };
   
@@ -907,6 +948,13 @@ export default function App() {
     );
   }
 
+  if (!authReady) {
+    return (
+      <div className="min-h-screen bg-[#0a0a0c] text-white flex items-center justify-center font-sans">
+        <div className="text-sm text-white/60">Checking your session...</div>
+      </div>
+    );
+  }
   if (isAiAnalysisOpen) {
     return (
       <div className="flex flex-col h-[100dvh] bg-[#0a0a0c] font-sans text-white relative overflow-hidden" style={getModeStyles()}>
@@ -4716,4 +4764,8 @@ export default function App() {
     </div>
   );
 }
+
+
+
+
 
