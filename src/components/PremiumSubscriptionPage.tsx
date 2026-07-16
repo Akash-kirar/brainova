@@ -2,16 +2,86 @@ import React, { useState } from 'react';
 import { motion } from 'motion/react';
 import { ChevronLeft, Crown, PlayCircle, TrendingUp, Calendar, BarChart2, Ban, Headphones, Star } from 'lucide-react';
 
-export default function PremiumSubscriptionPage({ onBack, onSkip }: { onBack: () => void; onSkip?: () => void }) {
+export default function PremiumSubscriptionPage({ onBack, onSkip, onSuccess }: { onBack: () => void; onSkip?: () => void; onSuccess?: () => void; }) {
   const [selectedPlan, setSelectedPlan] = useState<'monthly' | 'quarterly' | 'yearly'>('yearly');
 
+  
+  const handlePayment = async () => {
+    // For demo purposes, allow instant unlock if no real razorpay keys are present
+    if (!import.meta.env.VITE_RAZORPAY_KEY_ID || import.meta.env.VITE_RAZORPAY_KEY_ID === 'dummy') {
+      localStorage.setItem("brainova_is_pro", "true");
+      alert("Payment successful! You are now a Premium member. (Demo Mode)");
+      onBack();
+      if (onSuccess) onSuccess();
+      return;
+    }
+
+    let amount = 1999;
+    if (selectedPlan === 'monthly') amount = 199;
+    if (selectedPlan === 'quarterly') amount = 99;
+
+    try {
+      const res = await fetch('/api/razorpay/create-order', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ amount, currency: 'INR' })
+      });
+      const order = await res.json();
+      if (!order.id) {
+        alert('Server error');
+        return;
+      }
+
+      const options = {
+        key: import.meta.env.VITE_RAZORPAY_KEY_ID || 'dummy', 
+        amount: order.amount,
+        currency: order.currency,
+        name: "Brainova Premium",
+        description: selectedPlan + " subscription",
+        order_id: order.id,
+        handler: async function (response) {
+          try {
+            const verifyRes = await fetch('/api/razorpay/verify-signature', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(response)
+            });
+            const verifyData = await verifyRes.json();
+            if (verifyData.msg === 'success') {
+              localStorage.setItem("brainova_is_pro", "true");
+              alert("Payment successful! You are now a Premium member.");
+              onBack();
+              if (onSuccess) onSuccess();
+            } else {
+              alert("Payment verification failed.");
+            }
+          } catch (e) {
+            console.error(e);
+            alert("Error verifying payment");
+          }
+        },
+        theme: {
+          color: "#8b5cf6"
+        }
+      };
+      
+      const rzp1 = new (window as any).Razorpay(options);
+      rzp1.open();
+    } catch (e) {
+      console.error(e);
+      alert('Could not initiate payment');
+    }
+  };
+
   const features = [
-    { text: 'Unlimited access to all games', icon: <PlayCircle className="w-[18px] h-[18px] text-[#f59e0b]" /> },
+    { text: 'Access to all 100+ Premium Games', icon: <PlayCircle className="w-[18px] h-[18px] text-[#f59e0b]" /> },
     { text: 'Advanced AI analysis', icon: <TrendingUp className="w-[18px] h-[18px] text-[#f59e0b]" /> },
-    { text: 'Personalized 30-day plans', icon: <Calendar className="w-[18px] h-[18px] text-[#f59e0b]" /> },
+    { text: 'Priority Support', icon: <Headphones className="w-[18px] h-[18px] text-[#f59e0b]" /> },
+    { text: 'Early Access to New Features', icon: <Star className="w-[18px] h-[18px] text-[#f59e0b]" /> },
     { text: 'Detailed progress reports', icon: <BarChart2 className="w-[18px] h-[18px] text-[#f59e0b]" /> },
-    { text: 'Ad-free experience', icon: <Ban className="w-[18px] h-[18px] text-[#f59e0b]" /> },
-    { text: 'Priority support', icon: <Headphones className="w-[18px] h-[18px] text-[#f59e0b]" /> },
+    { text: 'Personalized Daily Workouts', icon: <Calendar className="w-[18px] h-[18px] text-[#f59e0b]" /> },
   ];
 
   return (
@@ -117,8 +187,8 @@ export default function PremiumSubscriptionPage({ onBack, onSkip }: { onBack: ()
 
       {/* Bottom Sticky action */}
       <div className="absolute bottom-0 left-0 right-0 p-6 pt-10 bg-gradient-to-t from-[#0c0914] via-[#0c0914] to-transparent z-20 flex flex-col items-center">
-        <button onClick={() => { localStorage.setItem("brainova_is_pro", "true"); onBack(); window.location.reload(); }} className="w-full bg-gradient-to-r from-violet-600 via-fuchsia-600 to-pink-500 hover:from-violet-500 hover:via-fuchsia-500 hover:to-pink-400 shadow-[0_0_25px_rgba(217,70,239,0.4)] hover:shadow-[0_0_35px_rgba(217,70,239,0.6)] text-white font-bold py-4 rounded-full text-[18px] hover:-translate-y-1 transition-all mb-4">
-          Start 7-Day Free Trial
+        <button onClick={handlePayment} className="w-full bg-gradient-to-r from-violet-600 via-fuchsia-600 to-pink-500 hover:from-violet-500 hover:via-fuchsia-500 hover:to-pink-400 shadow-[0_0_25px_rgba(217,70,239,0.4)] hover:shadow-[0_0_35px_rgba(217,70,239,0.6)] text-white font-bold py-4 rounded-full text-[18px] hover:-translate-y-1 transition-all mb-4">
+          Proceed to Payment
         </button>
         <p className="text-white/40 text-[14px]">Cancel anytime</p>
       </div>

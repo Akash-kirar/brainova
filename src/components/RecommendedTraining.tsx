@@ -1,5 +1,5 @@
 import React from 'react';
-import { Grid3X3, Brain, Play, Zap, Sparkles } from 'lucide-react';
+import { Grid3X3, Brain, Play, Zap, Sparkles, Crown } from 'lucide-react';
 
 interface RecommendedTrainingProps {
   onPlay?: (gameId: string) => void;
@@ -52,7 +52,12 @@ export default function RecommendedTraining({ onPlay }: RecommendedTrainingProps
                 {item.icon}
               </div>
               <div className="text-left">
-                <h4 className="font-bold text-[18px] text-white tracking-tight mb-0.5">{item.name}</h4>
+                <div className="flex items-center gap-2">
+                  <h4 className="font-bold text-[18px] text-white tracking-tight mb-0.5">{item.name}</h4>
+                  {item.gameId === 'sudoku-lite' && (
+                    <Crown className="w-5 h-5 text-[#f59e0b]" />
+                  )}
+                </div>
                 <p className="text-[14px] text-white/50">{item.category}</p>
               </div>
             </div>

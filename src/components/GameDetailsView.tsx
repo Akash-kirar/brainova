@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ArrowLeft, MoreVertical, Star } from 'lucide-react';
+import { ArrowLeft, MoreVertical, Star, Lock } from 'lucide-react';
 import { motion } from 'motion/react';
 
 interface GameDetailsViewProps {
@@ -15,6 +15,7 @@ interface GameDetailsViewProps {
   onPlay: (difficulty: string) => void;
   isFavorite?: boolean;
   onToggleFavorite?: () => void;
+  isLocked?: boolean;
   stats?: {
     bestScore: number | string;
     avgScore: number | string;
@@ -28,6 +29,7 @@ export default function GameDetailsView({
   onPlay,
   isFavorite = false,
   onToggleFavorite,
+  isLocked = false,
   stats = { bestScore: 0, avgScore: 0, accuracy: '0%' }
 }: GameDetailsViewProps) {
   const [difficulty, setDifficulty] = useState<'easy' | 'medium' | 'hard'>('easy');
@@ -159,8 +161,9 @@ export default function GameDetailsView({
         <div className="flex gap-4">
           <button 
             onClick={() => onPlay(difficulty)}
-            className="flex-1 bg-gradient-to-r from-[#ff6b2b] via-[#ec4899] to-[#8b5cf6] text-white font-bold text-lg py-4 rounded-2xl shadow-[0_4px_20px_rgba(236,72,153,0.3)] hover:opacity-90 active:scale-[0.98] transition-all"
+            className="flex-1 flex items-center justify-center gap-2 bg-gradient-to-r from-[#ff6b2b] via-[#ec4899] to-[#8b5cf6] text-white font-bold text-lg py-4 rounded-2xl shadow-[0_4px_20px_rgba(236,72,153,0.3)] hover:opacity-90 active:scale-[0.98] transition-all"
           >
+            {isLocked && <Lock className="w-5 h-5 text-white/80" />}
             Play Now
           </button>
           <button 

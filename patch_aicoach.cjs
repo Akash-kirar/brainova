@@ -1,15 +1,23 @@
 const fs = require('fs');
-let code = fs.readFileSync('src/components/AiCoachView.tsx', 'utf8');
 
-const target = `      {mode === 'suggestions' ? (
-        <div className="flex-1 overflow-y-auto hide-scrollbar pb-32">
-            <div className="absolute -left-10 -top-10 w-48 h-48 bg-[#a855f7]/30 blur-[50px] rounded-full pointer-events-none"></div>`;
+let content = fs.readFileSync('src/components/AiCoachView.tsx', 'utf8');
 
-const replacement = `      {mode === 'suggestions' ? (
-        <div className="flex-1 overflow-y-auto hide-scrollbar pb-32">
-          {/* Hero Card */}
-          <div className="mx-6 mt-6 bg-gradient-to-b from-[#1c1333] to-[#120b22] border border-[#a855f7]/30 rounded-[28px] p-6 relative overflow-hidden shadow-[0_10px_40px_rgba(109,40,217,0.2)]">
-            <div className="absolute -left-10 -top-10 w-48 h-48 bg-[#a855f7]/30 blur-[50px] rounded-full pointer-events-none"></div>`;
+const targetStr = `const languageInstruction = \`\\n\\n[System Instruction: The user's preferred language code is '\${speechLang}'. Please respond to this message in that language.]\`;`;
 
-code = code.replace(target, replacement);
-fs.writeFileSync('src/components/AiCoachView.tsx', code);
+const replaceStr = `        const todayStr = new Date().toISOString().split('T')[0];
+        const todayScore = sessions.filter(s => new Date(s.timestamp).toISOString().split('T')[0] === todayStr).reduce((acc, curr) => acc + curr.score, 0);
+        
+        const languageInstruction = \`\\n\\n[System Context: 
+- User Profile Score / Total XP: \${totalXP}
+- Today's Score: \${todayScore}
+- Daily Streak: \${stats.dailyStreak || 0} days
+- High Scores: \${JSON.stringify(stats.highScores)}
+The user's preferred language code is '\${speechLang}'. Please respond in that language. You are a smart personal AI. Give responses ONLY in text. If the score is 0, explicitly acknowledge it. If the user asks for a 7-day plan, create one based on their current profile score and activity.]\`;`;
+
+if (content.includes(targetStr)) {
+  content = content.replace(targetStr, replaceStr);
+  fs.writeFileSync('src/components/AiCoachView.tsx', content);
+  console.log('patched AiCoachView');
+} else {
+  console.log('target not found in AiCoachView');
+}

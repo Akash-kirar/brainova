@@ -1,25 +1,48 @@
 const fs = require('fs');
 let content = fs.readFileSync('src/App.tsx', 'utf8');
 
-// 1. Remove Akash default
-content = content.replace(/useState\('Akash'\)/g, "useState('')");
+const oldHandleWrapper = `  const handleGameCompleteWrapper = (session: Omit<GameSession, 'id' | 'timestamp'>) => {
+    recordGame({
+      ...session,
+      gameId: activeGame || undefined
+    });
+    if (session.score >= 30) { // Set threshold for high score
+      setCelebrationData({
+        score: session.score,
+        coins: Math.max(10, Math.floor(session.score / 5))
+      });
+    }
+  };`;
 
-// 2. Greeting
-// return \`\${greeting}, \${profileName.split(" ")[0]} 👋\`;
-content = content.replace(/return \`\\\$\\{greeting\\}, \\\$\\{profileName\.split\(" "\)\[0\]\\} 👋\`;/g, 'return `${greeting}${profileName ? `, ${profileName.split(" ")[0]}` : ""} 👋`;');
+const newHandleWrapper = `  const handleGameCompleteWrapper = (session: Omit<GameSession, 'id' | 'timestamp'>) => {
+    const prevDate = stats.lastPlayedDate;
+    const today = new Date().toISOString().split('T')[0];
+    const isNewStreak = prevDate !== today;
 
-// 3. Initials
-// <span className="text-[32px] font-medium text-white">{profileName.charAt(0).toUpperCase()}</span>
+    recordGame({
+      ...session,
+      gameId: activeGame || undefined
+    });
+    
+    if (session.score >= 30) { // Set threshold for high score
+      setCelebrationData({
+        score: session.score,
+        coins: Math.max(10, Math.floor(session.score / 5)),
+        streak: isNewStreak ? 1 : 0
+      });
+    }
+  };`;
+
+content = content.replace(oldHandleWrapper, newHandleWrapper);
+
 content = content.replace(
-  /<span className="text-\[32px\] font-medium text-white">\{profileName\.charAt\(0\)\.toUpperCase\(\)\}<\/span>/g,
-  '<span className="text-[32px] font-medium text-white">{(profileName || "U").charAt(0).toUpperCase()}</span>'
+  'const [celebrationData, setCelebrationData] = useState<{score: number, coins: number} | null>(null);',
+  'const [celebrationData, setCelebrationData] = useState<{score: number, coins: number, streak?: number} | null>(null);'
 );
 
-// 4. Update LeaderboardPage usage
-// <LeaderboardPage onBack={() => setIsLeaderboardOpen(false)} />
 content = content.replace(
-  /<LeaderboardPage onBack=\{\(\) => setIsLeaderboardOpen\(false\)\} \/>/g,
-  '<LeaderboardPage onBack={() => setIsLeaderboardOpen(false)} profileName={profileName} />'
+  '<CelebrationOverlay\n            score={celebrationData.score}\n            coins={celebrationData.coins}\n            onClose={() => setCelebrationData(null)}\n          />',
+  '<CelebrationOverlay\n            score={celebrationData.score}\n            coins={celebrationData.coins}\n            streak={celebrationData.streak}\n            onClose={() => setCelebrationData(null)}\n          />'
 );
 
 fs.writeFileSync('src/App.tsx', content);

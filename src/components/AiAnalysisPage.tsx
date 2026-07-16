@@ -25,9 +25,13 @@ export default function AiAnalysisPage({ onBack }: { onBack: () => void }) {
       { subject: 'Memory', A: calculateScore(stats.highScores.memory), color: '#c084fc', fullMark: 100 },
       { subject: 'Focus', A: calculateScore(stats.highScores.focus), color: '#f472b6', fullMark: 100 },
       { subject: 'Speed', A: calculateScore(stats.highScores.speed), color: '#c084fc', fullMark: 100 },
-      { subject: 'Recall', A: calculateScore(stats.highScores.language), color: '#60a5fa', fullMark: 100 },
+      { subject: 'Language', A: calculateScore(stats.highScores.language), color: '#60a5fa', fullMark: 100 },
       { subject: 'Logic', A: calculateScore(stats.highScores.logic), color: '#c084fc', fullMark: 100 },
-      { subject: 'Math Solving', A: calculateScore(stats.highScores.math), color: '#f472b6', fullMark: 100 },
+      { subject: 'Math', A: calculateScore(stats.highScores.math), color: '#f472b6', fullMark: 100 },
+      { subject: 'Visual', A: calculateScore(stats.highScores.visual), color: '#34d399', fullMark: 100 },
+      { subject: 'Observation', A: calculateScore(stats.highScores.observation), color: '#fcd34d', fullMark: 100 },
+      { subject: 'Executive', A: calculateScore(stats.highScores.executive), color: '#fb923c', fullMark: 100 },
+      { subject: 'Creativity', A: calculateScore(stats.highScores.creativity), color: '#a78bfa', fullMark: 100 },
     ];
   }, [stats]);
 
@@ -64,7 +68,7 @@ export default function AiAnalysisPage({ onBack }: { onBack: () => void }) {
           className="recharts-text recharts-polar-angle-axis-tick-value" 
           textAnchor={textAnchor}
           fill="white"
-          fontSize={11}
+          fontSize={12}
           fontWeight={500}
         >
           {payload.value.split(' ').length > 1 ? (
@@ -106,13 +110,13 @@ export default function AiAnalysisPage({ onBack }: { onBack: () => void }) {
       <div className="flex-1 overflow-y-auto px-6 pb-24 space-y-4">
         
         {/* Radar Chart Card */}
-        <div className="bg-[#121217] border border-white/5 rounded-3xl p-6 pt-8 flex flex-col items-center">
+        <div className="pt-2 pb-6 flex flex-col items-center">
           <h2 className="text-[17px] font-bold text-white mb-1 tracking-tight">Your Cognitive Overview</h2>
-          <p className="text-[13px] text-white/50 mb-8 font-medium">Updated today</p>
+          <p className="text-[13px] text-white/50 mb-4 font-medium">Updated today</p>
           
-          <div className="w-full h-[280px]">
+          <div className="w-full h-[380px]">
             <ResponsiveContainer width="100%" height="100%">
-              <RadarChart cx="50%" cy="50%" outerRadius="55%" data={data}>
+              <RadarChart cx="50%" cy="50%" outerRadius="65%" data={data}>
                 <defs>
                   <linearGradient id="radarGradient" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="0%" stopColor="#f472b6" stopOpacity={0.8} />
@@ -162,6 +166,25 @@ export default function AiAnalysisPage({ onBack }: { onBack: () => void }) {
             {weaknesses}
           </p>
         </div>
+
+        <div className="bg-[#121217] border border-white/5 rounded-2xl p-5 mt-4">
+          <div className="flex items-center gap-3 mb-4">
+            <Activity className="w-5 h-5 text-[#8b5cf6]" />
+            <span className="font-bold text-[#8b5cf6] text-[15px]">Detailed Scores</span>
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            {data.map((item, index) => (
+              <div key={index} className="flex flex-col bg-[#1c1c24] p-3 rounded-xl border border-white/5">
+                <span className="text-[12px] font-medium text-white/50 mb-1">{item.subject}</span>
+                <span className="text-[16px] font-bold text-white flex items-baseline gap-1">
+                  {stats.highScores[(item.subject === 'Math Solving' ? 'math' : item.subject === 'Recall' ? 'language' : item.subject.toLowerCase())] || 0}
+                  <span className="text-[10px] text-white/40 font-normal">XP</span>
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+
       </div>
     </div>
   );

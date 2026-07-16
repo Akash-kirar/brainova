@@ -1,11 +1,12 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { ChevronLeft, Bot, ChevronRight, Brain, Sparkles, Send, RefreshCw, Clock, BarChart2, Calendar, Target, Zap, MessageSquare, Menu, Crown, Flame , Gamepad2, Play, ChevronDown, Globe } from 'lucide-react';
+import { User, ChevronLeft, Bot, ChevronRight, Brain, Sparkles, Send, RefreshCw, Clock, BarChart2, Calendar, Target, Zap, MessageSquare, Menu, Crown, Flame , Gamepad2, Play, ChevronDown, Globe } from 'lucide-react';
 import { GoogleGenAI, GenerateContentResponse } from "@google/genai";
 import { useProgress } from '../hooks/useProgress';
 import { useChatLimit } from '../hooks/useChatLimit';
 
 interface AiCoachViewProps {
+  onOpenProfile?: () => void;
   onPlayGame: (gameId: string) => void;
   profileName: string;
   onSend: () => void;
@@ -30,7 +31,7 @@ const initAi = () => {
 
 const ai = initAi();
 
-export default function AiCoachView({ profileName, onSend, onPlayGame }: AiCoachViewProps) {
+export default function AiCoachView({ profileName, onSend, onPlayGame, onOpenProfile }: AiCoachViewProps) {
   const { stats, sessions } = useProgress();
   const [query, setQuery] = useState('');
   const [mode, setMode] = useState<'suggestions' | 'chat'>('suggestions');
@@ -106,7 +107,7 @@ export default function AiCoachView({ profileName, onSend, onPlayGame }: AiCoach
       chatRef.current = ai.chats.create({
         model: "gemini-3-flash-preview",
         config: {
-          systemInstruction: `You are Nova AI, a friendly, intelligent brain training coach. Keep answers short and encouraging (under 3 sentences). If the user asks for a calculation plan, say 'Great choice!' and append '[CALC_PLAN]'. If they ask for a training plan, append '[VIEW_PLAN]'. If they want to play a game or improve a skill, suggest a game by appending '[GAME:game-id]'. Available game IDs: memory, math, logic, focus, speed, language, visual, observation, executive, creativity. Example: 'Try this math game! [GAME:math]'`,
+          systemInstruction: `You are Nova AI, a smart, powerful, and friendly personal brain training coach. Your main work is to understand the user profile, progress, today's score, and needs, and give accurate answers. Give text-based suggestions for games to improve focus, memory, etc. You can create customized 1 to 7 days training plans based on the user's profile score and activity if requested. Give responses ONLY in text. By default, keep your answers very short and concise (1-2 sentences). Adapt your response length (short, medium, or long) if the user explicitly asks for it. If the user's score is zero, acknowledge it correctly and smartly but briefly. Do NOT send game links or widgets. If the user asks for a calculation plan, say 'Great choice!' and append '[CALC_PLAN]'. If they ask for a training plan widget, append '[VIEW_PLAN]'.`,
         }
       });
     }
@@ -142,7 +143,15 @@ export default function AiCoachView({ profileName, onSend, onPlayGame }: AiCoach
 
     if (chatRef.current) {
       try {
-        const languageInstruction = `\n\n[System Instruction: The user's preferred language code is '${speechLang}'. Please respond to this message in that language.]`;
+                const todayStr = new Date().toISOString().split('T')[0];
+        const todayScore = sessions.filter(s => new Date(s.timestamp).toISOString().split('T')[0] === todayStr).reduce((acc, curr) => acc + curr.score, 0);
+        
+        const languageInstruction = `\n\n[System Context: 
+- User Profile Score / Total XP: ${totalXP}
+- Today's Score: ${todayScore}
+- Daily Streak: ${stats.dailyStreak || 0} days
+- High Scores: ${JSON.stringify(stats.highScores)}
+The user's preferred language code is '${speechLang}'. Please respond in that language. You are a smart personal AI. Give responses ONLY in text. If the score is 0, explicitly acknowledge it. If the user asks for a 7-day plan, create one based on their current profile score and activity.]`;
         let streamResponse = await chatRef.current.sendMessageStream({ message: textToSend + languageInstruction });
         let fullText = '';
         
@@ -259,6 +268,17 @@ export default function AiCoachView({ profileName, onSend, onPlayGame }: AiCoach
             </div>
           </div>
 
+          {/* My Information Button */}
+          <div className="px-6 flex justify-center -mt-2 mb-2">
+            <button
+              onClick={() => onOpenProfile && onOpenProfile()}
+              className="w-full max-w-[260px] bg-indigo-500/10 border border-indigo-500/30 text-indigo-400 font-bold rounded-2xl py-2.5 flex items-center justify-center gap-2 hover:bg-indigo-500/20 transition-colors shadow-sm"
+            >
+              <User className="w-5 h-5" />
+              My Information
+            </button>
+          </div>
+
           {/* Quick Actions */}
           <div className="mt-8">
             <div className="px-6 flex justify-between items-center mb-4">
@@ -296,7 +316,10 @@ export default function AiCoachView({ profileName, onSend, onPlayGame }: AiCoach
                 </button>
               ))}
             </div>
+
+
           </div>
+
 
           {/* Start a Conversation */}
           <div className="mt-8 px-6 pb-6">
@@ -324,6 +347,7 @@ export default function AiCoachView({ profileName, onSend, onPlayGame }: AiCoach
                 </button>
               ))}
             </div>
+
           </div>
         </div>
       ) : (
@@ -476,7 +500,7 @@ export default function AiCoachView({ profileName, onSend, onPlayGame }: AiCoach
       {/* Input Area */}
       <div className="absolute bottom-0 left-0 right-0 p-5 bg-gradient-to-t from-[#0a0a0c] via-[#0a0a0c]/90 to-transparent pt-12 z-30 pointer-events-none">
         <div className="bg-[#161619] border border-white/10 rounded-full py-1.5 pl-5 pr-1.5 flex items-center gap-2 shadow-[0_10px_30px_rgba(0,0,0,0.5)] pointer-events-auto w-full max-w-3xl mx-auto backdrop-blur-md">
-          <button className="w-10 h-10 rounded-full bg-[#2e1065] text-[#d8b4fe] flex items-center justify-center shrink-0 hover:bg-[#3b0764] transition-colors shadow-inner">
+          <button onClick={() => onOpenProfile && onOpenProfile()} className="w-10 h-10 rounded-full bg-[#2e1065] text-[#d8b4fe] flex items-center justify-center shrink-0 hover:bg-[#3b0764] transition-colors shadow-inner">
              <Sparkles className="w-5 h-5" />
           </button>
           

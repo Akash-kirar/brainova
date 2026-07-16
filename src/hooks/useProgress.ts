@@ -1,4 +1,12 @@
 import { useState, useEffect } from 'react';
+import { supabase } from '@/src/lib/supabase';
+
+export interface Reward {
+  id: string;
+  title: string;
+  amount: number;
+  date: string;
+}
 
 export interface GameSession {
   id: string;
@@ -18,6 +26,7 @@ export interface UserStats {
   lastPlayedDate: string | null;
   totalGamesPlayed: number;
   novaCoins: number;
+  totalXp: number;
   highScores: {
     memory: number;
     speed: number;
@@ -32,6 +41,7 @@ export interface UserStats {
   };
   weeklyPerformance: { date: string; score: number }[];
   streakHistory: string[];
+  rewardsHistory: Reward[];
 }
 
 const DEFAULT_STATS: UserStats = {
@@ -40,55 +50,94 @@ const DEFAULT_STATS: UserStats = {
   lastPlayedDate: null,
   totalGamesPlayed: 0,
   novaCoins: 0,
+  totalXp: 0,
   highScores: { memory: 0, speed: 0, focus: 0, logic: 0, math: 0, language: 0, visual: 0, observation: 0, executive: 0, creativity: 0 },
   weeklyPerformance: [],
   streakHistory: [],
+  rewardsHistory: [],
 };
 
 export function useProgress() {
+
   const [stats, setStats] = useState<UserStats>(DEFAULT_STATS);
   const [sessions, setSessions] = useState<GameSession[]>([]);
+  const [userId, setUserId] = useState<string | null>(null);
+
+  // Check auth
+  useEffect(() => {
+    if (!supabase) return;
+    
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUserId(session?.user?.id || null);
+    });
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUserId(session?.user?.id || null);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
 
   // Load data on mount
   useEffect(() => {
-    const savedStats = localStorage.getItem('brainova_stats_v2');
-    
-    // Clear old sample data if it contains 1250 memory score
-    if (savedStats && savedStats.includes('"memory":1250')) {
-      localStorage.removeItem('brainova_stats_v2');
-      localStorage.removeItem('brainova_sessions_v2');
-      return; // Will use DEFAULT_STATS and empty sessions
-    }
-  
-    const savedSessions = localStorage.getItem('brainova_sessions_v2');
-    
-    if (savedStats) {
-      try {
-        setStats(JSON.parse(savedStats));
-      } catch (e) {
-        console.error("Failed to parse stats", e);
+    const loadData = async () => {
+      if (supabase && userId) {
+        // Load from supabase
+        try {
+          const { data: statsData } = await supabase.from('user_stats').select('stats').eq('user_id', userId).single();
+          if (statsData && statsData.stats) {
+            setStats(statsData.stats);
+          }
+          
+          const { data: sessionsData } = await supabase.from('game_sessions').select('*').eq('user_id', userId).order('timestamp', { ascending: true });
+          if (sessionsData && sessionsData.length > 0) {
+            setSessions(sessionsData.map(s => ({
+              ...s,
+              id: s.id.toString(),
+            })));
+          }
+        } catch (e) {
+          console.error('Error loading from supabase', e);
+        }
+      } else {
+        // Fallback to local storage
+        const savedStats = localStorage.getItem('brainova_stats_v2');
+        if (savedStats && savedStats.includes('"memory":1250')) {
+          localStorage.removeItem('brainova_stats_v2');
+          localStorage.removeItem('brainova_sessions_v2');
+          return;
+        }
+
+        const savedSessions = localStorage.getItem('brainova_sessions_v2');
+        
+        if (savedStats) {
+          try { setStats(JSON.parse(savedStats)); } catch (e) {}
+        }
+        if (savedSessions) {
+          try { setSessions(JSON.parse(savedSessions)); } catch (e) {}
+        }
       }
-    }
+    };
     
-    if (savedSessions) {
-      try {
-        setSessions(JSON.parse(savedSessions));
-      } catch (e) {
-        console.error("Failed to parse sessions", e);
-      }
-    }
-  }, []);
+    loadData();
+  }, [userId]);
 
   // Save data whenever it changes
   useEffect(() => {
-    localStorage.setItem('brainova_stats_v2', JSON.stringify(stats));
-  }, [stats]);
+    if (userId && supabase) {
+      supabase.from('user_stats').upsert({ user_id: userId, stats }).then();
+    } else {
+      localStorage.setItem('brainova_stats_v2', JSON.stringify(stats));
+    }
+  }, [stats, userId]);
 
   useEffect(() => {
-    localStorage.setItem('brainova_sessions_v2', JSON.stringify(sessions));
-  }, [sessions]);
+    if (!userId) {
+      localStorage.setItem('brainova_sessions_v2', JSON.stringify(sessions));
+    }
+  }, [sessions, userId]);
 
-  const recordGame = (session: Omit<GameSession, 'id' | 'timestamp'>) => {
+  const recordGame = async (session: Omit<GameSession, 'id' | 'timestamp'>) => {
     const now = new Date();
     const todayStr = now.toISOString().split('T')[0];
     
@@ -99,13 +148,44 @@ export function useProgress() {
     };
 
     setSessions(prev => [...prev, newSession]);
+    
+    if (userId && supabase) {
+      try {
+        await supabase.from('game_sessions').insert({
+          user_id: userId,
+          game_type: session.gameType,
+          score: session.score,
+          difficulty: session.difficulty,
+          timestamp: newSession.timestamp,
+          reaction_time: session.reactionTime || null,
+          max_level: session.maxLevel || null,
+          accuracy: session.accuracy || null
+        });
+      } catch (e) {
+        console.error("Failed to save session to supabase", e);
+      }
+    }
 
     setStats(prev => {
       const newStats = { ...prev };
       
       // Update total games
       newStats.totalGamesPlayed += 1;
-      newStats.novaCoins = (newStats.novaCoins || 0) + Math.max(10, Math.floor(session.score / 5));
+      newStats.totalXp = (newStats.totalXp || 0) + session.score;
+            const earnedCoins = Math.max(10, Math.floor(session.score / 5));
+      newStats.novaCoins = (newStats.novaCoins || 0) + earnedCoins;
+      
+      if (!newStats.rewardsHistory) newStats.rewardsHistory = [];
+      newStats.rewardsHistory.unshift({
+        id: Math.random().toString(36).substring(2, 9),
+        title: session.gameType.charAt(0).toUpperCase() + session.gameType.slice(1) + ' Game',
+        amount: earnedCoins,
+        date: now.toISOString()
+      });
+      // Keep only last 50 rewards
+      if (newStats.rewardsHistory.length > 50) {
+        newStats.rewardsHistory = newStats.rewardsHistory.slice(0, 50);
+      }
 
       // Update high scores
       if (session.score > newStats.highScores[session.gameType]) {
@@ -125,6 +205,16 @@ export function useProgress() {
           if (diffDays === 1) {
             // Played yesterday, increment streak
             newStats.dailyStreak += 1;
+            
+            // Give streak bonus
+            const streakBonus = Math.min(50, newStats.dailyStreak * 5);
+            newStats.novaCoins += streakBonus;
+            newStats.rewardsHistory.unshift({
+              id: Math.random().toString(36).substring(2, 9),
+              title: `Daily Streak (${newStats.dailyStreak} days)`,
+              amount: streakBonus,
+              date: now.toISOString()
+            });
           } else if (diffDays > 1) {
             // Missed a day, reset streak
             newStats.dailyStreak = 1;

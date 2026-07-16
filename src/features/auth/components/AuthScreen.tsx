@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { ArrowLeft, Mail, Lock, User, Brain, Github } from 'lucide-react';
 import { Language, t } from '@/src/i18n';
+import { supabase } from '@/src/lib/supabase';
 
 interface AuthScreenProps {
   language: Language;
@@ -12,6 +13,64 @@ interface AuthScreenProps {
 export const AuthScreen: React.FC<AuthScreenProps> = ({ language, onLogin, onBack }) => {
   const [authMode, setAuthMode] = useState<'select' | 'login' | 'signup'>('select');
   const [signupName, setSignupName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [errorMsg, setErrorMsg] = useState('');
+
+  const handleEmailLogin = async () => {
+    if (!supabase) {
+       onLogin(email.split('@')[0]);
+       return;
+    }
+    setLoading(true);
+    setErrorMsg('');
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password
+      });
+      if (error) throw error;
+      
+      const { data: profile } = await supabase.from('profiles').select('name').eq('id', data.user.id).single();
+      onLogin(profile?.name || email.split('@')[0]);
+    } catch (e: any) {
+      setErrorMsg(e.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleEmailSignup = async () => {
+    if (!supabase) {
+       onLogin(signupName || email.split('@')[0]);
+       return;
+    }
+    setLoading(true);
+    setErrorMsg('');
+    try {
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: {
+            name: signupName
+          }
+        }
+      });
+      if (error) throw error;
+      
+      if (data.user) {
+        await supabase.from('profiles').upsert({ id: data.user.id, name: signupName });
+      }
+      onLogin(signupName || email.split('@')[0]);
+    } catch (e: any) {
+      setErrorMsg(e.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
 
   const GoogleIcon = () => (
     <svg className="w-5 h-5" viewBox="0 0 24 24">
@@ -130,6 +189,8 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ language, onLogin, onBac
                   <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/40 group-focus-within:text-indigo-400 transition-colors" />
                   <input 
                     type="email" 
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
                     placeholder={t('emailAddress', language) || "Email address"} 
                     className="w-full bg-[#1a1a1c] border border-white/5 rounded-2xl py-4 pl-12 pr-4 text-white placeholder:text-white/30 focus:outline-none focus:border-indigo-500/50 focus:ring-1 focus:ring-indigo-500/50 transition-all text-[15px]"
                   />
@@ -138,6 +199,8 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ language, onLogin, onBac
                   <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/40 group-focus-within:text-indigo-400 transition-colors" />
                   <input 
                     type="password" 
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
                     placeholder={t('password', language) || "Password"} 
                     className="w-full bg-[#1a1a1c] border border-white/5 rounded-2xl py-4 pl-12 pr-4 text-white placeholder:text-white/30 focus:outline-none focus:border-indigo-500/50 focus:ring-1 focus:ring-indigo-500/50 transition-all text-[15px]"
                   />
@@ -150,11 +213,13 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ language, onLogin, onBac
                 </button>
               </div>
 
+              {errorMsg && <div className="text-red-400 text-sm mb-4">{errorMsg}</div>}
               <button 
-                onClick={() => onLogin(signupName)}
-                className="w-full h-14 rounded-2xl bg-indigo-500 text-white font-bold text-lg hover:bg-indigo-600 hover:scale-[0.98] active:scale-95 transition-all shadow-[0_0_20px_rgba(99,102,241,0.3)]"
+                onClick={handleEmailLogin}
+                disabled={loading}
+                className="w-full h-14 rounded-2xl bg-indigo-500 text-white font-bold text-lg hover:bg-indigo-600 hover:scale-[0.98] active:scale-95 transition-all shadow-[0_0_20px_rgba(99,102,241,0.3)] disabled:opacity-50"
               >
-                {t('logIn', language) || "Log In"}
+                {loading ? 'Loading...' : (t('logIn', language) || "Log In")}
               </button>
             </motion.div>
           )}
@@ -193,6 +258,8 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ language, onLogin, onBac
                   <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/40 group-focus-within:text-indigo-400 transition-colors" />
                   <input 
                     type="email" 
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
                     placeholder={t('emailAddress', language) || "Email address"} 
                     className="w-full bg-[#1a1a1c] border border-white/5 rounded-2xl py-4 pl-12 pr-4 text-white placeholder:text-white/30 focus:outline-none focus:border-indigo-500/50 focus:ring-1 focus:ring-indigo-500/50 transition-all text-[15px]"
                   />
@@ -201,17 +268,21 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ language, onLogin, onBac
                   <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/40 group-focus-within:text-indigo-400 transition-colors" />
                   <input 
                     type="password" 
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
                     placeholder={t('password', language) || "Password"} 
                     className="w-full bg-[#1a1a1c] border border-white/5 rounded-2xl py-4 pl-12 pr-4 text-white placeholder:text-white/30 focus:outline-none focus:border-indigo-500/50 focus:ring-1 focus:ring-indigo-500/50 transition-all text-[15px]"
                   />
                 </div>
               </div>
 
+              {errorMsg && <div className="text-red-400 text-sm mb-4">{errorMsg}</div>}
               <button 
-                onClick={() => onLogin(signupName)}
-                className="w-full h-14 rounded-2xl bg-indigo-500 text-white font-bold text-lg hover:bg-indigo-600 hover:scale-[0.98] active:scale-95 transition-all shadow-[0_0_20px_rgba(99,102,241,0.3)]"
+                onClick={handleEmailSignup}
+                disabled={loading}
+                className="w-full h-14 rounded-2xl bg-indigo-500 text-white font-bold text-lg hover:bg-indigo-600 hover:scale-[0.98] active:scale-95 transition-all shadow-[0_0_20px_rgba(99,102,241,0.3)] disabled:opacity-50"
               >
-                {t('signUp', language) || "Sign up"}
+                {loading ? 'Loading...' : (t('signUp', language) || "Sign up")}
               </button>
             </motion.div>
           )}

@@ -1,10 +1,11 @@
+import { supabase } from '@/src/lib/supabase';
 /**
  * @license
  * SPDX-License-Identifier: Apache-2.0
  */
 
 import React, { useState, useEffect, useRef } from 'react';
-import { Brain, Cpu, Paintbrush, TrendingUp, TrendingDown, ChevronLeft, ChevronRight, ChevronDown, Sparkles, Mail, Lock, User, ArrowLeft, Flame, Zap, Target, Activity, Play, Lightbulb, Calculator, Trophy, Star, Grid, RotateCcw, Box, Puzzle, Search, Clock, Type, Shuffle, BookOpen, ListOrdered, Link, Check, CheckCircle, Copy, Bot, Home, Gamepad2, Sparkle, Settings, FileText, Shield, HelpCircle, Download, Trash2, MessageSquare, Sliders, Globe, X, Mic, Send, CircleDollarSign, Heart, Flag, Moon, Crown, Compass, Camera, Edit2, Instagram, Gift, CreditCard, Building, Wallet, Smartphone, Award, MoreVertical, Bell, Gem, Dumbbell, Calendar, Rocket, Sword, Sun, Hexagon, Octagon, Diamond, Triangle, Infinity, Orbit, Atom } from 'lucide-react';
+import { Brain, Cpu, Paintbrush, TrendingUp, TrendingDown, ChevronLeft, ChevronRight, ChevronDown, Sparkles, Mail, Lock, User, ArrowLeft, LogOut, Flame, Zap, Target, Activity, Play, Lightbulb, Calculator, Trophy, Star, Grid, RotateCcw, Box, Puzzle, Search, Clock, Type, Shuffle, BookOpen, ListOrdered, Link, Check, CheckCircle, Copy, Bot, Home, Gamepad2, Sparkle, Settings, FileText, Shield, HelpCircle, Download, Trash2, MessageSquare, Sliders, Globe, X, Mic, Send, CircleDollarSign, Heart, Flag, Moon, Crown, Compass, Camera, Edit2, Instagram, Gift, CreditCard, Building, Wallet, Smartphone, Award, MoreVertical, Bell, Gem, Dumbbell, Calendar, Rocket, Sword, Sun, Hexagon, Octagon, Diamond, Triangle, Infinity, Orbit, Atom, Filter, RefreshCcw, ScanFace, Cuboid, Route, Layers, Palette, Smile, Brush, Shapes } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { AreaChart, Area, LineChart, Line, XAxis, YAxis, ResponsiveContainer } from 'recharts';
 
@@ -68,6 +69,7 @@ import GameDetailsView from './components/GameDetailsView';
 import { GameContext } from './contexts/GameContext';
 import PersonalizedPlanPage from './components/PersonalizedPlanPage';
 import AchievementsPage from './components/AchievementsPage';
+import FeedbackPage from './components/FeedbackPage';
 import LeaderboardPage from './components/LeaderboardPage';
 import { ChallengesPage } from './components/ChallengesPage';
 import { useProgress, GameSession } from './hooks/useProgress';
@@ -77,16 +79,32 @@ import CelebrationOverlay from '@/src/components/ui/CelebrationOverlay';
 import PatternRecognitionGame from '@/src/features/visual/components/PatternRecognitionGame';
 import MentalRotationGame from '@/src/features/visual/components/MentalRotationGame';
 import SpatialReasoningGame from '@/src/features/visual/components/SpatialReasoningGame';
+import SymmetryTestGame from '@/src/features/spatial/components/SymmetryTestGame';
+import BlockCountGame from '@/src/features/spatial/components/BlockCountGame';
+import PerfectPathGame from '@/src/features/spatial/components/PerfectPathGame';
+import LayerLogicGame from '@/src/features/spatial/components/LayerLogicGame';
 
 import SpotTheDifferenceGame from '@/src/features/observation/components/SpotTheDifferenceGame';
 import FindHiddenObjectGame from '@/src/features/observation/components/FindHiddenObjectGame';
 import VisualSearchGame from '@/src/features/observation/components/VisualSearchGame';
+import ShadowMatchGame from '@/src/features/observation/components/ShadowMatchGame';
+import FindIdenticalGame from '@/src/features/observation/components/FindIdenticalGame';
+import ShapeCountGame from '@/src/features/observation/components/ShapeCountGame';
+import ColorAnomalyGame from '@/src/features/observation/components/ColorAnomalyGame';
 import PlanningGame from '@/src/features/executive/components/PlanningGame';
 import DecisionMakingGame from '@/src/features/executive/components/DecisionMakingGame';
 import TaskSwitchingGame from '@/src/features/executive/components/TaskSwitchingGame';
+import RuleSorterGame from '@/src/features/executive/components/RuleSorterGame';
+import GoNoGoGame from '@/src/features/executive/components/GoNoGoGame';
+import SequencePlannerGame from '@/src/features/executive/components/SequencePlannerGame';
+import MemoryUpdaterGame from '@/src/features/executive/components/MemoryUpdaterGame';
 import PatternCreationGame from '@/src/features/creativity/components/PatternCreationGame';
 import CreativeThinkingGame from '@/src/features/creativity/components/CreativeThinkingGame';
 import PuzzleDesignGame from '@/src/features/creativity/components/PuzzleDesignGame';
+import ColorMixerGame from '@/src/features/creativity/components/ColorMixerGame';
+import EmojiStoryGame from '@/src/features/creativity/components/EmojiStoryGame';
+import PixelArtGame from '@/src/features/creativity/components/PixelArtGame';
+import ShapeBuilderGame from '@/src/features/creativity/components/ShapeBuilderGame';
 
 const mapNodesBase = [
   { id: 25, title: 'Infinite', xp: '106000', maxXP: '1000000', x: 240, y: 150, icon: Atom, color: '#f43f5e', labelColor: '#fb7185', labelPos: 'left' },
@@ -113,7 +131,7 @@ const mapNodesBase = [
   { id: 4, title: 'Intermediate', xp: '1200', maxXP: '2000', x: 160, y: 3510, icon: Target, color: '#0ea5e9', labelColor: '#38bdf8', labelPos: 'right' },
   { id: 3, title: 'Novice', xp: '600', maxXP: '1200', x: 280, y: 3670, icon: Zap, color: '#06b6d4', labelColor: '#22d3ee', labelPos: 'left' },
   { id: 2, title: 'Learner', xp: '100', maxXP: '300', x: 180, y: 3830, icon: Gift, color: '#eab308', labelColor: '#fde047', labelPos: 'right' },
-  { id: 1, title: 'Beginner', xp: '0', maxXP: '100', x: 240, y: 3990, icon: CheckCircle, color: '#10b981', labelColor: '#34d399', labelPos: 'left' }
+  { id: 1, title: 'Beginner', xp: '0', maxXP: '50', x: 240, y: 3990, icon: Flag, color: '#10b981', labelColor: '#34d399', labelPos: 'left' }
 ];
 
 const games = [
@@ -126,8 +144,8 @@ const games = [
 const allGames = [
   { id: 'memory-grid', title: 'Memory Grid', category: 'Memory', description: 'Remember highlighted squares', icon: <Brain className="w-8 h-8 text-indigo-400" />, color: 'bg-indigo-500/10', border: 'border-indigo-500/20' },
   { id: 'card-match', title: 'Card Match', category: 'Memory', description: 'Match identical cards', icon: <Sparkles className="w-8 h-8 text-purple-400" />, color: 'bg-purple-500/10', border: 'border-purple-500/20' },
-  { id: 'sequence-recall', title: 'Sequence Recall', category: 'Memory', description: 'Remember number sequence', icon: <Target className="w-8 h-8 text-emerald-400" />, color: 'bg-emerald-500/10', border: 'border-emerald-500/20' },
-  { id: 'pattern-recall', title: 'Pattern Recall', category: 'Memory', description: 'Remember shapes pattern', icon: <Zap className="w-8 h-8 text-amber-400" />, color: 'bg-amber-500/10', border: 'border-amber-500/20' },
+  { id: 'sequence-recall', title: 'Sequence Recall', category: 'Memory', description: 'Remember number sequence', icon: <Target className="w-8 h-8 text-emerald-400" />, color: 'bg-emerald-500/10', border: 'border-emerald-500/20', isPremium: true },
+  { id: 'pattern-recall', title: 'Pattern Recall', category: 'Memory', description: 'Remember shapes pattern', icon: <Zap className="w-8 h-8 text-amber-400" />, color: 'bg-amber-500/10', border: 'border-amber-500/20', isPremium: true },
   { id: 'image-memory', title: 'Image Memory', category: 'Memory', description: 'Remember pictures', icon: <Lightbulb className="w-8 h-8 text-rose-400" />, color: 'bg-rose-500/10', border: 'border-rose-500/20' },
   { id: 'color-memory', title: 'Color Memory', category: 'Memory', description: 'Remember color order', icon: <Brain className="w-8 h-8 text-cyan-400" />, color: 'bg-cyan-500/10', border: 'border-cyan-500/20' },
   { id: 'number-recall', title: 'Number Recall', category: 'Memory', description: 'Remember numbers quickly', icon: <Calculator className="w-8 h-8 text-blue-400" />, color: 'bg-blue-500/10', border: 'border-blue-500/20' },
@@ -162,12 +180,16 @@ const allGames = [
   { id: 'multi-object-tracking', title: 'Multi Object Tracking', category: 'Focus', description: 'Track multiple objects', icon: <Target className="w-8 h-8 text-purple-400" />, color: 'bg-purple-500/10', border: 'border-purple-500/20' },
   { id: 'attention-grid', title: 'Attention Grid', category: 'Focus', description: 'Focus on grid patterns', icon: <Sparkles className="w-8 h-8 text-cyan-400" />, color: 'bg-cyan-500/10', border: 'border-cyan-500/20' },
   
+    { id: 'shadow-match', title: 'Shadow Match', category: 'Observation', description: 'Match item to shadow', icon: <Search className="w-8 h-8 text-violet-400" />, color: 'bg-violet-500/10', border: 'border-violet-500/20' },
+  { id: 'find-identical', title: 'Find Identical', category: 'Observation', description: 'Find the exact match', icon: <Target className="w-8 h-8 text-fuchsia-400" />, color: 'bg-fuchsia-500/10', border: 'border-fuchsia-500/20' },
+  { id: 'shape-count', title: 'Shape Count', category: 'Observation', description: 'Count specific shapes', icon: <Box className="w-8 h-8 text-rose-400" />, color: 'bg-rose-500/10', border: 'border-rose-500/20' },
+  { id: 'color-anomaly', title: 'Color Anomaly', category: 'Observation', description: 'Spot the odd color', icon: <Sparkle className="w-8 h-8 text-sky-400" />, color: 'bg-sky-500/10', border: 'border-sky-500/20' },
   // Logic & Puzzle Games
-  { id: 'sudoku-lite', title: 'Sudoku Lite', category: 'Logic', description: 'Mini 4x4 Sudoku', icon: <Grid className="w-8 h-8 text-amber-400" />, color: 'bg-amber-500/10', border: 'border-amber-500/20' },
+  { id: 'sudoku-lite', title: 'Sudoku Lite', category: 'Logic', description: 'Mini 4x4 Sudoku', icon: <Grid className="w-8 h-8 text-amber-400" />, color: 'bg-amber-500/10', border: 'border-amber-500/20', isPremium: true },
   { id: 'pattern-logic', title: 'Pattern Logic', category: 'Logic', description: 'Find the next pattern', icon: <Brain className="w-8 h-8 text-indigo-400" />, color: 'bg-indigo-500/10', border: 'border-indigo-500/20' },
   { id: 'sequence-logic', title: 'Sequence Logic', category: 'Logic', description: 'Find the next number', icon: <Calculator className="w-8 h-8 text-blue-400" />, color: 'bg-blue-500/10', border: 'border-blue-500/20' },
   { id: 'smart-grid', title: 'Smart Grid Puzzle', category: 'Logic', description: 'Turn off all lights', icon: <Lightbulb className="w-8 h-8 text-cyan-400" />, color: 'bg-cyan-500/10', border: 'border-cyan-500/20' },
-  { id: 'cube-rotation', title: 'Cube Rotation Puzzle', category: 'Logic', description: 'Match the target grid', icon: <Box className="w-8 h-8 text-purple-400" />, color: 'bg-purple-500/10', border: 'border-purple-500/20' },
+  { id: 'cube-rotation', title: 'Cube Rotation Puzzle', category: 'Logic', description: 'Match the target grid', icon: <Box className="w-8 h-8 text-purple-400" />, color: 'bg-purple-500/10', border: 'border-purple-500/20', isPremium: true },
   { id: 'puzzle-match', title: 'Puzzle Match', category: 'Logic', description: 'Match logical pairs', icon: <Puzzle className="w-8 h-8 text-emerald-400" />, color: 'bg-emerald-500/10', border: 'border-emerald-500/20' },
   { id: 'hidden-pattern', title: 'Hidden Pattern Puzzle', category: 'Logic', description: 'Find the missing piece', icon: <Search className="w-8 h-8 text-amber-400" />, color: 'bg-amber-500/10', border: 'border-amber-500/20' },
   { id: 'block-puzzle', title: 'Block Puzzle', category: 'Logic', description: 'Fit blocks in grid', icon: <Cpu className="w-8 h-8 text-purple-400" />, color: 'bg-purple-500/10', border: 'border-purple-500/20' },
@@ -235,14 +257,26 @@ const allGames = [
   { id: 'pattern-recognition', title: 'Pattern Recognition', category: 'Visual & Spatial', description: 'Identify visual patterns', icon: <Grid className="w-8 h-8 text-indigo-400" />, color: 'bg-indigo-500/10', border: 'border-indigo-500/20' },
   { id: 'mental-rotation', title: 'Mental Rotation', category: 'Visual & Spatial', description: 'Rotate objects mentally', icon: <RotateCcw className="w-8 h-8 text-rose-400" />, color: 'bg-rose-500/10', border: 'border-rose-500/20' },
   { id: 'spatial-reasoning', title: 'Spatial Reasoning', category: 'Visual & Spatial', description: 'Solve spatial puzzles', icon: <Box className="w-8 h-8 text-cyan-400" />, color: 'bg-cyan-500/10', border: 'border-cyan-500/20' },
+  { id: 'symmetry-test', title: 'Symmetry Test', category: 'Visual & Spatial', description: 'Create mirror images', icon: <ScanFace className="w-8 h-8 text-blue-400" />, color: 'bg-blue-500/10', border: 'border-blue-500/20' },
+  { id: 'block-count', title: 'Block Count', category: 'Visual & Spatial', description: 'Count 3D blocks', icon: <Cuboid className="w-8 h-8 text-purple-400" />, color: 'bg-purple-500/10', border: 'border-purple-500/20' },
+  { id: 'perfect-path', title: 'Perfect Path', category: 'Visual & Spatial', description: 'Trace a path in grid', icon: <Route className="w-8 h-8 text-green-400" />, color: 'bg-green-500/10', border: 'border-green-500/20' },
+  { id: 'layer-logic', title: 'Layer Logic', category: 'Visual & Spatial', description: 'Combine overlapping layers', icon: <Layers className="w-8 h-8 text-yellow-400" />, color: 'bg-yellow-500/10', border: 'border-yellow-500/20' },
   // Executive Function
   { id: 'planning', title: 'Planning', category: 'Executive Function', description: 'Plan your route', icon: <Grid className="w-8 h-8 text-indigo-400" />, color: 'bg-indigo-500/10', border: 'border-indigo-500/20' },
   { id: 'decision-making', title: 'Decision Making', category: 'Executive Function', description: 'Quick optimal choices', icon: <TrendingUp className="w-8 h-8 text-rose-400" />, color: 'bg-rose-500/10', border: 'border-rose-500/20' },
   { id: 'task-switching', title: 'Task Switching', category: 'Executive Function', description: 'Switch contexts quickly', icon: <Activity className="w-8 h-8 text-violet-400" />, color: 'bg-violet-500/10', border: 'border-violet-500/20' },
+  { id: 'rule-sorter', title: 'Rule Sorter', category: 'Executive Function', description: 'Sort by changing rules', icon: <Filter className="w-8 h-8 text-cyan-400" />, color: 'bg-cyan-500/10', border: 'border-cyan-500/20' },
+  { id: 'go-no-go', title: 'Impulse Control', category: 'Executive Function', description: 'Go or No-Go', icon: <Target className="w-8 h-8 text-red-400" />, color: 'bg-red-500/10', border: 'border-red-500/20' },
+  { id: 'sequence-planner', title: 'Sequence Planner', category: 'Executive Function', description: 'Alternate item types', icon: <ListOrdered className="w-8 h-8 text-yellow-400" />, color: 'bg-yellow-500/10', border: 'border-yellow-500/20' },
+  { id: 'memory-updater', title: 'Memory Updater', category: 'Executive Function', description: 'Update memory states', icon: <RefreshCcw className="w-8 h-8 text-blue-400" />, color: 'bg-blue-500/10', border: 'border-blue-500/20' },
   // Creativity
   { id: 'pattern-creation', title: 'Pattern Creation', category: 'Creativity', description: 'Design symmetries', icon: <Paintbrush className="w-8 h-8 text-pink-400" />, color: 'bg-pink-500/10', border: 'border-pink-500/20' },
   { id: 'creative-thinking', title: 'Creative Thinking', category: 'Creativity', description: 'Alternative uses', icon: <Sparkles className="w-8 h-8 text-amber-400" />, color: 'bg-amber-500/10', border: 'border-amber-500/20' },
   { id: 'puzzle-design', title: 'Puzzle Design', category: 'Creativity', description: 'Design paths', icon: <Box className="w-8 h-8 text-cyan-400" />, color: 'bg-cyan-500/10', border: 'border-cyan-500/20' },
+  { id: 'color-mixer', title: 'Color Mixer', category: 'Creativity', description: 'Mix colors precisely', icon: <Palette className="w-8 h-8 text-rose-400" />, color: 'bg-rose-500/10', border: 'border-rose-500/20' },
+  { id: 'emoji-story', title: 'Emoji Story', category: 'Creativity', description: 'Tell story via emoji', icon: <Smile className="w-8 h-8 text-yellow-400" />, color: 'bg-yellow-500/10', border: 'border-yellow-500/20' },
+  { id: 'pixel-art', title: 'Pixel Art', category: 'Creativity', description: 'Draw pixel creations', icon: <Brush className="w-8 h-8 text-indigo-400" />, color: 'bg-indigo-500/10', border: 'border-indigo-500/20' },
+  { id: 'shape-builder', title: 'Shape Builder', category: 'Creativity', description: 'Combine basic shapes', icon: <Shapes className="w-8 h-8 text-green-400" />, color: 'bg-green-500/10', border: 'border-green-500/20' },
 ];
 
 const gameCategories = [
@@ -287,7 +321,10 @@ const MOCK_SUBSCRIPTIONS = [
 ];
 
 const MOCK_NOTIFICATIONS = [
-  { id: '1', title: 'Welcome to Brainova!', message: 'Start your journey with a daily workout.', time: '2h ago', isRead: false },
+  { id: '1', title: 'Welcome to Brainova!', message: 'Start your cognitive journey with us. Explore personalized workouts, diverse mini-games, and track your daily progress to enhance your brain health.', time: '2m ago', isRead: false },
+  { id: '2', title: 'Achievement Unlocked: Early Bird', message: 'Congratulations! You have completed a workout before 8 AM. Keep up the great morning routines to stay sharp all day.', time: '1h ago', isRead: false },
+  { id: '3', title: 'New Rank: Focus Novice', message: 'You have reached a new rank! Your focus and attention span are improving. Keep playing Focus games to reach the next tier.', time: '1d ago', isRead: true },
+  { id: '4', title: 'Daily Streak Maintained', message: 'Awesome job maintaining your 3-day streak! Consistency is the key to cognitive improvement.', time: '2d ago', isRead: true },
 ];
 
 export default function App() {
@@ -303,23 +340,65 @@ export default function App() {
   const [isCompleted, setIsCompleted] = useState(true);
   const [onboardingStep, setOnboardingStep] = useState(0);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  const handleLogout = async () => {
+    if (supabase) {
+      await supabase.auth.signOut();
+    }
+    setIsLoggedIn(false);
+    setOnboardingStep(0);
+    setProfileName('');
+  };
+
+
+  useEffect(() => {
+    if (!supabase) return;
+    
+    // Check initial session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session) {
+        setIsLoggedIn(true);
+        // fetch profile name
+        supabase.from('profiles').select('name').eq('id', session.user.id).single().then(({ data }) => {
+          if (data && data.name) setProfileName(data.name);
+        });
+      }
+    });
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (session) {
+        setIsLoggedIn(true);
+      } else {
+        setIsLoggedIn(false);
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
   const [authMode, setAuthMode] = useState<'select' | 'login' | 'signup'>('select');
   const [currentTab, setCurrentTab] = useState<'home' | 'games' | 'coach' | 'stats' | 'profile' | 'challenges'>('home');
   const [activeCategoryFilter, setActiveCategoryFilter] = useState<string>('All');
   const [activeGameDetails, setActiveGameDetails] = useState<string | null>(null);
   const [activeGame, setActiveGame] = useState<string | null>(null);
-  const [celebrationData, setCelebrationData] = useState<{score: number, coins: number} | null>(null);
+  const [celebrationData, setCelebrationData] = useState<{score: number, coins: number, streak?: number} | null>(null);
   const [gameSource, setGameSource] = useState<string | null>(null);
 
   const handleGameCompleteWrapper = (session: Omit<GameSession, 'id' | 'timestamp'>) => {
+    const prevDate = stats.lastPlayedDate;
+    const today = new Date().toISOString().split('T')[0];
+    const isNewStreak = prevDate !== today;
+
     recordGame({
       ...session,
       gameId: activeGame || undefined
     });
+    
     if (session.score >= 30) { // Set threshold for high score
       setCelebrationData({
         score: session.score,
-        coins: Math.max(10, Math.floor(session.score / 5))
+        coins: Math.max(10, Math.floor(session.score / 5)),
+        streak: isNewStreak ? 1 : 0
       });
     }
   };
@@ -350,6 +429,7 @@ export default function App() {
   const [isLeaderboardOpen, setIsLeaderboardOpen] = useState(false);
   const [isStarredGamesOpen, setIsStarredGamesOpen] = useState(false);
   const [isMyInfoOpen, setIsMyInfoOpen] = useState(false);
+  const [isEditingProfile, setIsEditingProfile] = useState(false);
   const [isAddNewGamesOpen, setIsAddNewGamesOpen] = useState(false);
   const [isModeModalOpen, setIsModeModalOpen] = useState(false);
   const [isXpRoadmapOpen, setIsXpRoadmapOpen] = useState(false);
@@ -377,7 +457,6 @@ export default function App() {
   const [showAllQuickTraining, setShowAllQuickTraining] = useState(false);
   const [mixedGames, setMixedGames] = useState<typeof allGames>([]);
   const [isProModalOpen, setIsProModalOpen] = useState(false);
-  const [isBenefitsModalOpen, setIsBenefitsModalOpen] = useState(false);
   const [isRewardsHistoryOpen, setIsRewardsHistoryOpen] = useState(false);
   const [isSubscriptionModalOpen, setIsSubscriptionModalOpen] = useState(false);
   const [isLpiModalOpen, setIsLpiModalOpen] = useState(false);
@@ -406,14 +485,16 @@ export default function App() {
   const [notifications, setNotifications] = useState(MOCK_NOTIFICATIONS);
   const [selectedNotification, setSelectedNotification] = useState<{id: string, title: string, message: string, time: string, isRead: boolean} | null>(null);
   const [isFeedbackOpen, setIsFeedbackOpen] = useState(false);
-  const [feedbackRating, setFeedbackRating] = useState(0);
-  const [feedbackText, setFeedbackText] = useState('');
+  
+  
+  
   const [isEditNameOpen, setIsEditNameOpen] = useState(false);
   const [tempName, setTempName] = useState('');
   const [tempEmail, setTempEmail] = useState('');
   const [isHighScoresOpen, setIsHighScoresOpen] = useState(false);
   const [isAiAnalysisOpen, setIsAiAnalysisOpen] = useState(false);
   const [isPremiumSubscriptionOpen, setIsPremiumSubscriptionOpen] = useState(false);
+  const [isPro, setIsPro] = useState(localStorage.getItem('brainova_is_pro') === 'true');
   const [isPersonalizedPlanOpen, setIsPersonalizedPlanOpen] = useState(false);
   const [isAchievementsOpen, setIsAchievementsOpen] = useState(false);
   const fileInputRef = React.useRef<HTMLInputElement>(null);
@@ -430,9 +511,17 @@ export default function App() {
     setIsProfileSettingsOpen(false);
   };
 
-  const handleNameSave = () => {
+  const handleNameSave = async () => {
     if (tempName.trim()) {
-      setProfileName(tempName.trim());
+      const newName = tempName.trim();
+      setProfileName(newName);
+      
+      if (supabase) {
+         const { data: { session } } = await supabase.auth.getSession();
+         if (session) {
+           await supabase.from('profiles').upsert({ id: session.user.id, name: newName });
+         }
+      }
     }
     setProfileEmail(tempEmail.trim());
     setIsEditNameOpen(false);
@@ -450,10 +539,22 @@ export default function App() {
     return { level: 6, rank: 'MASTER', filled: 5, partial: false };
   };
 
+  const getUnlockedCount = () => {
+    let count = 0;
+    if (stats.totalGamesPlayed > 0) count++;
+    if (stats.longestStreak >= 7) count++;
+    if (stats.highScores?.focus >= 80) count++;
+    if (stats.totalGamesPlayed > 5) count++;
+    return count;
+  };
+  const unlockedAchievementsCount = getUnlockedCount();
   const CategoryScoreCard = ({ title, score, icon: Icon, iconColor, iconBgColor, barColor }: any) => {
     const { level, rank, filled, partial } = getCategoryRank(score);
     
-    return (
+    
+
+
+  return (
       <div className="bg-[#1c1c1e] rounded-[20px] p-5 shadow-lg relative overflow-hidden border border-white/5 border-t-white/10">
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-4">
@@ -601,12 +702,19 @@ export default function App() {
   };
 
   const currentLpi = {
-    overall: Math.round(((stats.highScores.speed || 0) + (stats.highScores.memory || 0) + (stats.highScores.focus || 0) + (stats.highScores.logic || 0) + (stats.highScores.math || 0)) / 5) || 0,
+    overall: Math.round(
+      (Object.values(stats.highScores) as number[]).reduce((sum, score) => sum + (score || 0), 0) / 10
+    ) || 0,
     speed: stats.highScores.speed || 0,
     memory: stats.highScores.memory || 0,
-    attention: stats.highScores.focus || 0,
-    flexibility: stats.highScores.logic || 0,
-    math: stats.highScores.math || 0
+    focus: stats.highScores.focus || 0,
+    logic: stats.highScores.logic || 0,
+    math: stats.highScores.math || 0,
+    language: stats.highScores.language || 0,
+    visual: stats.highScores.visual || 0,
+    observation: stats.highScores.observation || 0,
+    executive: stats.highScores.executive || 0,
+    creativity: stats.highScores.creativity || 0
   };
 
 
@@ -626,7 +734,7 @@ export default function App() {
   const totalXP = sessions.reduce((acc, curr) => acc + curr.score, 0);
 
   const levelThresholds = [
-    { level: 1, title: 'Beginner', maxXP: 100 },
+    { level: 1, title: 'Beginner', maxXP: 50 },
     { level: 2, title: 'Learner', maxXP: 300 },
     { level: 3, title: 'Novice', maxXP: 1200 },
     { level: 4, title: 'Intermediate', maxXP: 2000 },
@@ -674,11 +782,18 @@ export default function App() {
     let status = 'locked';
     let progress = 0;
     
+    const isFirstNode = index === mapNodesBase.length - 1;
+
     if (totalXP >= nextRequiredXP) {
       status = 'completed';
     } else if (totalXP >= requiredXP && totalXP < nextRequiredXP) {
-      status = 'current';
-      progress = ((totalXP - requiredXP) / (nextRequiredXP - requiredXP)) * 100;
+      if (isFirstNode && totalXP < 100) {
+        status = 'locked';
+        progress = (totalXP / 100) * 100;
+      } else {
+        status = 'current';
+        progress = ((totalXP - requiredXP) / (nextRequiredXP - requiredXP)) * 100;
+      }
     } else {
       status = 'locked';
     }
@@ -809,6 +924,10 @@ export default function App() {
             setIsPremiumSubscriptionOpen(false);
             setIsPersonalizedPlanOpen(true);
           }} 
+          onSuccess={() => {
+            setIsPro(true);
+            setIsPremiumSubscriptionOpen(false);
+          }}
         />
       </div>
     );
@@ -822,10 +941,19 @@ export default function App() {
     );
   }
 
+
+  if (isFeedbackOpen) {
+    return (
+      <div className="flex flex-col h-[100dvh] bg-[#0a0a0c] font-sans text-white relative overflow-hidden" style={getModeStyles()}>
+        <FeedbackPage onBack={() => setIsFeedbackOpen(false)} language={language} />
+      </div>
+    );
+  }
+
   if (isAchievementsOpen) {
     return (
       <div className="flex flex-col h-[100dvh] bg-[#0a0a0c] font-sans text-white relative overflow-hidden" style={getModeStyles()}>
-        <AchievementsPage onBack={() => setIsAchievementsOpen(false)} />
+        <AchievementsPage onBack={() => setIsAchievementsOpen(false)} stats={stats} />
       </div>
     );
   }
@@ -846,8 +974,13 @@ export default function App() {
           <GameDetailsView 
             game={gameInfo} 
             stats={getGameStats(gameInfo.id)}
+            isLocked={(gameInfo as any).isPremium && !isPro}
             onClose={() => setActiveGameDetails(null)} 
             onPlay={(difficulty) => {
+              if ((gameInfo as any).isPremium && !isPro) {
+                setIsPremiumSubscriptionOpen(true);
+                return;
+              }
               setGameDifficulty(difficulty as 'easy' | 'medium' | 'hard');
               setActiveGameDetails(null);
               setTransitioningGame(gameInfo.id);
@@ -1210,6 +1343,26 @@ export default function App() {
               onBack={handleBackFromGame}
               onGameComplete={(score, maxLevel) => handleGameCompleteWrapper({ gameType: 'visual', score, difficulty: 'normal', maxLevel })}
             />
+          ) : activeGame === 'symmetry-test' ? (
+            <SymmetryTestGame difficulty={gameDifficulty}
+              onBack={handleBackFromGame}
+              onGameComplete={(score, maxLevel) => handleGameCompleteWrapper({ gameType: 'visual', score, difficulty: 'normal', maxLevel })}
+            />
+          ) : activeGame === 'block-count' ? (
+            <BlockCountGame difficulty={gameDifficulty}
+              onBack={handleBackFromGame}
+              onGameComplete={(score, maxLevel) => handleGameCompleteWrapper({ gameType: 'visual', score, difficulty: 'normal', maxLevel })}
+            />
+          ) : activeGame === 'perfect-path' ? (
+            <PerfectPathGame difficulty={gameDifficulty}
+              onBack={handleBackFromGame}
+              onGameComplete={(score, maxLevel) => handleGameCompleteWrapper({ gameType: 'visual', score, difficulty: 'normal', maxLevel })}
+            />
+          ) : activeGame === 'layer-logic' ? (
+            <LayerLogicGame difficulty={gameDifficulty}
+              onBack={handleBackFromGame}
+              onGameComplete={(score, maxLevel) => handleGameCompleteWrapper({ gameType: 'visual', score, difficulty: 'normal', maxLevel })}
+            />
           ) : activeGame === 'planning' ? (
             <PlanningGame difficulty={gameDifficulty}
               onBack={handleBackFromGame}
@@ -1235,8 +1388,48 @@ export default function App() {
               onBack={handleBackFromGame}
               onGameComplete={(score, maxLevel) => handleGameCompleteWrapper({ gameType: 'creativity', score, difficulty: 'normal', maxLevel })}
             />
+          ) : activeGame === 'color-mixer' ? (
+            <ColorMixerGame difficulty={gameDifficulty}
+              onBack={handleBackFromGame}
+              onGameComplete={(score, maxLevel) => handleGameCompleteWrapper({ gameType: 'creativity', score, difficulty: 'normal', maxLevel })}
+            />
+          ) : activeGame === 'emoji-story' ? (
+            <EmojiStoryGame difficulty={gameDifficulty}
+              onBack={handleBackFromGame}
+              onGameComplete={(score, maxLevel) => handleGameCompleteWrapper({ gameType: 'creativity', score, difficulty: 'normal', maxLevel })}
+            />
+          ) : activeGame === 'pixel-art' ? (
+            <PixelArtGame difficulty={gameDifficulty}
+              onBack={handleBackFromGame}
+              onGameComplete={(score, maxLevel) => handleGameCompleteWrapper({ gameType: 'creativity', score, difficulty: 'normal', maxLevel })}
+            />
+          ) : activeGame === 'shape-builder' ? (
+            <ShapeBuilderGame difficulty={gameDifficulty}
+              onBack={handleBackFromGame}
+              onGameComplete={(score, maxLevel) => handleGameCompleteWrapper({ gameType: 'creativity', score, difficulty: 'normal', maxLevel })}
+            />
           ) : activeGame === 'task-switching' ? (
             <TaskSwitchingGame difficulty={gameDifficulty}
+              onBack={handleBackFromGame}
+              onGameComplete={(score, maxLevel) => handleGameCompleteWrapper({ gameType: 'executive', score, difficulty: 'normal', maxLevel })}
+            />
+          ) : activeGame === 'rule-sorter' ? (
+            <RuleSorterGame difficulty={gameDifficulty}
+              onBack={handleBackFromGame}
+              onGameComplete={(score, maxLevel) => handleGameCompleteWrapper({ gameType: 'executive', score, difficulty: 'normal', maxLevel })}
+            />
+          ) : activeGame === 'go-no-go' ? (
+            <GoNoGoGame difficulty={gameDifficulty}
+              onBack={handleBackFromGame}
+              onGameComplete={(score, maxLevel) => handleGameCompleteWrapper({ gameType: 'executive', score, difficulty: 'normal', maxLevel })}
+            />
+          ) : activeGame === 'sequence-planner' ? (
+            <SequencePlannerGame difficulty={gameDifficulty}
+              onBack={handleBackFromGame}
+              onGameComplete={(score, maxLevel) => handleGameCompleteWrapper({ gameType: 'executive', score, difficulty: 'normal', maxLevel })}
+            />
+          ) : activeGame === 'memory-updater' ? (
+            <MemoryUpdaterGame difficulty={gameDifficulty}
               onBack={handleBackFromGame}
               onGameComplete={(score, maxLevel) => handleGameCompleteWrapper({ gameType: 'executive', score, difficulty: 'normal', maxLevel })}
             />
@@ -1252,6 +1445,26 @@ export default function App() {
             />
           ) : activeGame === 'visual-search' ? (
             <VisualSearchGame difficulty={gameDifficulty}
+              onBack={handleBackFromGame}
+              onGameComplete={(score, maxLevel) => handleGameCompleteWrapper({ gameType: 'observation', score, difficulty: 'normal', maxLevel })}
+            />
+          ) : activeGame === 'shadow-match' ? (
+            <ShadowMatchGame difficulty={gameDifficulty}
+              onBack={handleBackFromGame}
+              onGameComplete={(score, maxLevel) => handleGameCompleteWrapper({ gameType: 'observation', score, difficulty: 'normal', maxLevel })}
+            />
+          ) : activeGame === 'find-identical' ? (
+            <FindIdenticalGame difficulty={gameDifficulty}
+              onBack={handleBackFromGame}
+              onGameComplete={(score, maxLevel) => handleGameCompleteWrapper({ gameType: 'observation', score, difficulty: 'normal', maxLevel })}
+            />
+          ) : activeGame === 'shape-count' ? (
+            <ShapeCountGame difficulty={gameDifficulty}
+              onBack={handleBackFromGame}
+              onGameComplete={(score, maxLevel) => handleGameCompleteWrapper({ gameType: 'observation', score, difficulty: 'normal', maxLevel })}
+            />
+          ) : activeGame === 'color-anomaly' ? (
+            <ColorAnomalyGame difficulty={gameDifficulty}
               onBack={handleBackFromGame}
               onGameComplete={(score, maxLevel) => handleGameCompleteWrapper({ gameType: 'observation', score, difficulty: 'normal', maxLevel })}
             />
@@ -1295,10 +1508,13 @@ export default function App() {
                       </button>
                       <button 
                         onClick={() => setIsLpiModalOpen(true)}
-                        className="flex items-center gap-2 bg-[#fbbf24]/10 border border-[#fbbf24]/30 px-3 py-1.5 rounded-full hover:bg-[#fbbf24]/20 transition-colors cursor-pointer"
+                        className="flex items-center gap-2 bg-[#c084fc]/10 border border-[#c084fc]/30 px-3 py-1.5 rounded-full hover:bg-[#c084fc]/20 transition-colors cursor-pointer"
                       >
-                        <Brain className="w-4 h-4 text-[#fbbf24]" />
-                        <span className="text-[#fbbf24] font-bold text-sm">{stats.novaCoins || 0}</span>
+                        <div className="flex items-center justify-center">
+                          <img src="/logo.png" alt="Brainova" className="w-4 h-4 brightness-0" style={{ filter: 'invert(64%) sepia(51%) saturate(2371%) hue-rotate(227deg) brightness(101%) contrast(97%)' }} onError={(e) => { e.currentTarget.style.display = 'none'; e.currentTarget.nextElementSibling?.classList.remove('hidden') }} />
+                          <Brain className="w-4 h-4 text-[#c084fc] hidden" />
+                        </div>
+                        <span className="text-[#c084fc] font-bold text-[15px]">{stats.novaCoins || 0}</span>
                       </button>
                       <button 
                         onClick={() => setIsXpRoadmapOpen(true)}
@@ -1336,11 +1552,7 @@ export default function App() {
                   </div>
                 </div>
 
-                {/* Brain Score Section */}
-                <div className="px-6 mb-8">
-                  <BrainScoreCard onClick={() => setCurrentTab('stats')} stats={stats} />
-                </div>
-
+                {/* Brain Score Section removed per user request */}
                 {/* Combined Daily Workout & Exercises Card */}
                 <div className="px-6 mb-8">
                   <div className="relative">
@@ -1422,8 +1634,8 @@ export default function App() {
                   <h2 className="text-3xl font-bold mb-2">{t('allGames', language)}</h2>
                   <p className="text-white/60 text-sm mb-6">{t('selectGame', language)}</p>
                   
-                  <div className="flex overflow-x-auto hide-scrollbar gap-4 pb-6 pt-2 -mx-6 px-6 items-center">
-                    {['All', 'Recent', 'Logic', 'Memory', 'Focus', 'Math', 'Reaction Speed', 'Language & Vocabulary', 'Visual & Spatial', 'Observation', 'Executive Function', 'Creativity'].map(category => (
+                  <div className="flex overflow-x-auto hide-scrollbar scroll-smooth gap-4 pb-6 pt-2 -mx-6 px-6 items-center">
+                    {['All', 'Logic', 'Memory', 'Focus', 'Math', 'Reaction Speed', 'Language & Vocabulary', 'Visual & Spatial', 'Observation', 'Executive Function', 'Creativity'].map(category => (
                       <button
                         key={category}
                         onClick={() => setActiveCategoryFilter(category)}
@@ -1469,6 +1681,11 @@ export default function App() {
                             </div>
                             <h3 className="text-white font-bold mb-1 truncate w-full">{game.title}</h3>
                             <p className="text-white/50 text-xs w-full line-clamp-2">{game.description}</p>
+                            {(game as any).isPremium && (
+                               <div className="absolute bottom-4 right-4 z-20 opacity-60">
+                                 {!isPro ? <Lock className="w-5 h-5 text-white/50" /> : <Crown className="w-5 h-5 text-[#f59e0b]" />}
+                               </div>
+                            )}
                           </button>
                         ))}
                       </GameCarousel>
@@ -1477,7 +1694,7 @@ export default function App() {
 
                   {activeCategoryFilter !== 'AI Recommended' && Array.from(new Set(allGames.map(g => g.category)))
                     .filter(category => {
-                      if (activeCategoryFilter === 'All' || activeCategoryFilter === 'Recent') return true;
+                      if (activeCategoryFilter === 'All') return true;
                       return category === activeCategoryFilter;
                     })
                     .map(category => (
@@ -1507,6 +1724,11 @@ export default function App() {
                             </div>
                             <h3 className="text-lg font-bold mb-1 relative z-10">{game.title}</h3>
                             <p className="text-xs text-white/50 leading-relaxed relative z-10">{game.description}</p>
+                            {(game as any).isPremium && (
+                               <div className="absolute bottom-4 right-4 z-20 opacity-60">
+                                 {!isPro ? <Lock className="w-5 h-5 text-white/50" /> : <Crown className="w-5 h-5 text-[#f59e0b]" />}
+                               </div>
+                            )}
                           </button>
                         ))}
                       </GameCarousel>
@@ -1521,6 +1743,7 @@ export default function App() {
                 onPlayGame={handlePlayGame} 
                 profileName={profileName || 'Player'} 
                 onSend={() => setIsPremiumSubscriptionOpen(true)}
+                onOpenProfile={() => setIsMyInfoOpen(true)}
               />
             )}
 
@@ -1938,11 +2161,32 @@ export default function App() {
                         <CategoryScoreCard title={t('creativity', language)} score={stats.highScores.creativity} icon={Paintbrush} iconColor="text-[#f472b6]" iconBgColor="bg-[#ec4899]/10" barColor="bg-[#ec4899]" />
                       </motion.div>
                     )}
-                  </AnimatePresence>
+                                    </AnimatePresence>
+                </div>
+
+                {/* Achievements Button on Progress Tab */}
+                <div className="px-6 mb-6">
+                  <button 
+                    onClick={() => setIsAchievementsOpen(true)}
+                    className="w-full flex items-center justify-between p-5 rounded-[24px] bg-[#121217] border border-white/5 hover:bg-white/5 transition-all"
+                  >
+                    <div className="flex items-center gap-4">
+                      <div className="w-14 h-14 rounded-full bg-[#f59e0b]/10 border border-[#f59e0b]/20 flex items-center justify-center">
+                        <Award className="w-7 h-7 text-[#f59e0b]" />
+                      </div>
+                      <div className="text-left">
+                        <h3 className="font-bold text-white text-[16px] tracking-wide mb-1">Your Achievements</h3>
+                        <div className="flex items-center gap-1.5 text-[14px]">
+                          <span className="text-[#a855f7] font-bold">{unlockedAchievementsCount} / 34</span>
+                          <span className="text-white/50 font-medium">unlocked</span>
+                        </div>
+                      </div>
+                    </div>
+                    <ChevronRight className="w-5 h-5 text-white/30" />
+                  </button>
                 </div>
               </motion.div>
             )}
-
             {currentTab === 'profile' && (
               <motion.div 
                 initial={{ opacity: 0, y: 10 }}
@@ -2069,11 +2313,11 @@ export default function App() {
                       className="flex flex-col items-center justify-center py-4 hover:bg-white/5 transition-colors cursor-pointer"
                     >
                       <div className="flex flex-col items-center justify-center mb-1.5">
-                        <div className="flex items-center justify-center mb-1.5 drop-shadow-[0_0_8px_rgba(251,191,36,0.3)]">
-                          <img src="/logo.png" alt="Brainova" className="w-6 h-6 brightness-0" style={{ filter: 'invert(75%) sepia(85%) saturate(718%) hue-rotate(352deg) brightness(101%) contrast(106%)' }} onError={(e) => { e.currentTarget.style.display = 'none'; e.currentTarget.nextElementSibling?.classList.remove('hidden') }} />
-                          <Brain className="w-6 h-6 text-[#fbbf24] hidden" />
+                        <div className="flex items-center justify-center mb-1.5 drop-shadow-[0_0_8px_rgba(192,132,252,0.3)]">
+                          <img src="/logo.png" alt="Brainova" className="w-6 h-6 brightness-0" style={{ filter: 'invert(64%) sepia(51%) saturate(2371%) hue-rotate(227deg) brightness(101%) contrast(97%)' }} onError={(e) => { e.currentTarget.style.display = 'none'; e.currentTarget.nextElementSibling?.classList.remove('hidden') }} />
+                          <Brain className="w-6 h-6 text-[#c084fc] hidden" />
                         </div>
-                        <span className="text-[24px] text-[#fbbf24] font-bold leading-none" style={{ textShadow: '0 0 10px rgba(251,191,36,0.5)' }}>{stats.novaCoins || 0}</span>
+                        <span className="text-[24px] text-[#c084fc] font-bold leading-none" style={{ textShadow: '0 0 10px rgba(192,132,252,0.5)' }}>{stats.novaCoins || 0}</span>
                       </div>
                       <span className="text-[14px] text-[#9ca3af] font-medium">Nova Coins</span>
                     </button>
@@ -2140,7 +2384,7 @@ export default function App() {
                       <div className="flex justify-center mb-8 relative z-10">
                         {(() => {
                           const totalXP = sessions.reduce((acc, curr) => acc + curr.score, 0);
-                          const userRank = Math.max(1, 1000 - Math.floor(totalXP / 10));
+                          const userRank = Math.max(1, 50 - Math.floor(totalXP / 50));
                           return (
                             <div className="flex flex-col items-center">
                               <div className="relative w-[140px] h-[140px] flex items-center justify-center">
@@ -2184,7 +2428,7 @@ export default function App() {
                         <div className="text-left">
                           <h3 className="font-bold text-white text-[16px] tracking-wide mb-1">Your Achievements</h3>
                           <div className="flex items-center gap-1.5 text-[14px]">
-                            <span className="text-[#a855f7] font-bold">4 / 24</span>
+                            <span className="text-[#a855f7] font-bold">{unlockedAchievementsCount} / 34</span>
                             <span className="text-white/50 font-medium">unlocked</span>
                           </div>
                         </div>
@@ -2213,7 +2457,7 @@ export default function App() {
                     <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center">
                       <User className="w-5 h-5 text-blue-400" />
                     </div>
-                    <span className="font-medium">My Information</span>
+                    <span className="font-medium">Personalized Training</span>
                   </button>
 
                   <button 
@@ -2226,15 +2470,7 @@ export default function App() {
                     <span className="font-medium">Add New Games</span>
                   </button>
                   
-                  <button 
-                    onClick={() => setIsBenefitsModalOpen(true)}
-                    className="w-full flex items-center gap-4 text-left px-4 py-4 text-base text-white bg-white/5 border border-white/10 hover:bg-white/10 transition-all duration-300 rounded-xl"
-                  >
-                    <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center">
-                      <Gift className="w-5 h-5 text-amber-400" />
-                    </div>
-                    <span className="font-medium">Our Benefits</span>
-                  </button>
+
 
                   <button 
                     onClick={() => setIsRewardsHistoryOpen(true)}
@@ -2253,7 +2489,14 @@ export default function App() {
                     <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center">
                       <Bell className="w-5 h-5 text-rose-400" />
                     </div>
-                    <span className="font-medium">Notifications</span>
+                    <div className="flex flex-1 justify-between items-center">
+                      <span className="font-medium">Notifications</span>
+                      {notifications.filter(n => !n.isRead).length > 0 && (
+                        <div className="w-5 h-5 rounded-full bg-rose-500 flex items-center justify-center">
+                          <span className="text-[10px] font-bold">{notifications.filter(n => !n.isRead).length}</span>
+                        </div>
+                      )}
+                    </div>
                   </button>
 
                   <button 
@@ -2264,6 +2507,15 @@ export default function App() {
                       <Settings className="w-5 h-5 text-white/90" />
                     </div>
                     <span className="font-medium">App Settings</span>
+                  </button>
+                  <button 
+                    onClick={handleLogout}
+                    className="w-full flex items-center gap-4 text-left px-4 py-4 text-base text-red-400 bg-red-500/10 border border-red-500/20 hover:bg-red-500/20 transition-all duration-300 rounded-xl"
+                  >
+                    <div className="w-10 h-10 rounded-full bg-red-500/20 flex items-center justify-center">
+                      <LogOut className="w-5 h-5 text-red-400" />
+                    </div>
+                    <span className="font-medium">Log Out</span>
                   </button>
 
                   <button 
@@ -2403,30 +2655,23 @@ export default function App() {
                   initial={{ opacity: 0, y: '100%' }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: '100%' }}
-                  className="fixed inset-0 z-50 bg-[#0a0a0c] flex flex-col"
+                  className="fixed inset-0 z-50 bg-[#02020a] flex flex-col"
                 >
-                  <div className="flex items-center justify-between px-5 pt-12 pb-4 bg-[#0a0a0c]">
-                    <div className="flex items-center gap-3">
+                  <div className="absolute top-0 left-0 right-0 z-10 flex items-center justify-start px-4 pt-4 pb-2 pointer-events-none">
+                    <div className="flex items-center pointer-events-auto drop-shadow-md">
                       <button 
                         onClick={() => setIsXpRoadmapOpen(false)}
-                        className="p-1.5 rounded-full bg-transparent hover:bg-white/10 transition-colors"
+                        className="flex items-center gap-2 pl-2 pr-3 py-1.5 rounded-full bg-black/20 hover:bg-white/10 transition-colors backdrop-blur-sm"
                       >
-                        <ChevronLeft className="w-6 h-6 text-white" />
+                        <ArrowLeft className="w-5 h-5 text-white" />
+                        <span className="text-white text-sm font-medium">Back</span>
                       </button>
-                      <h2 className="text-xl font-bold text-white tracking-tight">Journey Map</h2>
-                    </div>
-                    
-                    <div className="flex items-center gap-2 bg-[#1a2b5e]/40 border border-[#3b82f6]/20 px-3 py-1.5 rounded-full">
-                      <div className="w-5 h-5 bg-[#3b82f6] rounded-full flex items-center justify-center">
-                        <span className="text-white font-bold text-[10px]">XP</span>
-                      </div>
-                      <span className="text-white font-bold text-sm tracking-wide">{totalXP}</span>
                     </div>
                   </div>
                   <div ref={mapContainerRef} className="flex-1 overflow-y-auto hide-scrollbar relative bg-[#02020a]">
-                    <div className="relative w-full h-[4200px] max-w-md mx-auto">
+                    <div className="relative w-full h-[4050px] max-w-md mx-auto">
                       {/* Space to Earth Background */}
-                      <svg className="absolute inset-0 w-full h-full pointer-events-none" preserveAspectRatio="none" viewBox="0 0 400 4200" style={{ zIndex: 0 }}>
+                      <svg className="absolute inset-0 w-full h-full pointer-events-none" preserveAspectRatio="none" viewBox="0 0 400 4050" style={{ zIndex: 0 }}>
                         <defs>
                           <linearGradient id="skyGrad" x1="0" y1="0" x2="0" y2="1">
                             {/* Deep Space */}
@@ -2462,7 +2707,7 @@ export default function App() {
                         </defs>
 
                         {/* Sky Background */}
-                        <rect width="400" height="4200" fill="url(#skyGrad)" />
+                        <rect width="400" height="4050" fill="url(#skyGrad)" />
                         
                         {/* Stars (Only in top ~25%) */}
                         <g fill="#ffffff" opacity="0.4">
@@ -2491,33 +2736,33 @@ export default function App() {
                         <path d="M300,80 L250,110" stroke="#c084fc" strokeWidth="1.5" opacity="0.6" />
 
                         {/* Distant Mountains - Top */}
-                        <path d="M-20,500 L60,320 L120,440 L180,280 L250,410 L330,250 L400,380 L440,290 L440,4200 L-20,4200 Z" fill="url(#mntBack)" stroke="#1e1b4b" strokeWidth="1" opacity="0.3" />
-                        <path d="M-20,800 L40,650 L100,740 L160,590 L240,730 L310,610 L380,720 L440,620 L440,4200 L-20,4200 Z" fill="url(#mntMid)" stroke="#0f172a" strokeWidth="1" opacity="0.4" />
+                        <path d="M-20,500 L60,320 L120,440 L180,280 L250,410 L330,250 L400,380 L440,290 L440,4050 L-20,4050 Z" fill="url(#mntBack)" stroke="#1e1b4b" strokeWidth="1" opacity="0.3" />
+                        <path d="M-20,800 L40,650 L100,740 L160,590 L240,730 L310,610 L380,720 L440,620 L440,4050 L-20,4050 Z" fill="url(#mntMid)" stroke="#0f172a" strokeWidth="1" opacity="0.4" />
                         
                         {/* Distant Mountains - Upper Mid */}
-                        <path d="M-20,1200 L50,1020 L110,1130 L190,950 L270,1100 L340,980 L410,1110 L440,1010 L440,4200 L-20,4200 Z" fill="url(#mntBack)" stroke="#1e1b4b" strokeWidth="1" opacity="0.5" />
+                        <path d="M-20,1200 L50,1020 L110,1130 L190,950 L270,1100 L340,980 L410,1110 L440,1010 L440,4050 L-20,4050 Z" fill="url(#mntBack)" stroke="#1e1b4b" strokeWidth="1" opacity="0.5" />
                         
                         {/* Earthy Mountains Transition */}
-                        <path d="M-20,1600 L70,1410 L130,1540 L210,1360 L290,1490 L360,1380 L430,1520 L440,1440 L440,4200 L-20,4200 Z" fill="#080b14" stroke="#080b14" strokeWidth="1" opacity="0.9" />
-                        <path d="M-20,1800 L40,1620 L100,1730 L170,1560 L250,1710 L320,1590 L390,1740 L440,1630 L440,4200 L-20,4200 Z" fill="#0a0e1c" stroke="#0a0e1c" strokeWidth="1" />
+                        <path d="M-20,1600 L70,1410 L130,1540 L210,1360 L290,1490 L360,1380 L430,1520 L440,1440 L440,4050 L-20,4050 Z" fill="#080b14" stroke="#080b14" strokeWidth="1" opacity="0.9" />
+                        <path d="M-20,1800 L40,1620 L100,1730 L170,1560 L250,1710 L320,1590 L390,1740 L440,1630 L440,4050 L-20,4050 Z" fill="#0a0e1c" stroke="#0a0e1c" strokeWidth="1" />
 
                         {/* Lush Green Hills - Grasslands */}
-                        <path d="M-20,2000 C 150,1800 300,2200 440,2050 L 440,4200 L -20,4200 Z" fill="#0c1224" />
-                        <path d="M-20,2300 C 150,2500 300,2100 440,2350 L 440,4200 L -20,4200 Z" fill="#0e152a" />
-                        <path d="M-20,2600 C 100,2400 250,2800 440,2550 L 440,4200 L -20,4200 Z" fill="#101830" />
-                        <path d="M-20,2900 C 150,3100 300,2700 440,3050 L 440,4200 L -20,4200 Z" fill="#121b36" />
-                        <path d="M-20,3200 C 100,3000 250,3400 440,3250 L 440,4200 L -20,4200 Z" fill="#141e3c" />
-                        <path d="M-20,3500 C 150,3700 300,3300 440,3650 L 440,4200 L -20,4200 Z" fill="#162142" />
+                        <path d="M-20,2000 C 150,1800 300,2200 440,2050 L 440,4050 L -20,4050 Z" fill="#0c1224" />
+                        <path d="M-20,2300 C 150,2500 300,2100 440,2350 L 440,4050 L -20,4050 Z" fill="#0e152a" />
+                        <path d="M-20,2600 C 100,2400 250,2800 440,2550 L 440,4050 L -20,4050 Z" fill="#101830" />
+                        <path d="M-20,2900 C 150,3100 300,2700 440,3050 L 440,4050 L -20,4050 Z" fill="#121b36" />
+                        <path d="M-20,3200 C 100,3000 250,3400 440,3250 L 440,4050 L -20,4050 Z" fill="#141e3c" />
+                        <path d="M-20,3500 C 150,3700 300,3300 440,3650 L 440,4050 L -20,4050 Z" fill="#162142" />
                         
                         {/* Foreground base */}
-                        <path d="M-20,3800 C 100,3600 250,4000 440,3850 L 440,4200 L -20,4200 Z" fill="#182448" />
-                        <path d="M-20,4100 C 150,4300 300,3900 440,4150 L 440,4200 L -20,4200 Z" fill="#1a274e" />
+                        <path d="M-20,3800 C 100,3600 250,4000 440,3850 L 440,4050 L -20,4050 Z" fill="#182448" />
+                        <path d="M-20,4100 C 150,4300 300,3900 440,4150 L 440,4050 L -20,4050 Z" fill="#1a274e" />
                         <rect width="400" height="400" y="3800" fill="url(#greenGlow)" />
 
                       </svg>
 
                       {/* SVG Paths */}
-                      <svg viewBox="0 0 400 4200" className="absolute inset-0 w-full h-full pointer-events-none" preserveAspectRatio="none" style={{ zIndex: 10 }}>
+                      <svg viewBox="0 0 400 4050" className="absolute inset-0 w-full h-full pointer-events-none" preserveAspectRatio="none" style={{ zIndex: 10 }}>
                         <defs>
                           {mapSegments.map((segment) => (
                             <React.Fragment key={`grads-${segment.id}`}>
@@ -2587,7 +2832,7 @@ export default function App() {
                           <div
                             key={node.id}
                             className="absolute transform -translate-x-1/2 -translate-y-1/2 flex items-center"
-                            style={{ left: `${(node.x / 400) * 100}%`, top: `${(node.y / 4200) * 100}%`, zIndex: 10 }}
+                            style={{ left: `${(node.x / 400) * 100}%`, top: `${(node.y / 4050) * 100}%`, zIndex: 10 }}
                           >
                             
                             <div className="relative">
@@ -2604,7 +2849,7 @@ export default function App() {
                                       <span className="font-bold text-sm text-white">Locked</span>
                                     </div>
                                     <p className="text-xs text-white/70">
-                                      You need <span className="font-bold" style={{ color: node.color }}>{node.xp} XP</span> to unlock this level.
+                                      You need <span className="font-bold" style={{ color: node.color }}>{node.id === 1 ? '100' : node.xp} XP</span> to unlock this level.
                                     </p>
                                     <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-[1px] border-8 border-transparent border-t-[#1c1c24]"></div>
                                     <div className="absolute top-full left-1/2 -translate-x-1/2 border-8 border-transparent border-t-white/10 -z-10 mt-[1px]"></div>
@@ -2666,7 +2911,7 @@ export default function App() {
                                 {node.id} {node.title}
                               </span>
                               <span className="text-[13px] font-medium text-white/60 drop-shadow-md">
-                                {isCurrent ? (totalXP === 0 && node.id === 1 ? '0 XP' : `${totalXP - (parseInt(node.xp) || 0)} / ${parseInt(node.maxXP || node.xp) - (parseInt(node.xp) || 0)} XP`) : node.status === 'completed' ? '' : `${node.xp} XP`}
+                                {isCurrent || (isLocked && node.id === 1 && totalXP < 50) ? (node.id === 1 && totalXP < 50 ? `${totalXP} / 50 XP` : `${totalXP - (parseInt(node.xp) || 0)} / ${parseInt(node.maxXP || node.xp) - (parseInt(node.xp) || 0)} XP`) : node.status === 'completed' ? '' : `${node.xp} XP`}
                               </span>
                             </div>
                           </div>
@@ -2791,70 +3036,6 @@ export default function App() {
               )}
             </AnimatePresence>
 
-            {/* Our Benefits Modal */}
-            <AnimatePresence>
-              {isBenefitsModalOpen && (
-                <motion.div 
-                  initial={{ opacity: 0, y: '100%' }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: '100%' }}
-                  className="fixed inset-0 z-50 bg-[#f4f7f6] dark:bg-[#0a0a0c] flex flex-col"
-                >
-                  <div className="flex items-center justify-between px-6 py-4 border-b border-black/10 dark:border-white/10 bg-white dark:bg-[#0a0a0c]">
-                    <div className="flex items-center gap-3">
-                      <Gift className="w-6 h-6 text-[#2ecc71]" />
-                      <h2 className="text-xl font-bold text-gray-900 dark:text-white">Our Benefits</h2>
-                    </div>
-                    <button 
-                      onClick={() => setIsBenefitsModalOpen(false)}
-                      className="p-2 rounded-full bg-black/5 hover:bg-black/10 dark:bg-white/10 dark:hover:bg-white/20 transition-colors"
-                    >
-                      <X className="w-6 h-6 text-gray-900 dark:text-white" />
-                    </button>
-                  </div>
-                  
-                  <div className="flex-1 overflow-y-auto px-6 py-8 hide-scrollbar scroll-smooth">
-                    <div className="max-w-md mx-auto w-full">
-                      
-                      <div className="space-y-0">
-                        {/* Benefit Items */}
-                        {[
-                          "Access to all 100+ Premium Games",
-                          "Personalized Daily Workouts",
-                          "Detailed Cognitive Analysis",
-                          "Unlimited Performance History",
-                          "Ad-Free Experience",
-                          "Priority Support",
-                          "Early Access to New Features"
-                        ].map((benefit, index) => (
-                          <div key={index} className="flex items-center justify-between py-4 border-b border-black/5 dark:border-white/5 last:border-0">
-                            <span className="text-[17px] text-gray-600 dark:text-white/80">{benefit}</span>
-                            <div className="w-6 h-6 rounded-full bg-[#3498db] flex items-center justify-center shrink-0">
-                              <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                              </svg>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-
-                      <div className="mt-10">
-                        <button 
-                          onClick={() => {
-                            setIsBenefitsModalOpen(false);
-                            setIsSubscriptionModalOpen(true);
-                          }}
-                          className="w-full py-4 bg-[#2ecc71] hover:bg-[#27ae60] text-white font-bold rounded flex items-center justify-center gap-2 transition-colors text-lg"
-                        >
-                          Unlock Premium Now
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-
             {/* Starred Games Modal */}
             <AnimatePresence>
               {isStarredGamesOpen && (
@@ -2889,8 +3070,8 @@ export default function App() {
                           <div 
                             key={idx} 
                             onClick={() => {
-                              setActiveGameDetails(game.id);
                               setIsStarredGamesOpen(false);
+                              handlePlayGame(game.id);
                             }}
                             className="bg-[#1a1a1c] rounded-2xl p-4 border border-white/5 hover:bg-[#2a2a2c] transition-colors cursor-pointer group relative"
                           >
@@ -2903,6 +3084,11 @@ export default function App() {
                             >
                               <Star className={`w-4 h-4 ${likedGames.includes(game.id) ? 'fill-yellow-400 text-yellow-400' : 'text-white/40'}`} />
                             </button>
+                            {(game as any).isPremium && (
+                              <div className="absolute bottom-4 right-4 z-20 opacity-60">
+                                {!isPro ? <Lock className="w-5 h-5 text-white/50" /> : <Crown className="w-5 h-5 text-[#f59e0b]" />}
+                              </div>
+                            )}
                             <div className={`w-12 h-12 rounded-xl ${game.color} flex items-center justify-center mb-4 group-hover:scale-110 transition-transform`}>
                               {game.icon}
                             </div>
@@ -2941,62 +3127,39 @@ export default function App() {
                   
                   <div className="flex-1 overflow-y-auto px-6 py-8 hide-scrollbar">
                     <div className="max-w-md mx-auto w-full space-y-4">
-                      
-                      <div className="bg-white/5 border border-white/10 rounded-2xl p-4 flex items-center justify-between">
-                        <div className="flex flex-col">
-                          <span className="text-white font-bold text-[17px]">Daily Login Streak</span>
-                          <span className="text-white/60 text-sm">May 11, 2026</span>
+                      {stats.rewardsHistory && stats.rewardsHistory.length > 0 ? (
+                        stats.rewardsHistory.map((reward) => (
+                          <div key={reward.id} className="bg-white/5 border border-white/10 rounded-2xl p-4 flex items-center justify-between">
+                            <div className="flex flex-col">
+                              <span className="text-white font-bold text-[17px]">{reward.title}</span>
+                              <span className="text-white/60 text-sm">
+                                {new Date(reward.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                              </span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <span className="text-green-400 font-bold">+{reward.amount}</span>
+                              <Gem className="w-5 h-5 text-[#8b5cf6]" />
+                            </div>
+                          </div>
+                        ))
+                      ) : (
+                        <div className="text-center pt-8 pb-4">
+                          <p className="text-white/60 text-sm">No rewards yet. Play games to earn gems!</p>
                         </div>
-                        <div className="flex items-center gap-2">
-                          <span className="text-green-400 font-bold">+50</span>
-                          <Gem className="w-5 h-5 text-[#8b5cf6]" />
-                        </div>
-                      </div>
+                      )}
 
-                      <div className="bg-white/5 border border-white/10 rounded-2xl p-4 flex items-center justify-between">
-                        <div className="flex flex-col">
-                          <span className="text-white font-bold text-[17px]">Memory Matrix Master</span>
-                          <span className="text-white/60 text-sm">May 10, 2026</span>
+                      {stats.rewardsHistory && stats.rewardsHistory.length > 0 && (
+                        <div className="mt-8 text-center pt-4">
+                          <p className="text-white/40 text-sm">That's all your rewards so far!</p>
                         </div>
-                        <div className="flex items-center gap-2">
-                          <span className="text-green-400 font-bold">+120</span>
-                          <Gem className="w-5 h-5 text-[#8b5cf6]" />
-                        </div>
-                      </div>
-
-                      <div className="bg-white/5 border border-white/10 rounded-2xl p-4 flex items-center justify-between">
-                        <div className="flex flex-col">
-                          <span className="text-white font-bold text-[17px]">Weekly Challenge Complete</span>
-                          <span className="text-white/60 text-sm">May 8, 2026</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <span className="text-green-400 font-bold">+300</span>
-                          <Gem className="w-5 h-5 text-[#8b5cf6]" />
-                        </div>
-                      </div>
-
-                      <div className="bg-white/5 border border-white/10 rounded-2xl p-4 flex items-center justify-between">
-                        <div className="flex flex-col">
-                          <span className="text-white font-bold text-[17px]">New Level Reached</span>
-                          <span className="text-white/60 text-sm">May 5, 2026</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <span className="text-green-400 font-bold">+500</span>
-                          <Gem className="w-5 h-5 text-[#8b5cf6]" />
-                        </div>
-                      </div>
-
-                      <div className="mt-8 text-center pt-4">
-                        <p className="text-white/40 text-sm">That's all your rewards so far!</p>
-                      </div>
-
+                      )}
                     </div>
                   </div>
                 </motion.div>
               )}
             </AnimatePresence>
 
-            {/* My Information Modal */}
+            {/* Personalized Training Modal */}
             <AnimatePresence>
               {isMyInfoOpen && (
                 <motion.div 
@@ -3008,7 +3171,7 @@ export default function App() {
                   <div className="flex items-center justify-between px-6 py-4 border-b border-white/10">
                     <div className="flex items-center gap-3">
                       <User className="w-6 h-6 text-blue-400" />
-                      <h2 className="text-xl font-bold text-white">My Information</h2>
+                      <h2 className="text-xl font-bold text-white">Personalized Training</h2>
                     </div>
                     <button 
                       onClick={() => setIsMyInfoOpen(false)}
@@ -3018,61 +3181,75 @@ export default function App() {
                     </button>
                   </div>
                   <div className="flex-1 overflow-y-auto p-6 flex flex-col gap-6">
-                    <div className="bg-[#1a1a1c] border border-white/10 rounded-2xl p-6 relative">
-                      <div className="flex justify-between items-center mb-4 border-b border-white/10 pb-2">
-                        <h3 className="text-lg font-bold text-blue-400">Profile Details</h3>
-                        <button 
-                          onClick={() => {
-                            setTempName(profileName);
-                            setTempEmail(profileEmail);
-                            setIsEditNameOpen(true);
-                            setIsMyInfoOpen(false);
-                          }}
-                          className="text-white/60 hover:text-white transition-colors flex items-center gap-1 text-sm font-medium"
-                        >
-                          <Edit2 className="w-4 h-4" /> Edit
-                        </button>
-                      </div>
-                      <div className="space-y-4">
-                        <div>
-                          <p className="text-sm text-white/50 mb-1">Name</p>
-                          <p className="text-lg font-medium">{profileName}</p>
-                        </div>
-                        <div>
-                          <p className="text-sm text-white/50 mb-1">Email</p>
-                          <p className="text-lg font-medium">{profileEmail || 'Not Provided'}</p>
-                        </div>
-                        <div>
-                          <p className="text-sm text-white/50 mb-1">XP</p>
-                          <p className="text-lg font-medium text-[#bde85b]">{totalXP}</p>
-                        </div>
-                      </div>
-                    </div>
+                    
 
                     <div className="bg-[#1a1a1c] border border-white/10 rounded-2xl p-6 relative">
                       <div className="flex justify-between items-center mb-4 border-b border-white/10 pb-2">
-                        <h3 className="text-lg font-bold text-indigo-400">Training Information</h3>
+                        <h3 className="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-400">Personalized Training Profile</h3>
                         <button 
                           onClick={() => {
-                            setPlanStep(0);
-                            setIsPlanGeneratorOpen(true);
-                            setIsMyInfoOpen(false);
+                            setIsEditingProfile(!isEditingProfile);
                           }}
-                          className="text-white/60 hover:text-white transition-colors flex items-center gap-1 text-sm font-medium"
+                          className="px-4 py-2 bg-indigo-500/20 hover:bg-indigo-500/30 text-indigo-300 rounded-xl transition-colors flex items-center gap-2 text-sm font-semibold"
                         >
-                          <Edit2 className="w-4 h-4" /> Update
+                          <Edit2 className="w-4 h-4" /> {isEditingProfile ? "Save Changes" : "Edit Info"}
                         </button>
                       </div>
-                      <div className="space-y-4">
-                        {planQuestions.map((q, idx) => (
-                          <div key={q.id}>
-                            <p className="text-sm text-white/50 mb-1">{t(q.question, language)}</p>
-                            <p className="text-base font-medium">
-                              {planAnswers[idx] ? t(planAnswers[idx], language) : 'Not Answered'}
-                            </p>
+                      
+                      {Object.keys(planAnswers).length === 0 ? (
+                        <div className="flex flex-col items-center justify-center py-10 text-center bg-white/5 rounded-xl border border-white/10">
+                          <Brain className="w-12 h-12 text-indigo-400 mb-4 opacity-50" />
+                          <h4 className="text-lg font-bold text-white mb-2">No Training Profile Found</h4>
+                          <p className="text-white/60 mb-6 max-w-sm mx-auto">Take our 10-question assessment so Brainova AI can design a personalized cognitive training program just for you.</p>
+                          <button 
+                            onClick={() => {
+                              setPlanStep(0);
+                              setIsPlanGeneratorOpen(true);
+                              setIsMyInfoOpen(false);
+                            }}
+                            className="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2.5 rounded-full font-bold transition-all flex items-center gap-2"
+                          >
+                            <Bot className="w-5 h-5" /> Start AI Assessment
+                          </button>
+                        </div>
+                      ) : (
+                        <div>
+                          <div onClick={() => setIsPlanGeneratorOpen(true)} className="mb-6 p-5 bg-gradient-to-br from-indigo-500/10 to-purple-500/10 hover:from-indigo-500/20 hover:to-purple-500/20 border border-indigo-500/20 rounded-2xl flex items-center gap-4 cursor-pointer transition-colors">
+                            <div className="w-10 h-10 rounded-full bg-indigo-500/20 flex items-center justify-center shrink-0">
+                               <Sparkles className="w-5 h-5 text-indigo-400" />
+                            </div>
+                            <div>
+                               <h4 className="font-bold text-indigo-300">AI Recommendation Active</h4>
+                            </div>
                           </div>
-                        ))}
-                      </div>
+
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            {planQuestions.map((q, idx) => {
+                               if (!planAnswers[idx]) return null;
+                               return (
+                                <div key={q.id} className="bg-[#2a2a2c] p-4 rounded-xl border border-white/5 hover:border-indigo-500/30 transition-colors flex flex-col justify-center">
+                                  <p className="text-xs text-white/50 mb-1.5 line-clamp-1">{t(q.question, language)}</p>
+                                  {isEditingProfile ? (
+                                    <select 
+                                      value={planAnswers[idx]} 
+                                      onChange={(e) => setPlanAnswers({ ...planAnswers, [idx]: e.target.value })}
+                                      className="w-full bg-[#1a1a1c] border border-white/10 rounded-lg p-2 text-white outline-none focus:border-indigo-500 text-[15px] mt-1"
+                                    >
+                                      {q.options.map(opt => (
+                                        <option key={opt} value={opt}>{t(opt, language)}</option>
+                                      ))}
+                                    </select>
+                                  ) : (
+                                    <p className="text-[15px] font-semibold text-white/90">
+                                      {t(planAnswers[idx], language)}
+                                    </p>
+                                  )}
+                                </div>
+                               )
+                            })}
+                          </div>
+                        </div>
+                      )}
                     </div>
                   </div>
                 </motion.div>
@@ -3393,9 +3570,9 @@ export default function App() {
                                 key={game.id}
                                 onClick={() => {
                                   setIsPlanGeneratorOpen(false);
-                                  setActiveGameDetails(game.id);
+                                  handlePlayGame(game.id);
                                 }}
-                                className="w-full flex items-center gap-4 p-4 rounded-2xl bg-[#2a2a2c] hover:bg-[#3a3a3c] transition-colors text-left"
+                                className="w-full flex items-center gap-4 p-4 rounded-2xl bg-[#2a2a2c] hover:bg-[#3a3a3c] transition-colors text-left relative"
                               >
                                 <div className={`w-14 h-14 rounded-xl ${game.color} flex items-center justify-center shrink-0`}>
                                   {game.icon}
@@ -3404,17 +3581,15 @@ export default function App() {
                                   <h4 className="font-bold text-lg">{game.title}</h4>
                                   <p className="text-sm text-white/50">{game.category}</p>
                                 </div>
+                                {(game as any).isPremium && (
+                                  !isPro ? <Lock className="w-5 h-5 text-white/50 mr-2" /> : <Crown className="w-5 h-5 text-[#f59e0b] mr-2" />
+                                )}
                                 <Play className="w-6 h-6 text-white/30" />
                               </button>
                             ))}
                           </div>
                           
-                          <button 
-                            onClick={() => setIsPlanGeneratorOpen(false)}
-                            className="w-full py-4 rounded-xl bg-indigo-500 hover:bg-indigo-600 text-white font-bold text-lg transition-colors mt-4"
-                          >
-                            {t('startTraining', language)}
-                          </button>
+                          
                         </div>
                       ) : (
                         <div className="py-2">
@@ -3454,14 +3629,32 @@ export default function App() {
                                     setIsGeneratingPlan(true);
                                     setTimeout(() => {
                                       setIsGeneratingPlan(false);
+                                      let recTitle = "Cognitive Booster";
+                                      let recDesc = "A balanced training plan tailored to your profile and answers.";
+                                      let recGames = ['memory-grid', 'reaction-tap', 'sudoku-lite'];
+                                      const goal = newAnswers[1];
+                                      if (goal === "q2o1") {
+                                        recTitle = "Memory Master";
+                                        recDesc = "A specialized plan designed to enhance your short-term and working memory.";
+                                        recGames = ['memory-grid', 'card-match', 'sequence-recall'];
+                                      } else if (goal === "q2o2") {
+                                        recTitle = "Focus & Attention";
+                                        recDesc = "High-intensity exercises to improve your sustained attention and concentration.";
+                                        recGames = ['focus-tap', 'reaction-tap', 'mental-math'];
+                                      } else if (goal === "q2o3") {
+                                        recTitle = "Logic & Problem Solving";
+                                        recDesc = "Advanced puzzles and analytical games to sharpen your logical reasoning.";
+                                        recGames = ['sudoku-lite', 'smart-grid', 'sliding-puzzle'];
+                                      } else if (goal === "q2o4") {
+                                        recTitle = "Overall Brain Health";
+                                        recDesc = "A well-rounded routine touching on memory, logic, vocabulary, and speed.";
+                                        recGames = ['word-builder', 'focus-tap', 'card-match'];
+                                      }
+                                      
                                       setGeneratedPlan({
-                                        title: "focusLogicMaster",
-                                        description: "focusLogicDesc",
-                                        games: [
-                                          allGames.find(g => g.id === 'sudoku') || allGames[0],
-                                          allGames.find(g => g.id === 'sequence') || allGames[1],
-                                          allGames.find(g => g.id === 'reaction') || allGames[2]
-                                        ]
+                                        title: recTitle,
+                                        description: recDesc,
+                                        games: recGames.map(id => allGames.find(g => g.id === id) || allGames[0])
                                       });
                                     }, 2500);
                                   }
@@ -3494,7 +3687,7 @@ export default function App() {
                     initial={{ scale: 0.9, opacity: 0 }}
                     animate={{ scale: 1, opacity: 1 }}
                     exit={{ scale: 0.9, opacity: 0 }}
-                    className="bg-[#1e2330] rounded-2xl p-6 max-w-sm w-full shadow-2xl relative"
+                    className="bg-[#1e2330] rounded-2xl p-6 max-w-sm w-full shadow-2xl relative max-h-[90vh] overflow-y-auto scroll-smooth hide-scrollbar"
                     onClick={e => e.stopPropagation()}
                   >
                     <button 
@@ -3505,9 +3698,9 @@ export default function App() {
                     </button>
 
                     <div className="flex items-center gap-3 mb-8 mt-2">
-                      <div className="flex items-center justify-center drop-shadow-[0_0_8px_rgba(251,191,36,0.3)]">
-                        <img src="/logo.png" alt="Brainova" className="w-7 h-7 brightness-0" style={{ filter: 'invert(75%) sepia(85%) saturate(718%) hue-rotate(352deg) brightness(101%) contrast(106%)' }} onError={(e) => { e.currentTarget.style.display = 'none'; e.currentTarget.nextElementSibling?.classList.remove('hidden') }} />
-                        <Brain className="w-7 h-7 text-[#fbbf24] hidden" />
+                      <div className="flex items-center justify-center drop-shadow-[0_0_8px_rgba(192,132,252,0.3)]">
+                        <img src="/logo.png" alt="Brainova" className="w-7 h-7 brightness-0" style={{ filter: 'invert(64%) sepia(51%) saturate(2371%) hue-rotate(227deg) brightness(101%) contrast(97%)' }} onError={(e) => { e.currentTarget.style.display = 'none'; e.currentTarget.nextElementSibling?.classList.remove('hidden') }} />
+                        <Brain className="w-7 h-7 text-[#c084fc] hidden" />
                       </div>
                       <h2 className="text-2xl font-bold text-white">Current Nova Coin</h2>
                     </div>
@@ -3521,60 +3714,37 @@ export default function App() {
                         <div className="absolute -left-[25px] top-4 w-6 h-[1px] bg-slate-600/60"></div>
                         <h3 className="text-sm font-bold text-white mb-2">Overall Nova Coin</h3>
                         <div className="flex items-center gap-4">
-                          <div className="h-[22px] bg-[#fbbf24] rounded-sm shadow-[0_0_12px_rgba(251,191,36,0.4)]" style={{ width: `${Math.max(4, (currentLpi.overall / 1000) * 100)}%` }}></div>
+                          <div className="h-[22px] bg-[#c084fc] rounded-sm shadow-[0_0_12px_rgba(192,132,252,0.4)]" style={{ width: `${Math.max(4, (currentLpi.overall / 1000) * 100)}%` }}></div>
                           <span className="text-xl font-bold text-white">{currentLpi.overall}</span>
                         </div>
                       </div>
 
-                      {/* Speed */}
-                      <div className="relative">
-                        <div className="absolute -left-[25px] top-4 w-6 h-[1px] bg-slate-600/60"></div>
-                        <h3 className="text-[13px] font-medium text-slate-300 mb-2">Speed</h3>
-                        <div className="flex items-center gap-4">
-                          <div className="h-[18px] bg-[#fbbf24] rounded-sm shadow-[0_0_12px_rgba(251,191,36,0.3)]" style={{ width: `${Math.max(4, (currentLpi.speed / 1000) * 100)}%` }}></div>
-                          <span className="text-white font-bold">{currentLpi.speed}</span>
-                        </div>
-                      </div>
-
-                      {/* Memory */}
-                      <div className="relative">
-                        <div className="absolute -left-[25px] top-4 w-6 h-[1px] bg-slate-600/60"></div>
-                        <h3 className="text-[13px] font-medium text-slate-300 mb-2">Memory</h3>
-                        <div className="flex items-center gap-4">
-                          <div className="h-[18px] bg-[#fbbf24] rounded-sm shadow-[0_0_12px_rgba(251,191,36,0.3)]" style={{ width: `${Math.max(4, (currentLpi.memory / 1000) * 100)}%` }}></div>
-                          <span className="text-white font-bold">{currentLpi.memory}</span>
-                        </div>
-                      </div>
-
-                      {/* Attention */}
-                      <div className="relative">
-                        <div className="absolute -left-[25px] top-4 w-6 h-[1px] bg-slate-600/60"></div>
-                        <h3 className="text-[13px] font-medium text-slate-300 mb-2">Attention</h3>
-                        <div className="flex items-center gap-4">
-                          <div className="h-[18px] bg-[#fbbf24] rounded-sm shadow-[0_0_12px_rgba(251,191,36,0.3)]" style={{ width: `${Math.max(4, (currentLpi.attention / 1000) * 100)}%` }}></div>
-                          <span className="text-white font-bold">{currentLpi.attention}</span>
-                        </div>
-                      </div>
-
-                      {/* Flexibility */}
-                      <div className="relative">
-                        <div className="absolute -left-[25px] top-4 w-6 h-[1px] bg-slate-600/60"></div>
-                        <h3 className="text-[13px] font-medium text-slate-300 mb-2">Flexibility</h3>
-                        <div className="flex items-center gap-4">
-                          <div className="h-[18px] bg-[#fbbf24] rounded-sm shadow-[0_0_12px_rgba(251,191,36,0.3)]" style={{ width: `${Math.max(4, (currentLpi.flexibility / 1000) * 100)}%` }}></div>
-                          <span className="text-white font-bold">{currentLpi.flexibility}</span>
-                        </div>
-                      </div>
-
-                      {/* Math Solving */}
-                      <div className="relative">
-                        <div className="absolute -left-[25px] top-4 w-6 h-[1px] bg-slate-600/60"></div>
-                        <h3 className="text-[13px] font-medium text-slate-300 mb-2">Math Solving</h3>
-                        <div className="flex items-center gap-4">
-                          <div className="h-[18px] bg-[#fbbf24] rounded-sm shadow-[0_0_12px_rgba(251,191,36,0.3)]" style={{ width: `${Math.max(4, (currentLpi.math / 1000) * 100)}%` }}></div>
-                          <span className="text-white font-bold">{currentLpi.math}</span>
-                        </div>
-                      </div>
+                      {Object.entries(currentLpi)
+                        .filter(([key]) => key !== 'overall')
+                        .map(([key, value]) => {
+                          const labels = {
+                            speed: 'Reaction Speed',
+                            memory: 'Memory',
+                            focus: 'Focus',
+                            logic: 'Logic',
+                            math: 'Math',
+                            language: 'Language & Vocabulary',
+                            visual: 'Visual & Spatial',
+                            observation: 'Observation',
+                            executive: 'Executive Function',
+                            creativity: 'Creativity'
+                          };
+                          return (
+                            <div key={key} className="relative">
+                              <div className="absolute -left-[25px] top-4 w-6 h-[1px] bg-slate-600/60"></div>
+                              <h3 className="text-[13px] font-medium text-slate-300 mb-2">{labels[key] || key}</h3>
+                              <div className="flex items-center gap-4">
+                                <div className="h-[18px] bg-[#c084fc] rounded-sm shadow-[0_0_12px_rgba(192,132,252,0.3)]" style={{ width: `${Math.max(4, (value / 1000) * 100)}%` }}></div>
+                                <span className="text-white font-bold">{value}</span>
+                              </div>
+                            </div>
+                          );
+                        })}
                     </div>
                   </motion.div>
                 </motion.div>
@@ -3595,7 +3765,7 @@ export default function App() {
                     initial={{ scale: 0.9, opacity: 0 }}
                     animate={{ scale: 1, opacity: 1 }}
                     exit={{ scale: 0.9, opacity: 0 }}
-                    className="bg-[#2c1b00] border border-[#ff9900]/20 rounded-3xl p-6 max-w-sm w-full shadow-2xl relative"
+                    className="bg-[#2c1b00] border border-[#ff9900]/20 rounded-3xl p-6 max-w-sm w-full shadow-2xl relative max-h-[90vh] overflow-y-auto scroll-smooth hide-scrollbar"
                     onClick={e => e.stopPropagation()}
                   >
                     <button 
@@ -3659,89 +3829,84 @@ export default function App() {
                     </button>
                   </div>
 
-                  <div className="p-6 flex-1 flex flex-col items-center justify-center">
-                    <div className="bg-white rounded-3xl p-6 sm:p-8 shadow-2xl max-w-md w-full">
-                      <div className="text-center mb-6">
-                        <h3 className="text-2xl font-bold text-gray-900 mb-2">Choose Your Plan</h3>
-                        <p className="text-sm text-gray-500">Unlock all games and advanced features</p>
-                      </div>
-                      
-                      <div className="space-y-4 mb-8">
+                  <div className="p-6 flex-1 flex flex-col items-center justify-start sm:justify-center overflow-y-auto">
+                    <div className="max-w-md w-full">
+                      <div className="space-y-4">
                         {/* 1 Month Plan */}
                         <div 
-                          onClick={() => setSelectedPlan('1month')}
-                          className={`border-2 rounded-2xl p-4 flex items-center justify-between cursor-pointer transition-colors ${selectedPlan === '1month' ? 'border-[#00c853] bg-[#00c853]/5' : 'border-[#e2e8f0]'}`}
+                          onClick={() => {
+                            setSelectedPlan('1month');
+                          }}
+                          className={`bg-[#1a1b26] border rounded-[24px] p-6 flex items-center justify-between cursor-pointer transition-colors ${selectedPlan === '1month' ? 'border-white bg-white/10' : 'border-[#2a2b36] hover:border-[#3a3b46]'}`}
                         >
                           <div>
-                            <h4 className="font-bold text-gray-900 text-[17px]">1 Month</h4>
-                            <p className="text-[11px] text-gray-400 uppercase tracking-widest mt-1">Subscription</p>
+                            <h4 className="font-bold text-white text-[22px] mb-1">1 Month</h4>
+                            <p className="text-[12px] text-gray-400 uppercase tracking-[0.2em] font-medium">SUBSCRIPTION</p>
                           </div>
                           <div className="text-right">
-                            <span className="text-xl font-bold text-gray-900">₹199</span>
+                            <span className="text-3xl font-bold text-white">₹199</span>
                           </div>
                         </div>
 
-                        {/* 6 Month Plan */}
+                        {/* 3 Month Plan */}
                         <div 
-                          onClick={() => setSelectedPlan('6months')}
-                          className={`border-2 rounded-2xl p-4 flex items-center justify-between cursor-pointer relative transition-colors ${selectedPlan === '6months' ? 'border-[#00c853] bg-[#00c853]/5' : 'border-[#ff1744] bg-[#ff1744]/5'}`}
+                          onClick={() => {
+                            setSelectedPlan('6months');
+                          }}
+                          className={`bg-[#1a1b26] border rounded-[24px] p-6 flex items-center justify-between cursor-pointer relative transition-colors ${selectedPlan === '6months' ? 'border-pink-500 bg-pink-500/10' : 'border-[#3b1722] hover:border-[#4b2732]'}`}
                         >
-                          
                           <div>
-                            <h4 className="font-bold text-gray-900 text-[17px]">3 Months</h4>
-                            <p className="text-[11px] text-gray-400 uppercase tracking-widest mt-1">Subscription</p>
+                            <h4 className="font-bold text-white text-[22px] mb-1">3 Months</h4>
+                            <p className="text-[12px] text-gray-400 uppercase tracking-[0.2em] font-medium">SUBSCRIPTION</p>
                           </div>
                           <div className="text-right">
-                            <span className="text-xl font-bold text-gray-900">₹99</span>
+                            <span className="text-3xl font-bold text-white">₹99</span>
                           </div>
                         </div>
 
                         {/* 1 Year Plan */}
                         <div 
-                          onClick={() => setSelectedPlan('1year')}
-                          className={`border-2 rounded-2xl p-4 flex items-center justify-between cursor-pointer transition-colors ${selectedPlan === '1year' ? 'border-[#00c853] bg-[#00c853]/5' : 'border-[#f59e0b]'}`}
+                          onClick={() => {
+                            setSelectedPlan('1year');
+                          }}
+                          className={`bg-[#1a1b26] border rounded-[24px] p-6 flex items-center justify-between cursor-pointer transition-colors ${selectedPlan === '1year' ? 'border-[#fbbf24] bg-[#fbbf24]/10' : 'border-[#f59e0b] hover:border-[#fbbf24]'}`}
                         >
                           <div>
-                            <h4 className="font-bold text-gray-900 text-[17px]">1 Year</h4>
-                            <p className="text-[11px] text-gray-400 uppercase tracking-widest mt-1">Subscription</p>
+                            <h4 className="font-bold text-white text-[22px] mb-1">1 Year</h4>
+                            <p className="text-[12px] text-gray-400 uppercase tracking-[0.2em] font-medium">SUBSCRIPTION</p>
                           </div>
                           <div className="text-right">
-                            <span className="text-xl font-bold text-gray-900">₹1,999</span>
+                            <span className="text-3xl font-bold text-white">₹1,999</span>
                           </div>
                         </div>
                       </div>
 
-                      <div className="space-y-4 mb-8">
-                        <div className="flex items-center gap-3 text-gray-700">
-                          <div className="w-6 h-6 rounded-full bg-[#00c853]/20 flex items-center justify-center shrink-0">
-                            <CheckCircle className="w-4 h-4 text-[#00c853]" />
-                          </div>
-                          <span className="text-sm font-medium">All 100+ Games</span>
-                        </div>
-                        <div className="flex items-center gap-3 text-gray-700">
-                          <div className="w-6 h-6 rounded-full bg-[#00c853]/20 flex items-center justify-center shrink-0">
-                            <CheckCircle className="w-4 h-4 text-[#00c853]" />
-                          </div>
-                          <span className="text-sm font-medium">Advanced Analytics</span>
-                        </div>
-                        <div className="flex items-center gap-3 text-gray-700">
-                          <div className="w-6 h-6 rounded-full bg-[#00c853]/20 flex items-center justify-center shrink-0">
-                            <CheckCircle className="w-4 h-4 text-[#00c853]" />
-                          </div>
-                          <span className="text-sm font-medium">Ad-Free Experience</span>
-                        </div>
+                      <div className="mt-8 space-y-4">
+                        {selectedPlan && (
+                          <button
+                            onClick={() => {
+                              setIsSubscriptionModalOpen(false);
+                              setIsCheckoutModalOpen(true);
+                            }}
+                            className="w-full py-4 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-bold text-lg hover:from-indigo-400 hover:to-purple-400 transition-all shadow-lg shadow-indigo-500/25"
+                          >
+                            Proceed
+                          </button>
+                        )}
+                        <button
+                          onClick={() => {
+                            setSelectedPlan('');
+                            setIsSubscriptionModalOpen(false);
+                            setIsCheckoutModalOpen(true);
+                          }}
+                          className="w-full py-4 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 text-white font-bold text-lg hover:from-purple-400 hover:to-pink-400 transition-all shadow-lg shadow-pink-500/25"
+                        >
+                          Start 7-Day Free Trial
+                        </button>
+                        <p className="text-center text-white/50 text-sm font-medium cursor-pointer hover:text-white/80" onClick={() => setIsSubscriptionModalOpen(false)}>
+                          Cancel anytime
+                        </p>
                       </div>
-
-                      <button 
-                        disabled={!selectedPlan}
-                        onClick={() => {
-                          setIsSubscriptionModalOpen(false);
-                          setIsCheckoutModalOpen(true);
-                        }}
-                        className={`w-full py-4 font-bold rounded-xl transition-colors uppercase tracking-wider text-sm shadow-lg ${selectedPlan ? 'bg-[#00c853] hover:bg-[#00e676] text-white shadow-[#00c853]/30' : 'bg-gray-200 text-gray-400 cursor-not-allowed shadow-none'}`}
-                      >
-                        Buy Now
-                      </button>
                     </div>
                   </div>
                 </motion.div>
@@ -3755,33 +3920,33 @@ export default function App() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: 20 }}
-                  className="fixed inset-0 z-50 bg-[#0f111a] flex items-center justify-center p-4"
+                  className="fixed inset-0 z-50 bg-[#0a0a0c] flex items-center justify-center p-4"
                 >
-                  <div className="bg-white rounded-3xl p-6 sm:p-8 shadow-2xl max-w-md w-full relative">
+                  <div className="bg-[#1c1c24] border border-white/10 rounded-3xl p-6 sm:p-8 shadow-2xl max-w-md w-full relative">
                     <button 
                       onClick={() => setIsCheckoutModalOpen(false)} 
-                      className="absolute top-6 right-6 text-gray-400 hover:text-gray-600 transition-colors"
+                      className="absolute top-6 right-6 text-white/40 hover:text-white transition-colors"
                     >
                       <X className="w-5 h-5" />
                     </button>
                     
-                    <h3 className="text-2xl font-bold text-gray-900 mb-6">Checkout</h3>
+                    <h3 className="text-2xl font-bold text-white mb-6">Checkout</h3>
                     
-                    <div className="bg-gray-50 rounded-2xl p-5 mb-6 border border-gray-100 text-gray-900 shadow-sm">
+                    <div className="bg-[#0a0a0c] rounded-2xl p-5 mb-6 border border-white/5 text-white shadow-sm">
                       <div className="flex justify-between items-center mb-2">
-                        <span className="font-semibold text-gray-700">Selected Plan</span>
-                        <span className="font-bold">
+                        <span className="font-semibold text-white/60">Selected Plan</span>
+                        <span className="font-bold text-white">
                           {selectedPlan === '1month' ? '1 Month' : selectedPlan === '6months' ? '3 Months' : '1 Year'}
                         </span>
                       </div>
                       <div className="flex justify-between items-center text-lg">
-                        <span className="font-semibold text-gray-700">Price</span>
-                        <span className={`font-bold ${promoApplied ? 'line-through text-gray-400' : ''}`}>
+                        <span className="font-semibold text-white/60">Price</span>
+                        <span className={`font-bold ${promoApplied ? 'line-through text-white/40' : 'text-white'}`}>
                           ₹{selectedPlan === '1month' ? '199' : selectedPlan === '6months' ? '99' : '1,999'}
                         </span>
                       </div>
                       {promoApplied && (
-                        <div className="flex justify-between items-center text-lg mt-1 text-[#00c853]">
+                        <div className="flex justify-between items-center text-lg mt-1 text-green-400">
                           <span className="font-semibold">Discounted Price</span>
                           <span className="font-bold">
                             ₹{promoApplied === 'INDIA' 
@@ -3793,14 +3958,14 @@ export default function App() {
                     </div>
 
                     <div className="mb-8">
-                      <h4 className="text-lg font-bold text-gray-900 mb-3">Promo code</h4>
+                      <h4 className="text-lg font-bold text-white mb-3">Promo code</h4>
                       <div className="flex gap-3 mb-2">
                         <input 
                           type="text"
                           value={promoCode}
                           onChange={(e) => setPromoCode(e.target.value.toUpperCase())}
                           placeholder="NEW20 or INDIA"
-                          className="flex-1 border border-gray-300 rounded-xl px-4 py-3 text-gray-900 font-medium focus:outline-none focus:border-[#00c853] focus:ring-1 focus:ring-[#00c853] transition-all placeholder:text-gray-400"
+                          className="flex-1 bg-[#0a0a0c] border border-white/10 rounded-xl px-4 py-3 text-white font-medium focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all placeholder:text-white/30"
                         />
                         <button 
                           onClick={() => {
@@ -3810,12 +3975,12 @@ export default function App() {
                               setPromoApplied(false);
                             }
                           }}
-                          className="px-6 py-3 border border-gray-300 rounded-xl font-semibold text-gray-700 hover:bg-gray-50 transition-colors"
+                          className="px-6 py-3 bg-[#0a0a0c] border border-white/10 rounded-xl font-semibold text-white hover:bg-white/5 transition-colors"
                         >
                           Apply
                         </button>
                       </div>
-                      <p className="text-sm text-gray-500 font-medium ml-1">One code per order</p>
+                      <p className="text-sm text-white/40 font-medium ml-1">One code per order</p>
                     </div>
 
                     <button 
@@ -3823,7 +3988,7 @@ export default function App() {
                         setIsCheckoutModalOpen(false);
                         setIsPaymentModalOpen(true);
                       }}
-                      className="w-full py-4 bg-[#00c853] hover:bg-[#00e676] text-white font-bold rounded-xl transition-colors uppercase tracking-wider text-sm shadow-lg shadow-[#00c853]/30"
+                      className="w-full py-4 bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-400 hover:to-purple-400 text-white font-bold rounded-xl transition-colors uppercase tracking-wider text-sm shadow-lg shadow-purple-500/20"
                     >
                       Confirm Purchase
                     </button>
@@ -4085,12 +4250,24 @@ export default function App() {
                         setIsProfileSettingsOpen(false);
                         setIsFeedbackOpen(true);
                       }}
-                      className="w-full flex items-center gap-4 text-left px-4 py-4 text-base text-white hover:bg-white/5 transition-colors rounded-xl"
+                      className="relative w-full flex items-center justify-between p-1 mt-4 mb-2 text-left transition-all rounded-2xl group overflow-hidden"
+                      style={{
+                        background: 'linear-gradient(90deg, rgba(168, 85, 247, 0.15) 0%, rgba(59, 130, 246, 0.15) 100%)',
+                        border: '1px solid rgba(168, 85, 247, 0.3)',
+                        boxShadow: '0 0 20px rgba(168, 85, 247, 0.1)',
+                      }}
                     >
-                      <div className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center">
-                        <MessageSquare className="w-5 h-5 text-white/70" />
+                      <div className="absolute inset-0 bg-gradient-to-r from-purple-500/10 to-blue-500/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                      <div className="flex items-center gap-4 relative z-10 p-3">
+                        <div className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center shadow-lg shadow-purple-500/20">
+                          <MessageSquare className="w-6 h-6 text-white animate-pulse" />
+                        </div>
+                        <div>
+                          <span className="block font-bold text-white text-[16px]">{t('yourFeedback', language) || "Your Feedback"}</span>
+                          <span className="block text-[13px] text-purple-300">We'd love to hear from you!</span>
+                        </div>
                       </div>
-                      <span className="font-medium">{t('yourFeedback', language)}</span>
+                      <ChevronRight className="w-5 h-5 text-white/50 mr-4 relative z-10" />
                     </button>
                     
                   </div>
@@ -4245,7 +4422,7 @@ export default function App() {
                     initial={{ scale: 0.9, opacity: 0 }}
                     animate={{ scale: 1, opacity: 1 }}
                     exit={{ scale: 0.9, opacity: 0 }}
-                    className="bg-[#1a1a1c] border border-white/10 rounded-3xl p-6 max-w-sm w-full shadow-2xl relative"
+                    className="bg-[#1a1a1c] border border-white/10 rounded-3xl p-6 max-w-sm w-full shadow-2xl relative max-h-[90vh] overflow-y-auto scroll-smooth hide-scrollbar"
                     onClick={e => e.stopPropagation()}
                   >
                     <button 
@@ -4415,199 +4592,124 @@ export default function App() {
               </button>
             </motion.div>
           </AnimatePresence>
-
-          {/* Feedback Modal */}
-          <AnimatePresence>
-            {isFeedbackOpen && (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                className="fixed inset-0 z-[10000] bg-black/80 backdrop-blur-sm flex items-center justify-center p-4"
-                onClick={() => setIsFeedbackOpen(false)}
-              >
-                <motion.div
-                  initial={{ scale: 0.95, opacity: 0 }}
-                  animate={{ scale: 1, opacity: 1 }}
-                  exit={{ scale: 0.95, opacity: 0 }}
-                  onClick={(e) => e.stopPropagation()}
-                  className="bg-[#1a1a1c] w-full max-w-sm rounded-[2rem] p-6 shadow-2xl relative overflow-hidden"
-                >
-                  <button
-                    onClick={() => setIsFeedbackOpen(false)}
-                    className="absolute top-4 right-4 p-2 rounded-full bg-white/5 hover:bg-white/10 transition-colors text-white/60 hover:text-white"
-                  >
-                    <X className="w-5 h-5" />
-                  </button>
-                  
-                  <div className="text-center mb-6">
-                    <div className="w-16 h-16 rounded-full bg-indigo-500/20 flex items-center justify-center mx-auto mb-4">
-                      <MessageSquare className="w-8 h-8 text-indigo-400" />
-                    </div>
-                    <h2 className="text-2xl font-bold text-white mb-2">We value your feedback</h2>
-                    <p className="text-white/60 text-sm">Let us know how we can improve Brainova.</p>
-                  </div>
-                  
-                  <div className="flex justify-center gap-2 mb-6">
-                    {[1, 2, 3, 4, 5].map((star) => (
-                      <button
-                        key={star}
-                        onClick={() => setFeedbackRating(star)}
-                        className="p-1 focus:outline-none transition-transform hover:scale-110"
-                      >
-                        <Star 
-                          className={`w-8 h-8 transition-colors ${
-                            star <= feedbackRating 
-                              ? 'text-[#f59e0b] fill-[#f59e0b]' 
-                              : 'text-white/20 hover:text-white/40'
-                          }`} 
-                        />
-                      </button>
-                    ))}
-                  </div>
-                  
-                  <textarea
-                    value={feedbackText}
-                    onChange={(e) => setFeedbackText(e.target.value)}
-                    placeholder="Tell us more about your experience..."
-                    className="w-full h-32 bg-white/5 border border-white/10 rounded-xl p-4 text-white placeholder-white/40 focus:outline-none focus:border-indigo-500 resize-none transition-colors mb-6"
-                  ></textarea>
-                  
-                  <button
-                    onClick={() => {
-                      // Here you would typically send the feedback to your backend
-                      console.log({ rating: feedbackRating, text: feedbackText });
-                      setIsFeedbackOpen(false);
-                      setFeedbackRating(0);
-                      setFeedbackText('');
-                    }}
-                    disabled={feedbackRating === 0}
-                    className="w-full py-4 rounded-xl font-bold text-white transition-colors relative overflow-hidden group disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    <div className="absolute inset-0 bg-gradient-to-r from-indigo-600 to-purple-600 transition-transform group-hover:scale-[1.02]"></div>
-                    <span className="relative z-10 flex items-center justify-center gap-2">
-                      <Send className="w-5 h-5" />
-                      Submit Feedback
-                    </span>
-                  </button>
-                </motion.div>
-              </motion.div>
-            )}
-          </AnimatePresence>
-
-          {/* Notifications Modal */}
-          <AnimatePresence>
-            {isNotificationsOpen && (
-              <motion.div
-                initial={{ opacity: 0, y: '100%' }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: '100%' }}
-                className="fixed inset-0 z-[10000] bg-[#0a0a0c] flex flex-col"
-              >
-                <div className="flex items-center justify-between px-6 py-4 border-b border-white/10 bg-[#0a0a0c]">
-                  {selectedNotification ? (
-                    <div className="flex items-center gap-3">
-                      <button 
-                        onClick={() => setSelectedNotification(null)}
-                        className="p-2 rounded-full hover:bg-white/10 transition-colors -ml-2"
-                      >
-                        <ArrowLeft className="w-5 h-5 text-white" />
-                      </button>
-                      <h2 className="text-xl font-bold text-white">Message</h2>
-                    </div>
-                  ) : (
-                    <h2 className="text-xl font-bold text-white">Notifications</h2>
-                  )}
-                  <button
-                    onClick={() => {
-                      setIsNotificationsOpen(false);
-                      setSelectedNotification(null);
-                    }}
-                    className="p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
-                  >
-                    <X className="w-6 h-6" />
-                  </button>
-                </div>
-                
-                <div className="flex-1 overflow-y-auto px-6 py-4">
-                  <AnimatePresence mode="wait">
-                    {selectedNotification ? (
-                      <motion.div 
-                        key="notification-details"
-                        initial={{ opacity: 0, x: 20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        exit={{ opacity: 0, x: -20 }}
-                        className="h-full flex flex-col"
-                      >
-                        <div className="mb-6 mt-2">
-                          <h3 className="text-2xl font-bold text-white mb-2 leading-tight">
-                            {selectedNotification.title}
-                          </h3>
-                          <div className="text-sm text-white/40 font-medium">
-                            {selectedNotification.time}
-                          </div>
-                        </div>
-                        
-                        <div className="bg-[#1a1a1c] border border-white/5 rounded-3xl p-6 shadow-xl flex-1 flex flex-col items-center justify-center text-center">
-                          <div className="w-16 h-16 rounded-full bg-indigo-500/20 flex items-center justify-center mb-6">
-                            <Brain className="w-8 h-8 text-indigo-400" />
-                          </div>
-                          <p className="text-white/80 text-lg leading-relaxed whitespace-pre-wrap max-w-sm">
-                            {selectedNotification.message}
-                          </p>
-                        </div>
-                      </motion.div>
-                    ) : (
-                      <motion.div
-                        key="notifications-list"
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                      >
-                        {notifications.length > 0 ? (
-                          <div className="space-y-4">
-                            {notifications.map((notification) => (
-                              <div 
-                                key={notification.id} 
-                                onClick={() => setSelectedNotification(notification as any)}
-                                className={`p-4 rounded-2xl border cursor-pointer hover:bg-white/5 transition-colors ${notification.isRead ? 'bg-[#1a1a1c] border-white/5' : 'bg-[#1a1a1c] border-indigo-500/30'}`}
-                              >
-                                <div className="flex justify-between items-start mb-2">
-                                  <h3 className={`font-bold ${notification.isRead ? 'text-white/80' : 'text-white'}`}>
-                                    {notification.title}
-                                  </h3>
-                                  <span className="text-xs text-white/40">{notification.time}</span>
-                                </div>
-                                <p className="text-sm text-white/60 leading-relaxed line-clamp-2">
-                                  {notification.message}
-                                </p>
-                              </div>
-                            ))}
-                          </div>
-                        ) : (
-                          <div className="flex flex-col items-center justify-center h-[50vh] text-white/50">
-                            <div className="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center mb-4">
-                              <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-                              </svg>
-                            </div>
-                            <p className="text-lg font-medium">No notifications yet</p>
-                            <p className="text-sm text-white/40 mt-1">We'll let you know when something comes up</p>
-                          </div>
-                        )}
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
         </div>
-
+        
+        {/* Notifications Modal */}
+        <AnimatePresence>
+          {isNotificationsOpen && (
+            <motion.div
+              initial={{ opacity: 0, y: '100%' }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: '100%' }}
+              className="fixed inset-0 z-[10000] bg-[#0a0a0c] flex flex-col"
+            >
+              <div className="flex items-center justify-between px-6 py-4 border-b border-white/10 bg-[#0a0a0c]">
+                {selectedNotification ? (
+                  <div className="flex items-center gap-3">
+                    <button 
+                      onClick={() => setSelectedNotification(null)}
+                      className="p-2 rounded-full hover:bg-white/10 transition-colors -ml-2"
+                    >
+                      <ArrowLeft className="w-5 h-5 text-white" />
+                    </button>
+                    <h2 className="text-xl font-bold text-white">Message</h2>
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-3">
+                    <Bell className="w-6 h-6 text-rose-400" />
+                    <h2 className="text-xl font-bold text-white">Notifications</h2>
+                  </div>
+                )}
+                <button
+                  onClick={() => {
+                    setIsNotificationsOpen(false);
+                    setSelectedNotification(null);
+                  }}
+                  className="p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
+                >
+                  <X className="w-6 h-6" />
+                </button>
+              </div>
+              
+              <div className="flex-1 overflow-y-auto px-6 py-4">
+                <AnimatePresence mode="wait">
+                  {selectedNotification ? (
+                    <motion.div 
+                      key="notification-details"
+                      initial={{ opacity: 0, x: 20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{ opacity: 0, x: -20 }}
+                      className="h-full flex flex-col"
+                    >
+                      <div className="mb-6 mt-2">
+                        <h3 className="text-2xl font-bold text-white mb-2 leading-tight">
+                          {selectedNotification.title}
+                        </h3>
+                        <div className="text-sm text-white/40 font-medium">
+                          {selectedNotification.time}
+                        </div>
+                      </div>
+                      
+                      <div className="bg-[#1a1a1c] border border-white/5 rounded-3xl p-6 shadow-xl flex-1 flex flex-col">
+                        <div className="w-16 h-16 rounded-full bg-rose-500/20 flex items-center justify-center mb-6">
+                          <Bell className="w-8 h-8 text-rose-400" />
+                        </div>
+                        <p className="text-white/80 text-lg leading-relaxed whitespace-pre-wrap">
+                          {selectedNotification.message}
+                        </p>
+                      </div>
+                    </motion.div>
+                  ) : (
+                    <motion.div
+                      key="notifications-list"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                    >
+                      {notifications.length > 0 ? (
+                        <div className="space-y-4">
+                          {notifications.map((notification) => (
+                            <div 
+                              key={notification.id}
+                              onClick={() => {
+                                setNotifications(prev => prev.map(n => n.id === notification.id ? { ...n, isRead: true } : n));
+                                setSelectedNotification(notification as any);
+                              }}
+                              className={`p-4 rounded-2xl border cursor-pointer hover:bg-white/5 transition-colors ${notification.isRead ? 'bg-[#1a1a1c] border-white/5' : 'bg-rose-500/10 border-rose-500/30'}`}
+                            >
+                              <div className="flex justify-between items-start mb-2">
+                                <h3 className={`font-bold ${notification.isRead ? 'text-white/80' : 'text-white'}`}>
+                                  {notification.title}
+                                </h3>
+                                <span className="text-xs text-white/40">{notification.time}</span>
+                              </div>
+                              <p className="text-sm text-white/60 leading-relaxed line-clamp-2">
+                                {notification.message}
+                              </p>
+                            </div>
+                          ))}
+                        </div>
+                      ) : (
+                        <div className="flex flex-col items-center justify-center h-[50vh] text-white/50">
+                          <div className="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center mb-4">
+                            <Bell className="w-8 h-8 text-white/30" />
+                          </div>
+                          <p className="text-lg font-medium">No notifications yet</p>
+                          <p className="text-sm text-white/40 mt-1">We'll let you know when something comes up</p>
+                        </div>
+                      )}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
         {celebrationData && (
           <CelebrationOverlay
             score={celebrationData.score}
             coins={celebrationData.coins}
+            streak={celebrationData.streak}
             onClose={() => setCelebrationData(null)}
           />
         )}

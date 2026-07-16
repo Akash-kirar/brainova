@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
 import { ChevronLeft, Flame, Award, Target, Lock, Zap, Sun, Shield, Lightbulb, CheckCircle, Heart, Layers, Crown, Timer, Book, Brain, Wind, Moon, TrendingUp, Calculator, Diamond, Gem, Trophy, Activity, Cpu, Check, Lock as LockIcon, Sparkles, Flag, Rocket, Clock } from 'lucide-react';
 import { motion } from 'motion/react';
+import { UserStats } from '../hooks/useProgress';
 
 interface AchievementsPageProps {
+  stats: UserStats;
   onBack: () => void;
 }
 
-export default function AchievementsPage({ onBack }: AchievementsPageProps) {
+export default function AchievementsPage({ onBack, stats }: AchievementsPageProps) {
   const [filter, setFilter] = useState<'all' | 'locked' | 'unlocked'>('all');
 
   const allAchievements = [
@@ -17,8 +19,8 @@ export default function AchievementsPage({ onBack }: AchievementsPageProps) {
       xp: 10,
       icon: <Flag className="w-7 h-7 text-[#10b981]" strokeWidth={2} />,
       color: 'bg-[#10b981]',
-      date: '12 Apr 2024',
-      unlocked: true,
+      date: stats.totalGamesPlayed > 0 ? 'Unlocked' : 'Locked',
+      unlocked: stats.totalGamesPlayed > 0,
       hexagonBorder: 'border-[#10b981]'
     },
     {
@@ -28,8 +30,8 @@ export default function AchievementsPage({ onBack }: AchievementsPageProps) {
       xp: 20,
       icon: <Shield className="w-7 h-7 text-[#10b981]" strokeWidth={2} />,
       color: 'bg-[#10b981]',
-      date: '20 Apr 2024',
-      unlocked: true,
+      date: stats.longestStreak >= 7 ? 'Unlocked' : 'Locked',
+      unlocked: stats.longestStreak >= 7,
       hexagonBorder: 'border-[#10b981]'
     },
     {
@@ -39,8 +41,8 @@ export default function AchievementsPage({ onBack }: AchievementsPageProps) {
       xp: 30,
       icon: <Clock className="w-7 h-7 text-[#fbbf24]" strokeWidth={2} />,
       color: 'bg-[#fbbf24]',
-      date: '02 May 2024',
-      unlocked: true,
+      date: stats.highScores.focus >= 80 ? 'Unlocked' : 'Locked',
+      unlocked: stats.highScores.focus >= 80,
       hexagonBorder: 'border-[#fbbf24]'
     },
     {
@@ -50,8 +52,8 @@ export default function AchievementsPage({ onBack }: AchievementsPageProps) {
       xp: 25,
       icon: <Brain className="w-7 h-7 text-[#3b82f6]" strokeWidth={2} />,
       color: 'bg-[#3b82f6]',
-      date: '10 May 2024',
-      unlocked: true,
+      date: stats.totalGamesPlayed > 5 ? 'Unlocked' : 'Locked', // proxy
+      unlocked: stats.totalGamesPlayed > 5,
       hexagonBorder: 'border-[#3b82f6]'
     },
     {
@@ -61,8 +63,8 @@ export default function AchievementsPage({ onBack }: AchievementsPageProps) {
       xp: 50,
       icon: <Zap className="w-7 h-7 text-[#a855f7]" strokeWidth={2} />,
       color: 'bg-[#a855f7]',
-      date: 'Locked',
-      unlocked: false,
+      date: stats.totalXp >= 1000 ? 'Unlocked' : 'Locked',
+      unlocked: stats.totalXp >= 1000,
       hexagonBorder: 'border-[#a855f7]'
     },
     {
@@ -94,8 +96,8 @@ export default function AchievementsPage({ onBack }: AchievementsPageProps) {
       xp: 100,
       icon: <Lightbulb className="w-7 h-7 text-[#f97316]" strokeWidth={2} />,
       color: 'bg-[#f97316]',
-      date: 'Locked',
-      unlocked: false,
+      date: stats.highScores.logic >= 2000 ? 'Unlocked' : 'Locked',
+      unlocked: stats.highScores.logic >= 2000,
       hexagonBorder: 'border-[#f97316]'
     },
     {
@@ -116,8 +118,8 @@ export default function AchievementsPage({ onBack }: AchievementsPageProps) {
       xp: 200,
       icon: <Heart className="w-7 h-7 text-[#ec4899]" strokeWidth={2} />,
       color: 'bg-[#ec4899]',
-      date: 'Locked',
-      unlocked: false,
+      date: stats.longestStreak >= 14 ? 'Unlocked' : 'Locked',
+      unlocked: stats.longestStreak >= 14,
       hexagonBorder: 'border-[#ec4899]'
     },
     {
@@ -127,8 +129,8 @@ export default function AchievementsPage({ onBack }: AchievementsPageProps) {
       xp: 300,
       icon: <Layers className="w-7 h-7 text-[#8b5cf6]" strokeWidth={2} />,
       color: 'bg-[#8b5cf6]',
-      date: 'Locked',
-      unlocked: false,
+      date: stats.longestStreak >= 30 ? 'Unlocked' : 'Locked',
+      unlocked: stats.longestStreak >= 30,
       hexagonBorder: 'border-[#8b5cf6]'
     },
     {
@@ -138,8 +140,8 @@ export default function AchievementsPage({ onBack }: AchievementsPageProps) {
       xp: 250,
       icon: <Crown className="w-7 h-7 text-[#eab308]" strokeWidth={2} />,
       color: 'bg-[#eab308]',
-      date: 'Locked',
-      unlocked: false,
+      date: stats.totalGamesPlayed >= 100 ? 'Unlocked' : 'Locked',
+      unlocked: stats.totalGamesPlayed >= 100,
       hexagonBorder: 'border-[#eab308]'
     },
     {
@@ -237,8 +239,8 @@ export default function AchievementsPage({ onBack }: AchievementsPageProps) {
       xp: 500,
       icon: <Gem className="w-7 h-7 text-[#d946ef]" strokeWidth={2} />,
       color: 'bg-[#d946ef]',
-      date: 'Locked',
-      unlocked: false,
+      date: stats.totalXp >= 10000 ? 'Unlocked' : 'Locked',
+      unlocked: stats.totalXp >= 10000,
       hexagonBorder: 'border-[#d946ef]'
     },
     {
@@ -273,6 +275,116 @@ export default function AchievementsPage({ onBack }: AchievementsPageProps) {
       date: 'Locked',
       unlocked: false,
       hexagonBorder: 'border-[#c026d3]'
+    },
+    {
+      id: 'puzzle_solver',
+      title: 'Puzzle Solver',
+      subtitle: 'Solve 50 puzzles',
+      xp: 120,
+      icon: <Sparkles className="w-7 h-7 text-[#f43f5e]" strokeWidth={2} />,
+      color: 'bg-[#f43f5e]',
+      date: 'Locked',
+      unlocked: false,
+      hexagonBorder: 'border-[#f43f5e]'
+    },
+    {
+      id: 'social_butterfly',
+      title: 'Social Butterfly',
+      subtitle: 'Share 10 times',
+      xp: 50,
+      icon: <Activity className="w-7 h-7 text-[#0ea5e9]" strokeWidth={2} />,
+      color: 'bg-[#0ea5e9]',
+      date: 'Locked',
+      unlocked: false,
+      hexagonBorder: 'border-[#0ea5e9]'
+    },
+    {
+      id: 'sharp_eyes',
+      title: 'Sharp Eyes',
+      subtitle: 'Observation > 80',
+      xp: 150,
+      icon: <Target className="w-7 h-7 text-[#a855f7]" strokeWidth={2} />,
+      color: 'bg-[#a855f7]',
+      date: stats.highScores.observation >= 80 ? 'Unlocked' : 'Locked',
+      unlocked: stats.highScores.observation >= 80,
+      hexagonBorder: 'border-[#a855f7]'
+    },
+    {
+      id: 'creative_spark',
+      title: 'Creative Spark',
+      subtitle: 'Creativity > 80',
+      xp: 150,
+      icon: <Sparkles className="w-7 h-7 text-[#ec4899]" strokeWidth={2} />,
+      color: 'bg-[#ec4899]',
+      date: stats.highScores.creativity >= 80 ? 'Unlocked' : 'Locked',
+      unlocked: stats.highScores.creativity >= 80,
+      hexagonBorder: 'border-[#ec4899]'
+    },
+    {
+      id: 'multi_tasker',
+      title: 'Multi-Tasker',
+      subtitle: '3 games in 10 mins',
+      xp: 100,
+      icon: <Layers className="w-7 h-7 text-[#14b8a6]" strokeWidth={2} />,
+      color: 'bg-[#14b8a6]',
+      date: 'Locked',
+      unlocked: false,
+      hexagonBorder: 'border-[#14b8a6]'
+    },
+    {
+      id: 'weekend_warrior',
+      title: 'Weekend Warrior',
+      subtitle: 'Play on Sat & Sun',
+      xp: 50,
+      icon: <Clock className="w-7 h-7 text-[#f59e0b]" strokeWidth={2} />,
+      color: 'bg-[#f59e0b]',
+      date: 'Locked',
+      unlocked: false,
+      hexagonBorder: 'border-[#f59e0b]'
+    },
+    {
+      id: 'half_century',
+      title: 'Half Century',
+      subtitle: '50 Games Played',
+      xp: 100,
+      icon: <Flag className="w-7 h-7 text-[#eab308]" strokeWidth={2} />,
+      color: 'bg-[#eab308]',
+      date: stats.totalGamesPlayed >= 50 ? 'Unlocked' : 'Locked',
+      unlocked: stats.totalGamesPlayed >= 50,
+      hexagonBorder: 'border-[#eab308]'
+    },
+    {
+      id: 'loyal_member',
+      title: 'Loyal Member',
+      subtitle: '100 Days active',
+      xp: 500,
+      icon: <Heart className="w-7 h-7 text-[#f43f5e]" strokeWidth={2} />,
+      color: 'bg-[#f43f5e]',
+      date: stats.streakHistory.length >= 100 ? 'Unlocked' : 'Locked',
+      unlocked: stats.streakHistory.length >= 100,
+      hexagonBorder: 'border-[#f43f5e]'
+    },
+    {
+      id: 'super_focus',
+      title: 'Super Focus',
+      subtitle: 'No mistakes for 5m',
+      xp: 200,
+      icon: <Target className="w-7 h-7 text-[#10b981]" strokeWidth={2} />,
+      color: 'bg-[#10b981]',
+      date: 'Locked',
+      unlocked: false,
+      hexagonBorder: 'border-[#10b981]'
+    },
+    {
+      id: 'grand_master',
+      title: 'Grand Master',
+      subtitle: 'Reach 50,000 XP',
+      xp: 1000,
+      icon: <Crown className="w-7 h-7 text-[#fbbf24]" strokeWidth={2} />,
+      color: 'bg-[#fbbf24]',
+      date: stats.totalXp >= 50000 ? 'Unlocked' : 'Locked',
+      unlocked: stats.totalXp >= 50000,
+      hexagonBorder: 'border-[#fbbf24]'
     }
   ];
 
@@ -336,19 +448,19 @@ export default function AchievementsPage({ onBack }: AchievementsPageProps) {
         <div className="flex gap-3 mb-8 overflow-x-auto pb-2 scrollbar-hide">
           <button 
             onClick={() => setFilter('all')}
-            className={`px-6 py-2.5 rounded-full font-semibold text-[14px] whitespace-nowrap transition-colors ${filter === 'all' ? 'bg-[#3b1578] text-white border border-purple-500/50 shadow-[0_0_15px_rgba(147,51,234,0.3)]' : 'bg-[#121124] text-white/60 border border-white/5 hover:text-white'}`}
+            className={`px-6 py-2.5 rounded-full font-semibold text-[14px] whitespace-nowrap transition-colors ${filter === 'all' ? 'bg-[#3b1578] text-white border border-purple-500/50 shadow-[0_0_15px_rgba(147,51,255,0.3)]' : 'bg-[#121124] text-white/60 border border-white/5 hover:text-white'}`}
           >
             All
           </button>
           <button 
             onClick={() => setFilter('locked')}
-            className={`px-6 py-2.5 rounded-full font-semibold text-[14px] whitespace-nowrap flex items-center gap-2 transition-colors ${filter === 'locked' ? 'bg-[#3b1578] text-white border border-purple-500/50 shadow-[0_0_15px_rgba(147,51,234,0.3)]' : 'bg-[#121124] text-white/60 border border-white/5 hover:text-white'}`}
+            className={`px-6 py-2.5 rounded-full font-semibold text-[14px] whitespace-nowrap flex items-center gap-2 transition-colors ${filter === 'locked' ? 'bg-[#3b1578] text-white border border-purple-500/50 shadow-[0_0_15px_rgba(147,51,255,0.3)]' : 'bg-[#121124] text-white/60 border border-white/5 hover:text-white'}`}
           >
             <LockIcon className="w-4 h-4" /> Locked
           </button>
           <button 
             onClick={() => setFilter('unlocked')}
-            className={`px-6 py-2.5 rounded-full font-semibold text-[14px] whitespace-nowrap flex items-center gap-2 transition-colors ${filter === 'unlocked' ? 'bg-[#3b1578] text-white border border-purple-500/50 shadow-[0_0_15px_rgba(147,51,234,0.3)]' : 'bg-[#121124] text-white/60 border border-white/5 hover:text-white'}`}
+            className={`px-6 py-2.5 rounded-full font-semibold text-[14px] whitespace-nowrap flex items-center gap-2 transition-colors ${filter === 'unlocked' ? 'bg-[#3b1578] text-white border border-purple-500/50 shadow-[0_0_15px_rgba(147,51,255,0.3)]' : 'bg-[#121124] text-white/60 border border-white/5 hover:text-white'}`}
           >
             <LockIcon className="w-4 h-4" /> Unlocked
           </button>

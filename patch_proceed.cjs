@@ -1,0 +1,10 @@
+const fs = require('fs');
+let content = fs.readFileSync('src/App.tsx', 'utf8');
+
+content = content.replace(
+  `<div className="mt-8 space-y-4">\n                        <button\n                          onClick={() => {\n                            setIsSubscriptionModalOpen(false);\n                            setIsCheckoutModalOpen(true);\n                          }}\n                          className="w-full py-4 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 text-white font-bold text-lg hover:from-purple-400 hover:to-pink-400 transition-all shadow-lg shadow-pink-500/25"\n                        >\n                          Start 7-Day Free Trial\n                        </button>`,
+  `<div className="mt-8 space-y-4">\n                        {selectedPlan && (\n                          <button\n                            onClick={() => {\n                              setIsSubscriptionModalOpen(false);\n                              setIsCheckoutModalOpen(true);\n                            }}\n                            className="w-full py-4 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-bold text-lg hover:from-indigo-400 hover:to-purple-400 transition-all shadow-lg shadow-indigo-500/25"\n                          >\n                            Proceed\n                          </button>\n                        )}\n                        <button\n                          onClick={() => {\n                            setSelectedPlan('');\n                            setIsSubscriptionModalOpen(false);\n                            setIsCheckoutModalOpen(true);\n                          }}\n                          className="w-full py-4 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 text-white font-bold text-lg hover:from-purple-400 hover:to-pink-400 transition-all shadow-lg shadow-pink-500/25"\n                        >\n                          Start 7-Day Free Trial\n                        </button>`
+);
+
+fs.writeFileSync('src/App.tsx', content);
+console.log("Proceed button added.");
