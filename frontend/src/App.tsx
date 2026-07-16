@@ -5,7 +5,7 @@ import { supabase } from '@/src/lib/supabase';
  */
 
 import React, { useState, useEffect, useRef } from 'react';
-import { Brain, Cpu, Paintbrush, TrendingUp, TrendingDown, ChevronLeft, ChevronRight, ChevronDown, Sparkles, Mail, Lock, User, ArrowLeft, LogOut, Flame, Zap, Target, Activity, Play, Lightbulb, Calculator, Trophy, Star, Grid, RotateCcw, Box, Puzzle, Search, Clock, Type, Shuffle, BookOpen, ListOrdered, Link, Check, CheckCircle, Copy, Bot, Home, Gamepad2, Sparkle, Settings, FileText, Shield, HelpCircle, Download, Trash2, MessageSquare, Sliders, Globe, X, Mic, Send, CircleDollarSign, Heart, Flag, Moon, Crown, Compass, Camera, Edit2, Instagram, Gift, CreditCard, Building, Wallet, Smartphone, Award, MoreVertical, Bell, Gem, Dumbbell, Calendar, Rocket, Sword, Sun, Hexagon, Octagon, Diamond, Triangle, Infinity, Orbit, Atom, Filter, RefreshCcw, ScanFace, Cuboid, Route, Layers, Palette, Smile, Brush, Shapes } from 'lucide-react';
+import { Brain, Cpu, Paintbrush, TrendingUp, TrendingDown, ChevronLeft, ChevronRight, ChevronDown, Sparkles, Mail, Lock, User, ArrowLeft, LogOut, Flame, Zap, Target, Activity, Play, Lightbulb, Calculator, Trophy, Star, Grid, RotateCcw, Box, Puzzle, Search, Clock, Type, Shuffle, BookOpen, ListOrdered, Link, Check, CheckCircle, Copy, Bot, Home, Gamepad2, Sparkle, Settings, FileText, Shield, HelpCircle, Download, Trash2, MessageSquare, Sliders, Globe, X, Mic, Send, CircleDollarSign, Heart, Flag, Moon, Crown, Compass, Camera, Edit2, Instagram, Gift, CreditCard, Building, Wallet, Smartphone, Award, MoreVertical, Bell, Gem, Dumbbell, Calendar, Rocket, Sword, Sun, Hexagon, Octagon, Diamond, Triangle, Infinity as InfinityIcon, Orbit, Atom, Filter, RefreshCcw, ScanFace, Cuboid, Route, Layers, Palette, Smile, Brush, Shapes } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { AreaChart, Area, LineChart, Line, XAxis, YAxis, ResponsiveContainer } from 'recharts';
 
@@ -109,7 +109,7 @@ import ShapeBuilderGame from '@/src/features/creativity/components/ShapeBuilderG
 const mapNodesBase = [
   { id: 25, title: 'Infinite', xp: '106000', maxXP: '1000000', x: 240, y: 150, icon: Atom, color: '#f43f5e', labelColor: '#fb7185', labelPos: 'left' },
   { id: 24, title: 'Pinnacle', xp: '94000', maxXP: '106000', x: 160, y: 310, icon: Orbit, color: '#ec4899', labelColor: '#f472b6', labelPos: 'right' },
-  { id: 23, title: 'Zenith', xp: '83000', maxXP: '94000', x: 280, y: 470, icon: Infinity, color: '#d946ef', labelColor: '#f0abfc', labelPos: 'left' },
+  { id: 23, title: 'Zenith', xp: '83000', maxXP: '94000', x: 280, y: 470, icon: InfinityIcon, color: '#d946ef', labelColor: '#f0abfc', labelPos: 'left' },
   { id: 22, title: 'Apex', xp: '73000', maxXP: '83000', x: 180, y: 630, icon: Triangle, color: '#a855f7', labelColor: '#c084fc', labelPos: 'right' },
   { id: 21, title: 'Transcendent', xp: '64000', maxXP: '73000', x: 260, y: 790, icon: Diamond, color: '#8b5cf6', labelColor: '#a78bfa', labelPos: 'left' },
   { id: 20, title: 'Ethereal', xp: '56000', maxXP: '64000', x: 150, y: 950, icon: Octagon, color: '#6366f1', labelColor: '#818cf8', labelPos: 'right' },
@@ -818,7 +818,7 @@ export default function App() {
   const mapNodes = mapNodesBase.map((node, index) => {
     const requiredXP = parseInt(node.xp) || 0;
     const nextNode = mapNodesBase[index - 1]; // Array is sorted descending
-    const nextRequiredXP = nextNode ? parseInt(nextNode.xp) || 0 : Infinity;
+    const nextRequiredXP = nextNode ? parseInt(nextNode.xp) || 0 : Number.POSITIVE_INFINITY;
     
     let status = 'locked';
     let progress = 0;
@@ -3943,7 +3943,7 @@ export default function App() {
                         )}
                         <button
                           onClick={() => {
-                            setSelectedPlan('');
+                            setSelectedPlan(null);
                             setIsSubscriptionModalOpen(false);
                             setIsCheckoutModalOpen(true);
                           }}

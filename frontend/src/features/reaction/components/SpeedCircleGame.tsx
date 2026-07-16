@@ -24,7 +24,7 @@ export default function SpeedCircleGame({ onBack, onGameComplete, difficulty = '
   const [lives, setLives] = useState(3);
   const [circles, setCircles] = useState<Circle[]>([]);
   
-  const gameLoopRef = useRef<number>();
+  const gameLoopRef = useRef<number | null>(null);
   const lastSpawnRef = useRef<number>(0);
   const spawnRateRef = useRef<number>(1500);
   const circleDurationRef = useRef<number>(2500);

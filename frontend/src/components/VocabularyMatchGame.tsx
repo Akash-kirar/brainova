@@ -186,7 +186,7 @@ export default function VocabularyMatchGame({ onBack, onGameComplete, gameType =
         {gameState === 'start' && (
           <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="bg-slate-800/80 p-8 rounded-2xl border border-slate-700/50 text-center max-w-md w-full">
             <div className={`w-20 h-20 bg-${getColor()}-500/20 rounded-full flex items-center justify-center mx-auto mb-6`}>
-              {React.cloneElement(getIcon() as React.ReactElement, { className: `w-10 h-10 ${colorClass}` })}
+              {React.cloneElement(getIcon() as React.ReactElement<{ className?: string }>, { className: `w-10 h-10 ${colorClass}` })}
             </div>
             <h2 className="text-2xl font-bold mb-4">{getTitle()}</h2>
             <p className="text-slate-400 mb-8">Match the words on the left with their correct pairs on the right.</p>
