@@ -3,6 +3,7 @@ import path from "path";
 import Razorpay from "razorpay";
 import crypto from "crypto";
 import dotenv from "dotenv";
+import cors from "cors";
 
 dotenv.config();
 
@@ -15,13 +16,9 @@ const aiSystemInstruction =
 async function startServer() {
   const app = express();
   const PORT = Number(process.env.PORT || 3000);
-  const entryFile = process.argv[1] || "";
-  const isProduction =
-    process.env.NODE_ENV === "production" ||
-    process.env.npm_lifecycle_event === "start" ||
-    entryFile.endsWith("server.cjs");
   const hasRazorpayKeys = Boolean(process.env.RAZORPAY_KEY_ID && process.env.RAZORPAY_KEY_SECRET);
 
+  app.use(cors()); // Allow requests from any origin (can be restricted in production)
   app.use(express.json());
   app.set("trust proxy", 1);
 
@@ -142,23 +139,8 @@ async function startServer() {
     }
   });
 
-  if (!isProduction) {
-    const { createServer: createViteServer } = await import("vite");
-    const vite = await createViteServer({
-      server: { middlewareMode: true },
-      appType: "spa",
-    });
-    app.use(vite.middlewares);
-  } else {
-    const distPath = path.join(process.cwd(), "dist");
-    app.use(express.static(distPath));
-    app.get("*", (_req, res) => {
-      res.sendFile(path.join(distPath, "index.html"));
-    });
-  }
-
   app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
+    console.log(`Backend Server running on port ${PORT}`);
   });
 }
 

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { motion } from 'motion/react';
 import { ChevronLeft, Crown, PlayCircle, TrendingUp, Calendar, BarChart2, Ban, Headphones, Star } from 'lucide-react';
+import { getApiUrl } from '../lib/api';
 
 export default function PremiumSubscriptionPage({ onBack, onSkip, onSuccess }: { onBack: () => void; onSkip?: () => void; onSuccess?: () => void; }) {
   const [selectedPlan, setSelectedPlan] = useState<'monthly' | 'quarterly' | 'yearly'>('yearly');
@@ -21,7 +22,7 @@ export default function PremiumSubscriptionPage({ onBack, onSkip, onSuccess }: {
     if (selectedPlan === 'quarterly') amount = 99;
 
     try {
-      const res = await fetch('/api/razorpay/create-order', {
+      const res = await fetch(getApiUrl('/api/razorpay/create-order'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -43,7 +44,7 @@ export default function PremiumSubscriptionPage({ onBack, onSkip, onSuccess }: {
         order_id: order.id,
         handler: async function (response) {
           try {
-            const verifyRes = await fetch('/api/razorpay/verify-signature', {
+            const verifyRes = await fetch(getApiUrl('/api/razorpay/verify-signature'), {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify(response)

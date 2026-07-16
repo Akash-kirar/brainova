@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { User, ChevronLeft, Bot, ChevronRight, Brain, Sparkles, Send, RefreshCw, Clock, BarChart2, Calendar, Target, Zap, MessageSquare, Menu, Crown, Flame , Gamepad2, Play, ChevronDown, Globe } from 'lucide-react';
 import { useProgress } from '../hooks/useProgress';
 import { useChatLimit } from '../hooks/useChatLimit';
+import { getApiUrl } from '../lib/api';
 
 interface AiCoachViewProps {
   onOpenProfile?: () => void;
@@ -127,7 +128,7 @@ export default function AiCoachView({ profileName, onSend, onPlayGame, onOpenPro
 - High Scores: ${JSON.stringify(stats.highScores)}
 The user's preferred language code is '${speechLang}'. Please respond in that language. You are a smart personal AI. Give responses ONLY in text. If the score is 0, explicitly acknowledge it. If the user asks for a 7-day plan, create one based on their current profile score and activity.]`;
 
-      const response = await fetch('/api/ai/chat', {
+      const response = await fetch(getApiUrl('/api/ai/chat'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
