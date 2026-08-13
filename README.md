@@ -1,75 +1,82 @@
-# Brainova Final
+# 🧠 Brainova
 
-Brainova is a Vite React app served by a small Express server. Use a Node web service deployment if you want the AI coach and Razorpay API routes to work.
+**Brainova** is a gamified brain-training platform designed to make cognitive training more engaging, consistent, and measurable.
 
-## Local Setup
+Instead of treating brain training like traditional studying or exercises, Brainova turns it into an interactive experience where users can play games, complete cognitive workouts, track their progress, build streaks, earn XP, and understand their performance.
 
-1. Install Node.js 20 or newer.
-2. Install dependencies:
-   ```bash
-   npm ci
-   ```
-3. Create `.env` from `.env.example` and set the required values.
-4. Start local development:
-   ```bash
-   npm run dev
-   ```
+## ✨ What is Brainova?
 
-The local app runs on `http://localhost:3000`.
+Brainova provides a collection of interactive brain-training experiences focused on areas such as:
 
-## Required Environment Variables
+* 🧠 Memory
+* 🎯 Focus
+* ⚡ Speed
+* 🧩 Logic
+* 👀 Observation
+* 🎨 Creativity
+* 📐 Math
+* 💬 Language
+* 🧠 Executive thinking
+* 👁️ Visual skills
 
-Set these in your hosting provider before deploying:
+Users can regularly train through short challenges and monitor how their performance develops over time.
 
-```bash
-VITE_SUPABASE_URL=https://erejgwkyxibliiusbekl.supabase.co
-VITE_SUPABASE_PUBLISHABLE_KEY=your_supabase_publishable_key
-```
+## 🚀 Key Features
 
-Optional, but needed for full production features:
+### 🎮 Brain Training Games
 
-```bash
-GEMINI_API_KEY=your_gemini_server_key
-GEMINI_MODEL=gemini-3-flash-preview
-VITE_RAZORPAY_KEY_ID=your_razorpay_browser_key
-RAZORPAY_KEY_ID=your_razorpay_key_id
-RAZORPAY_KEY_SECRET=your_razorpay_secret
-NODE_ENV=production
-```
+Interactive games and challenges designed around different cognitive skills.
 
-Do not create `VITE_GEMINI_API_KEY`. Gemini runs through the Express API so the secret is not exposed in the browser bundle.
+### 📊 Progress Tracking
 
-## Deploy On A Node Host
+Users can view their activity, performance, XP, levels, and training progress.
 
-Recommended platforms: Render, Railway, Fly.io, Heroku, or any host that supports a persistent Node server.
+### 🤖 AI Analysis
 
-Use these settings:
+Brainova provides a cognitive overview that analyzes performance across different skill areas and highlights strengths and areas that need improvement.
 
-```bash
-Build command: npm ci && npm run build
-Start command: npm start
-Health check: /healthz
-```
+### 🔥 Daily Streaks
 
-The server reads `PORT` from the hosting platform automatically.
+A streak system encourages users to return regularly and build a consistent training habit.
 
-## Static Hosting Note
+### ⭐ XP & Levels
 
-You can deploy the `dist` folder to a static host, but these server routes will not work there:
+Users earn XP by completing activities and progress through different levels.
 
-```text
-/api/ai/chat
-/api/razorpay/create-order
-/api/razorpay/verify-signature
-```
+### 🪙 Nova Coins
 
-Use a Node web service deployment for the complete app.
+A reward system that gives users Nova Coins as they engage with the platform.
 
-## Verification
+### 🏆 Challenges & Achievements
 
-Run before deploying:
+Gamified challenges, rankings, and achievements help make consistent training more engaging.
 
-```bash
-npm run typecheck
-npm run build
-```
+### 👤 Personal Profile
+
+Users can track their Brainova journey, including level, XP, streak, Nova Coins, rankings, and achievements.
+
+## 🎯 Goal
+
+The goal of Brainova is simple:
+
+> **Make brain training feel less like work and more like a game.**
+
+Brainova aims to encourage consistent practice by combining **cognitive training + games + progress tracking + gamification** in one platform.
+
+## 🌐 Platform
+
+Brainova is currently available as a web application:
+
+**https://brainova.in**
+
+## 🛠️ Project
+
+Brainova is an independent product built to explore how gamification, interactive experiences, analytics, and modern web technologies can be combined to create an engaging cognitive-training platform.
+
+---
+
+### 💡 Vision
+
+**Train Your Brain. Level Up Your Life.**
+
+Brainova is being developed with the vision of making daily cognitive training more accessible, engaging, and rewarding.
