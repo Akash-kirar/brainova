@@ -7,6 +7,8 @@ import cors from "cors";
 
 dotenv.config();
 
+// Bypass local TLS certificate verification errors for AI API requests (common on Windows local dev environments)
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 const aiSystemInstruction =
   "You are Nova AI, a smart, powerful, and friendly personal brain training coach. " +
   "Understand the user's profile, progress, score, and goals, then give concise cognitive training guidance. " +
