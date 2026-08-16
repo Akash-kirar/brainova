@@ -349,7 +349,7 @@ export default function App() {
 
     const { data, error } = await supabase
       .from('profiles')
-      .select('name, email, language')
+      .select('name, email, language, avatar_url')
       .eq('id', session.user.id)
       .maybeSingle();
 
@@ -361,6 +361,7 @@ export default function App() {
     if (data?.name) setProfileName(data.name);
     if (data?.email) setProfileEmail(data.email);
     if (data?.language) setLanguage(data.language as Language);
+    if (data?.avatar_url) setProfilePhoto(data.avatar_url);
   };
 
   const handleLogout = async () => {
@@ -371,6 +372,7 @@ export default function App() {
     setOnboardingStep(0);
     setProfileName('');
     setProfileEmail('');
+    setProfilePhoto(null);
   };
 
   useEffect(() => {
@@ -539,7 +541,42 @@ export default function App() {
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
-        setProfilePhoto(reader.result as string);
+        const img = new Image();
+        img.onload = async () => {
+          const canvas = document.createElement('canvas');
+          const MAX_SIZE = 150;
+          let width = img.width;
+          let height = img.height;
+          
+          if (width > height) {
+            if (width > MAX_SIZE) {
+              height *= MAX_SIZE / width;
+              width = MAX_SIZE;
+            }
+          } else {
+            if (height > MAX_SIZE) {
+              width *= MAX_SIZE / height;
+              height = MAX_SIZE;
+            }
+          }
+          
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          if (ctx) {
+            ctx.drawImage(img, 0, 0, width, height);
+            const compressedBase64 = canvas.toDataURL('image/jpeg', 0.8);
+            setProfilePhoto(compressedBase64);
+            
+            if (supabase) {
+              const { data: { session } } = await supabase.auth.getSession();
+              if (session) {
+                await supabase.from('profiles').update({ avatar_url: compressedBase64 }).eq('id', session.user.id);
+              }
+            }
+          }
+        };
+        img.src = reader.result as string;
       };
       reader.readAsDataURL(file);
     }
