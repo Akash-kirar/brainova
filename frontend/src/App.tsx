@@ -607,7 +607,7 @@ export default function App() {
   };
   
   const { stats, sessions, recordGame } = useProgress();
-  const { entries, currentUserId } = useLeaderboard();
+  const { entries, currentUserId, loading } = useLeaderboard();
   
   const actualUserRank = entries.findIndex(e => e.id === currentUserId) + 1;
   const displayRank = actualUserRank > 0 ? actualUserRank : '--';
@@ -1051,7 +1051,13 @@ export default function App() {
   if (isLeaderboardOpen) {
     return (
       <div className="flex flex-col h-[100dvh] bg-[#0a0a0c] font-sans text-white relative overflow-hidden" style={getModeStyles()}>
-        <LeaderboardPage onBack={() => setIsLeaderboardOpen(false)} profileName={profileName} />
+        <LeaderboardPage 
+          onBack={() => setIsLeaderboardOpen(false)} 
+          profileName={profileName} 
+          entries={entries}
+          loading={loading}
+          currentUserId={currentUserId}
+        />
       </div>
     );
   }

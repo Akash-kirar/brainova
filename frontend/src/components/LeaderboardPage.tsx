@@ -1,10 +1,13 @@
 import React, { useMemo, useState } from 'react';
 import { ChevronLeft, Crown, ChevronRight } from 'lucide-react';
-import { getLeaderboardAvatar, useLeaderboard } from '../hooks/useLeaderboard';
+import { getLeaderboardAvatar } from '../hooks/useLeaderboard';
 
 interface LeaderboardPageProps {
   onBack: () => void;
   profileName?: string;
+  entries: any[];
+  loading: boolean;
+  currentUserId: string | null;
 }
 
 interface DisplayUser {
@@ -16,9 +19,8 @@ interface DisplayUser {
   isEmpty?: boolean;
 }
 
-export default function LeaderboardPage({ onBack, profileName }: LeaderboardPageProps) {
+export default function LeaderboardPage({ onBack, profileName, entries, loading, currentUserId }: LeaderboardPageProps) {
   const [showMore, setShowMore] = useState(false);
-  const { entries, loading, currentUserId } = useLeaderboard();
 
   const rankedUsers = useMemo<DisplayUser[]>(() => {
     return entries.map((entry, index) => {
