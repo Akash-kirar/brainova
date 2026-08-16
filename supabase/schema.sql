@@ -151,6 +151,19 @@ to authenticated
 using ((select auth.uid()) = user_id)
 with check ((select auth.uid()) = user_id);
 
+-- Leaderboard: authenticated users can read all profiles and stats for ranking
+drop policy if exists "profiles_select_leaderboard" on public.profiles;
+create policy "profiles_select_leaderboard"
+on public.profiles for select
+to authenticated
+using (true);
+
+drop policy if exists "user_stats_select_leaderboard" on public.user_stats;
+create policy "user_stats_select_leaderboard"
+on public.user_stats for select
+to authenticated
+using (true);
+
 drop policy if exists "game_sessions_select_own" on public.game_sessions;
 create policy "game_sessions_select_own"
 on public.game_sessions for select
@@ -177,3 +190,83 @@ with check (user_id is null);
 
 create index if not exists game_sessions_user_timestamp_idx on public.game_sessions (user_id, timestamp desc);
 create index if not exists user_feedback_user_created_idx on public.user_feedback (user_id, created_at desc);
+
+-- Enable realtime updates for leaderboard (run once in Supabase SQL editor if not already added)
+do $$
+begin
+  alter publication supabase_realtime add table public.profiles;
+exception
+  when duplicate_object then null;
+end $$;
+
+do $$
+begin
+  alter publication supabase_realtime add table public.user_stats;
+exception
+  when duplicate_object then null;
+end $$;
+
+-- Backfill profiles/stats for auth users created before triggers existed
+insert into public.profiles (id, name, email)
+select
+  u.id,
+  coalesce(
+    nullif(trim(u.raw_user_meta_data->>'name'), ''),
+    nullif(trim(u.raw_user_meta_data->>'full_name'), ''),
+    split_part(u.email, '@', 1)
+  ),
+  u.email
+from auth.users u
+left join public.profiles p on p.id = u.id
+where p.id is null
+on conflict (id) do nothing;
+
+insert into public.user_stats (user_id, stats)
+select u.id, '{}'::jsonb
+from auth.users u
+left join public.user_stats us on us.user_id = u.id
+where us.user_id is null
+on conflict (user_id) do nothing;
+
+-- Leaderboard RPC: returns every auth user with name + XP (bypasses RLS safely)
+create or replace function public.get_leaderboard()
+returns table (
+  id uuid,
+  name text,
+  email text,
+  avatar_url text,
+  xp bigint
+)
+language sql
+security definer
+set search_path = ''
+stable
+as $$
+  select
+    u.id,
+    coalesce(
+      nullif(trim(p.name), ''),
+      nullif(trim(u.raw_user_meta_data->>'name'), ''),
+      nullif(trim(u.raw_user_meta_data->>'full_name'), ''),
+      nullif(split_part(u.email, '@', 1), ''),
+      'Player'
+    ) as name,
+    u.email,
+    p.avatar_url,
+    coalesce(
+      nullif((us.stats->>'totalXp')::bigint, 0),
+      (
+        select coalesce(sum(gs.score), 0)::bigint
+        from public.game_sessions gs
+        where gs.user_id = u.id
+      ),
+      0::bigint
+    ) as xp
+  from auth.users u
+  left join public.profiles p on p.id = u.id
+  left join public.user_stats us on us.user_id = u.id
+  order by xp desc, name asc;
+$$;
+
+revoke all on function public.get_leaderboard() from public;
+grant execute on function public.get_leaderboard() to authenticated;
