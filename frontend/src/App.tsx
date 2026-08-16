@@ -5,7 +5,7 @@ import { supabase } from '@/src/lib/supabase';
  */
 
 import React, { useState, useEffect, useRef } from 'react';
-import { Brain, Cpu, Paintbrush, TrendingUp, TrendingDown, ChevronLeft, ChevronRight, ChevronDown, Sparkles, Mail, Lock, User, ArrowLeft, LogOut, Flame, Zap, Target, Activity, Play, Lightbulb, Calculator, Trophy, Star, Grid, RotateCcw, Box, Puzzle, Search, Clock, Type, Shuffle, BookOpen, ListOrdered, Link, Check, CheckCircle, Copy, Bot, Home, Gamepad2, Sparkle, Settings, FileText, Shield, HelpCircle, Download, Trash2, MessageSquare, Sliders, Globe, X, Mic, Send, CircleDollarSign, Heart, Flag, Moon, Crown, Compass, Camera, Edit2, Instagram, Gift, CreditCard, Building, Wallet, Smartphone, Award, MoreVertical, Bell, Gem, Dumbbell, Calendar, Rocket, Sword, Sun, Hexagon, Octagon, Diamond, Triangle, Infinity as InfinityIcon, Orbit, Atom, Filter, RefreshCcw, ScanFace, Cuboid, Route, Layers, Palette, Smile, Brush, Shapes } from 'lucide-react';
+import { Brain, Cpu, Paintbrush, TrendingUp, TrendingDown, ChevronLeft, ChevronRight, ChevronDown, Sparkles, Mail, Lock, User, ArrowLeft, LogOut, Flame, Zap, Target, Activity, Play, Lightbulb, Calculator, Trophy, Star, Grid, RotateCcw, Box, Puzzle, Search, Clock, Type, Shuffle, BookOpen, ListOrdered, Link, Check, CheckCircle, Copy, Bot, Home, Gamepad2, Sparkle, Settings, FileText, Shield, HelpCircle, Download, Trash2, MessageSquare, Sliders, Globe, X, Mic, Send, CircleDollarSign, Heart, Flag, Moon, Crown, Compass, Camera, Images, Edit2, Instagram, Gift, CreditCard, Building, Wallet, Smartphone, Award, MoreVertical, Bell, Gem, Dumbbell, Calendar, Rocket, Sword, Sun, Hexagon, Octagon, Diamond, Triangle, Infinity as InfinityIcon, Orbit, Atom, Filter, RefreshCcw, ScanFace, Cuboid, Route, Layers, Palette, Smile, Brush, Shapes } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { AreaChart, Area, LineChart, Line, XAxis, YAxis, ResponsiveContainer } from 'recharts';
 
@@ -535,7 +535,9 @@ export default function App() {
   const [isPro, setIsPro] = useState(localStorage.getItem('brainova_is_pro') === 'true');
   const [isPersonalizedPlanOpen, setIsPersonalizedPlanOpen] = useState(false);
   const [isAchievementsOpen, setIsAchievementsOpen] = useState(false);
-  const fileInputRef = React.useRef<HTMLInputElement>(null);
+  const [isPhotoOptionsOpen, setIsPhotoOptionsOpen] = useState(false);
+  const cameraInputRef = React.useRef<HTMLInputElement>(null);
+  const galleryInputRef = React.useRef<HTMLInputElement>(null);
 
   const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -582,6 +584,7 @@ export default function App() {
       reader.readAsDataURL(file);
     }
     setIsProfileSettingsOpen(false);
+    setIsPhotoOptionsOpen(false);
   };
 
   const handleNameSave = async () => {
@@ -2296,23 +2299,20 @@ export default function App() {
                     {/* Top row: Avatar & details */}
                     <div className="flex justify-between items-start mb-6 w-full relative">
                       <div className="flex items-center gap-4 w-full">
-                        <div className="relative w-[76px] h-[76px] shrink-0">
+                        <div 
+                          className="relative w-[76px] h-[76px] shrink-0 cursor-pointer group"
+                          onClick={() => {
+                            const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+                            if (isMobile) {
+                              setIsPhotoOptionsOpen(true);
+                            } else {
+                              galleryInputRef.current?.click();
+                            }
+                          }}
+                        >
                           {/* Gradient Ring */}
                           <div className="absolute inset-0 bg-gradient-to-tr from-blue-600 via-purple-500 to-transparent rounded-full p-[2px]">
-                            <div className="w-full h-full bg-[#0b101a] rounded-full overflow-hidden flex items-center justify-center p-[3px] relative group">
-                              <input 
-                                type="file" 
-                                ref={fileInputRef}
-                                className="hidden" 
-                                accept="image/*"
-                                onChange={handlePhotoUpload}
-                              />
-                              <div 
-                                className="absolute inset-0 bg-black/50 hidden group-hover:flex items-center justify-center cursor-pointer transition-all z-10 rounded-full"
-                                onClick={() => fileInputRef.current?.click()}
-                              >
-                                <Camera className="w-6 h-6 text-white/50" />
-                              </div>
+                            <div className="w-full h-full bg-[#0b101a] rounded-full overflow-hidden flex items-center justify-center p-[3px] relative">
                               <div className="w-full h-full bg-[#1b2532] rounded-full overflow-hidden shadow-inner">
                                 {profilePhoto ? (
                                   <img src={profilePhoto} alt="Profile" className="w-full h-full object-cover" style={{ filter: displayMode === 'light' ? 'invert(1) hue-rotate(180deg)' : 'none' }} />
@@ -2323,6 +2323,10 @@ export default function App() {
                                 )}
                               </div>
                             </div>
+                          </div>
+                          {/* Pencil Edit Badge */}
+                          <div className="absolute bottom-0 right-0 w-7 h-7 bg-[#1b2532] border-2 border-[#0b101a] rounded-full flex items-center justify-center shadow-lg group-hover:bg-[#2c3b50] transition-colors z-20">
+                            <Edit2 className="w-3.5 h-3.5 text-white/80" />
                           </div>
                         </div>
                         
@@ -4252,14 +4256,80 @@ export default function App() {
               )}
             </AnimatePresence>
 
-            {/* Hidden File Input */}
+            {/* Hidden File Inputs */}
             <input 
               type="file" 
-              ref={fileInputRef} 
+              ref={cameraInputRef} 
+              onChange={handlePhotoUpload} 
+              accept="image/*" 
+              capture="environment"
+              className="hidden" 
+            />
+            <input 
+              type="file" 
+              ref={galleryInputRef} 
               onChange={handlePhotoUpload} 
               accept="image/*" 
               className="hidden" 
             />
+
+            <AnimatePresence>
+              {isPhotoOptionsOpen && (
+                <motion.div 
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  className="fixed inset-0 bg-black/60 z-[99999] flex items-end justify-center sm:items-center"
+                  onClick={() => setIsPhotoOptionsOpen(false)}
+                >
+                  <motion.div 
+                    initial={{ y: 300 }}
+                    animate={{ y: 0 }}
+                    exit={{ y: 300 }}
+                    onClick={(e) => e.stopPropagation()}
+                    className="bg-[#121124] w-full sm:w-[400px] rounded-t-3xl sm:rounded-3xl p-6 pb-10 sm:pb-6 shadow-2xl border border-white/10"
+                  >
+                    <div className="w-12 h-1.5 bg-white/20 rounded-full mx-auto mb-6 sm:hidden"></div>
+                    <h3 className="text-xl font-bold text-white mb-6 text-center">Upload Profile Photo</h3>
+                    
+                    <div className="grid grid-cols-2 gap-4">
+                      <button
+                        onClick={() => {
+                          setIsPhotoOptionsOpen(false);
+                          cameraInputRef.current?.click();
+                        }}
+                        className="flex flex-col items-center justify-center gap-3 p-6 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors"
+                      >
+                        <div className="w-14 h-14 rounded-full bg-blue-500/20 flex items-center justify-center border border-blue-500/30">
+                          <Camera className="w-7 h-7 text-blue-400" />
+                        </div>
+                        <span className="font-medium text-white text-lg">Camera</span>
+                      </button>
+                      
+                      <button
+                        onClick={() => {
+                          setIsPhotoOptionsOpen(false);
+                          galleryInputRef.current?.click();
+                        }}
+                        className="flex flex-col items-center justify-center gap-3 p-6 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors"
+                      >
+                        <div className="w-14 h-14 rounded-full bg-purple-500/20 flex items-center justify-center border border-purple-500/30">
+                          <Images className="w-7 h-7 text-purple-400" />
+                        </div>
+                        <span className="font-medium text-white text-lg">Gallery</span>
+                      </button>
+                    </div>
+                    
+                    <button
+                      onClick={() => setIsPhotoOptionsOpen(false)}
+                      className="w-full mt-6 py-4 rounded-xl font-bold text-white/60 hover:text-white bg-white/5 hover:bg-white/10 transition-colors"
+                    >
+                      Cancel
+                    </button>
+                  </motion.div>
+                </motion.div>
+              )}
+            </AnimatePresence>
 
             <AnimatePresence>
               {isProfileSettingsOpen && (
@@ -4278,7 +4348,13 @@ export default function App() {
                   <div className="p-4 flex flex-col gap-2">
                     <button 
                       onClick={() => {
-                        fileInputRef.current?.click();
+                        setIsProfileSettingsOpen(false);
+                        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+                        if (isMobile) {
+                          setIsPhotoOptionsOpen(true);
+                        } else {
+                          galleryInputRef.current?.click();
+                        }
                       }}
                       className="w-full flex items-center gap-4 text-left px-4 py-4 text-base text-white hover:bg-white/5 transition-colors rounded-xl"
                     >
