@@ -184,9 +184,58 @@ export function useProgress() {
     }
   }, [sessions, userId]);
 
+  const getLocalDateStr = () => {
+    const now = new Date();
+    return new Date(now.getTime() - now.getTimezoneOffset() * 60000).toISOString().split('T')[0];
+  };
+
+  const calculateStreaksFromHistory = (history: string[], todayStr: string) => {
+    if (!history || history.length === 0) return { current: 0, longest: 0 };
+    const sorted = [...new Set(history)].sort();
+    let longest = 1;
+    let currentStreakCount = 1;
+    for (let i = 1; i < sorted.length; i++) {
+      const [y1, m1, d1] = sorted[i-1].split('-').map(Number);
+      const [y2, m2, d2] = sorted[i].split('-').map(Number);
+      const diffDays = Math.round((new Date(y2, m2 - 1, d2).getTime() - new Date(y1, m1 - 1, d1).getTime()) / 86400000);
+      if (diffDays === 1) {
+        currentStreakCount++;
+        if (currentStreakCount > longest) longest = currentStreakCount;
+      } else if (diffDays > 1) {
+        currentStreakCount = 1;
+      }
+    }
+    const lastPlayed = sorted[sorted.length - 1];
+    let current = 0;
+    if (lastPlayed) {
+      const [y1, m1, d1] = lastPlayed.split('-').map(Number);
+      const [y2, m2, d2] = todayStr.split('-').map(Number);
+      const diffToToday = Math.round((new Date(y2, m2 - 1, d2).getTime() - new Date(y1, m1 - 1, d1).getTime()) / 86400000);
+      if (diffToToday <= 1) {
+        current = currentStreakCount;
+      }
+    }
+    return { current, longest: Math.max(longest, currentStreakCount) };
+  };
+
+  // Auto-correct streaks if user opens app on a new day
+  useEffect(() => {
+    if (!stats || !stats.streakHistory) return;
+    const todayStr = getLocalDateStr();
+    const { current, longest } = calculateStreaksFromHistory(stats.streakHistory, todayStr);
+    
+    if (stats.dailyStreak !== current || (stats.longestStreak || 0) < longest) {
+      setStats(prev => ({
+        ...prev,
+        dailyStreak: current,
+        longestStreak: Math.max(prev.longestStreak || 0, longest)
+      }));
+    }
+  }, [stats.streakHistory, stats.dailyStreak, stats.longestStreak]);
+
   const recordGame = async (session: Omit<GameSession, 'id' | 'timestamp'>) => {
     const now = new Date();
-    const todayStr = now.toISOString().split('T')[0];
+    const todayStr = getLocalDateStr();
 
     const newSession: GameSession = {
       ...session,
@@ -238,36 +287,28 @@ export function useProgress() {
         newStats.highScores[session.gameType] = session.score;
       }
 
-      if (prev.lastPlayedDate !== todayStr) {
-        if (!prev.lastPlayedDate) {
-          newStats.dailyStreak = 1;
-        } else {
-          const lastDate = new Date(prev.lastPlayedDate);
-          const diffTime = Math.abs(now.getTime() - lastDate.getTime());
-          const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+      const isFirstPlayToday = !newStats.streakHistory.includes(todayStr);
 
-          if (diffDays === 1) {
-            newStats.dailyStreak += 1;
-            const streakBonus = Math.min(50, newStats.dailyStreak * 5);
-            newStats.novaCoins += streakBonus;
-            newStats.rewardsHistory.unshift({
-              id: Math.random().toString(36).substring(2, 9),
-              title: `Daily Streak (${newStats.dailyStreak} days)`,
-              amount: streakBonus,
-              date: now.toISOString(),
-            });
-          } else if (diffDays > 1) {
-            newStats.dailyStreak = 1;
-          }
-        }
-        newStats.lastPlayedDate = todayStr;
-      }
-
-      if (!newStats.streakHistory.includes(todayStr)) {
+      if (isFirstPlayToday) {
         newStats.streakHistory.push(todayStr);
       }
-      if (newStats.dailyStreak > (newStats.longestStreak || 0)) {
-        newStats.longestStreak = newStats.dailyStreak;
+      
+      newStats.lastPlayedDate = todayStr;
+
+      // Re-calculate robustly
+      const { current, longest } = calculateStreaksFromHistory(newStats.streakHistory, todayStr);
+      newStats.dailyStreak = current;
+      newStats.longestStreak = Math.max(newStats.longestStreak || 0, longest);
+
+      if (isFirstPlayToday) {
+        const streakBonus = Math.min(50, newStats.dailyStreak * 5);
+        newStats.novaCoins += streakBonus;
+        newStats.rewardsHistory.unshift({
+          id: Math.random().toString(36).substring(2, 9),
+          title: `Daily Streak (${newStats.dailyStreak} days)`,
+          amount: streakBonus,
+          date: now.toISOString(),
+        });
       }
 
       const existingDayIndex = newStats.weeklyPerformance.findIndex(p => p.date === todayStr);

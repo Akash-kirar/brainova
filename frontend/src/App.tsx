@@ -2683,6 +2683,29 @@ export default function App() {
                             
                             const todayStrLocal = todayDate.toLocaleDateString('en-CA'); // Gets YYYY-MM-DD
                             
+                            // Pre-calculate streak map for the history
+                            const streakMap = new Map<string, number>();
+                            if (stats.streakHistory) {
+                              const sorted = [...new Set(stats.streakHistory)].sort();
+                              let currentStreak = 1;
+                              for (let i = 0; i < sorted.length; i++) {
+                                if (i === 0) {
+                                  streakMap.set(sorted[i], currentStreak);
+                                  continue;
+                                }
+                                const [y1, m1, d1] = sorted[i-1].split('-').map(Number);
+                                const [y2, m2, d2] = sorted[i].split('-').map(Number);
+                                const diffDays = Math.round((new Date(y2, m2 - 1, d2).getTime() - new Date(y1, m1 - 1, d1).getTime()) / 86400000);
+                                
+                                if (diffDays === 1) {
+                                  currentStreak++;
+                                } else {
+                                  currentStreak = 1;
+                                }
+                                streakMap.set(sorted[i], currentStreak);
+                              }
+                            }
+                            
                             return calendarDays.map((dateStr, i) => {
                               if (!dateStr) {
                                 return <div key={i} className="h-8"></div>;
@@ -2691,20 +2714,21 @@ export default function App() {
                               const isCurrentDay = dateStr === todayStrLocal;
                               const isPastDay = dateStr < todayStrLocal;
                               const hasPlayed = stats.streakHistory && stats.streakHistory.includes(dateStr);
+                              const streakAtDate = streakMap.get(dateStr) || 0;
+                              const isFire = streakAtDate >= 3;
+                              
+                              let iconContent;
+                              if (hasPlayed) {
+                                iconContent = <Flame className="w-5 h-5 text-orange-500" />;
+                              } else {
+                                iconContent = <Flame className="w-5 h-5 text-white/30" />;
+                              }
                               
                               return (
                                 <div key={i} className="flex flex-col items-center justify-center h-8 relative">
-                                  {isCurrentDay ? (
-                                    <>
-                                      <Flame className={`w-5 h-5 ${hasPlayed ? 'text-orange-500 fill-orange-500/20' : 'text-white/60 fill-white/60'}`} />
-                                      <div className="absolute -bottom-2 w-0 h-0 border-l-[4px] border-l-transparent border-r-[4px] border-r-transparent border-b-[4px] border-b-white"></div>
-                                    </>
-                                  ) : hasPlayed ? (
-                                    <div className="w-3.5 h-3.5 rounded-full bg-orange-500"></div>
-                                  ) : isPastDay ? (
-                                    <div className="w-3.5 h-3.5 rounded-full bg-white/30"></div>
-                                  ) : (
-                                    <div className="w-3.5 h-3.5 rounded-full border border-white/20"></div>
+                                  {iconContent}
+                                  {isCurrentDay && (
+                                    <div className="absolute -bottom-2 w-0 h-0 border-l-[4px] border-l-transparent border-r-[4px] border-r-transparent border-b-[4px] border-b-white"></div>
                                   )}
                                 </div>
                               );
