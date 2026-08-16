@@ -171,22 +171,6 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ language, onLogin, onBac
               <h2 className="text-3xl font-bold mb-2 tracking-tight text-center">{t('welcomeBack', language) || 'Welcome Back'}</h2>
               <p className="text-white/60 mb-8 text-[15px] text-center">Log in to continue your training.</p>
 
-              <button
-                onClick={() => handleOAuthLogin('google')}
-                disabled={loading}
-                className="w-full h-14 rounded-2xl bg-[#1a1a1c] border border-white/10 text-white font-bold text-[16px] flex items-center justify-center gap-3 hover:bg-[#2a2a2c] hover:scale-[0.98] active:scale-95 transition-all mb-8 shadow-sm disabled:opacity-50"
-                aria-label="Continue with Google"
-              >
-                <GoogleIcon />
-                Continue with Google
-              </button>
-
-              <div className="w-full flex items-center gap-4 mb-8">
-                <div className="flex-1 h-px bg-white/10"></div>
-                <span className="text-[11px] text-white/40 uppercase tracking-wider font-semibold">Or with email</span>
-                <div className="flex-1 h-px bg-white/10"></div>
-              </div>
-
               <div className="space-y-4 mb-6 w-full">
                 <div className="relative group">
                   <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/40 group-focus-within:text-indigo-400 transition-colors" />
@@ -230,6 +214,22 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ language, onLogin, onBac
                 {loading ? 'Loading...' : (t('logIn', language) || 'Log In')}
               </button>
 
+              <div className="w-full flex items-center gap-4 mb-8">
+                <div className="flex-1 h-px bg-white/10"></div>
+                <span className="text-[11px] text-white/40 uppercase tracking-wider font-semibold">Or continue with</span>
+                <div className="flex-1 h-px bg-white/10"></div>
+              </div>
+
+              <button
+                onClick={() => handleOAuthLogin('google')}
+                disabled={loading}
+                className="w-full h-14 rounded-2xl bg-[#1a1a1c] border border-white/10 text-white font-bold text-[16px] flex items-center justify-center gap-3 hover:bg-[#2a2a2c] hover:scale-[0.98] active:scale-95 transition-all mb-8 shadow-sm disabled:opacity-50"
+                aria-label="Continue with Google"
+              >
+                <GoogleIcon />
+                Continue with Google
+              </button>
+
               <div className="text-[15px] text-white/60">
                 Don't have an account?{' '}
                 <button onClick={() => setAuthMode('signup')} className="text-indigo-400 hover:text-indigo-300 font-medium transition-colors">
@@ -254,22 +254,6 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ language, onLogin, onBac
 
               <h2 className="text-3xl font-bold mb-2 tracking-tight text-center">{t('createAccount', language) || 'Create Account'}</h2>
               <p className="text-white/60 mb-8 text-[15px] text-center">Start your cognitive training journey today.</p>
-
-              <button
-                onClick={() => handleOAuthLogin('google')}
-                disabled={loading}
-                className="w-full h-14 rounded-2xl bg-[#1a1a1c] border border-white/10 text-white font-bold text-[16px] flex items-center justify-center gap-3 hover:bg-[#2a2a2c] hover:scale-[0.98] active:scale-95 transition-all mb-8 shadow-sm disabled:opacity-50"
-                aria-label="Continue with Google"
-              >
-                <GoogleIcon />
-                Continue with Google
-              </button>
-
-              <div className="w-full flex items-center gap-4 mb-8">
-                <div className="flex-1 h-px bg-white/10"></div>
-                <span className="text-[11px] text-white/40 uppercase tracking-wider font-semibold">Or with email</span>
-                <div className="flex-1 h-px bg-white/10"></div>
-              </div>
 
               <div className="space-y-4 mb-8 w-full">
                 <div className="relative group">
@@ -316,6 +300,22 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ language, onLogin, onBac
                 className="w-full h-14 rounded-2xl bg-indigo-500 text-white font-bold text-lg hover:bg-indigo-600 hover:scale-[0.98] active:scale-95 transition-all shadow-[0_0_20px_rgba(99,102,241,0.3)] disabled:opacity-50 mb-8"
               >
                 {loading ? 'Loading...' : (t('signUp', language) || 'Sign up')}
+              </button>
+
+              <div className="w-full flex items-center gap-4 mb-8">
+                <div className="flex-1 h-px bg-white/10"></div>
+                <span className="text-[11px] text-white/40 uppercase tracking-wider font-semibold">Or continue with</span>
+                <div className="flex-1 h-px bg-white/10"></div>
+              </div>
+
+              <button
+                onClick={() => handleOAuthLogin('google')}
+                disabled={loading}
+                className="w-full h-14 rounded-2xl bg-[#1a1a1c] border border-white/10 text-white font-bold text-[16px] flex items-center justify-center gap-3 hover:bg-[#2a2a2c] hover:scale-[0.98] active:scale-95 transition-all mb-8 shadow-sm disabled:opacity-50"
+                aria-label="Continue with Google"
+              >
+                <GoogleIcon />
+                Continue with Google
               </button>
 
               <div className="text-[15px] text-white/60">
