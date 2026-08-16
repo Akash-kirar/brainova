@@ -473,6 +473,7 @@ export default function App() {
   const [isXpRoadmapOpen, setIsXpRoadmapOpen] = useState(false);
   const [isQuestPageOpen, setIsQuestPageOpen] = useState(false);
   const [isTrainingHistoryOpen, setIsTrainingHistoryOpen] = useState(false);
+  const [calendarViewDate, setCalendarViewDate] = useState(new Date());
   const [activeTooltip, setActiveTooltip] = useState<number | null>(null);
   const [selectedLevel, setSelectedLevel] = useState<any>(null);
   const mapContainerRef = useRef<HTMLDivElement>(null);
@@ -2651,7 +2652,26 @@ export default function App() {
                     </button>
 
                     <div className="p-6 pt-8 overflow-y-auto hide-scrollbar flex-1 relative scroll-smooth">
-                      <h2 className="text-2xl font-medium text-white text-center mb-8">Training History</h2>
+                      <h2 className="text-2xl font-medium text-white text-center mb-6">Training History</h2>
+
+                      <div className="flex items-center justify-between mb-6 px-2">
+                        <button 
+                          onClick={() => setCalendarViewDate(new Date(calendarViewDate.getFullYear(), calendarViewDate.getMonth() - 1, 1))}
+                          className="p-1.5 bg-white/5 hover:bg-white/10 rounded-xl transition-colors"
+                        >
+                          <ChevronLeft className="w-5 h-5 text-white/60" />
+                        </button>
+                        <span className="text-white font-medium text-[15px]">
+                          {calendarViewDate.toLocaleDateString(undefined, { month: 'long', year: 'numeric' })}
+                        </span>
+                        <button 
+                          onClick={() => setCalendarViewDate(new Date(calendarViewDate.getFullYear(), calendarViewDate.getMonth() + 1, 1))}
+                          disabled={calendarViewDate.getMonth() === new Date().getMonth() && calendarViewDate.getFullYear() === new Date().getFullYear()}
+                          className="p-1.5 bg-white/5 hover:bg-white/10 rounded-xl transition-colors disabled:opacity-30 disabled:hover:bg-white/5"
+                        >
+                          <ChevronRight className="w-5 h-5 text-white/60" />
+                        </button>
+                      </div>
 
                       {/* Calendar Grid */}
                       <div className="mb-8">
@@ -2662,8 +2682,8 @@ export default function App() {
                           
                           {(() => {
                             const todayDate = new Date();
-                            const currentMonth = todayDate.getMonth();
-                            const currentYear = todayDate.getFullYear();
+                            const currentMonth = calendarViewDate.getMonth();
+                            const currentYear = calendarViewDate.getFullYear();
                             
                             const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
                             const firstDayOfMonth = new Date(currentYear, currentMonth, 1).getDay();
