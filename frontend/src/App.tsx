@@ -71,6 +71,7 @@ import PersonalizedPlanPage from './components/PersonalizedPlanPage';
 import AchievementsPage from './components/AchievementsPage';
 import FeedbackPage from './components/FeedbackPage';
 import LeaderboardPage from './components/LeaderboardPage';
+import { useLeaderboard } from './hooks/useLeaderboard';
 import { ChallengesPage } from './components/ChallengesPage';
 import { useProgress, GameSession } from './hooks/useProgress';
 import { t, Language } from './i18n';
@@ -606,6 +607,10 @@ export default function App() {
   };
   
   const { stats, sessions, recordGame } = useProgress();
+  const { entries, currentUserId } = useLeaderboard();
+  
+  const actualUserRank = entries.findIndex(e => e.id === currentUserId) + 1;
+  const displayRank = actualUserRank > 0 ? actualUserRank : '--';
 
   const getCategoryRank = (score: number) => {
     if (score === 0) return { level: 1, rank: 'BEGINNER', filled: 0, partial: false };
@@ -2468,8 +2473,6 @@ export default function App() {
                       
                       <div className="flex justify-center mb-8 relative z-10">
                         {(() => {
-                          const totalXP = sessions.reduce((acc, curr) => acc + curr.score, 0);
-                          const userRank = Math.max(1, 50 - Math.floor(totalXP / 50));
                           return (
                             <div className="flex flex-col items-center">
                               <div className="relative w-[140px] h-[140px] flex items-center justify-center">
@@ -2480,7 +2483,7 @@ export default function App() {
                                 {/* Inner Thin Ring */}
                                 <div className="absolute inset-5 rounded-full border-[1px] border-cyan-400/30"></div>
                                 
-                                <span className="text-white font-bold text-5xl tracking-tight drop-shadow-md relative z-10">{userRank}</span>
+                                <span className="text-white font-bold text-5xl tracking-tight drop-shadow-md relative z-10">{displayRank}</span>
                               </div>
                             </div>
                           );
